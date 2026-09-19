@@ -86,7 +86,7 @@ function Header() {
   ];
 
   return (
-    <header className={hidden ? 'header is-hidden' : 'header'}>
+    <header className={`header${hidden ? ' is-hidden' : ''}${open ? ' is-open' : ''}`}>
       <div className="nav container">
         <Logo />
 
