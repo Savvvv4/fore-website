@@ -1215,13 +1215,13 @@ a { color: inherit; }
   }
   .nav-links.open a { padding: 14px 12px; font-size: 15px; }
 
-  .hero { padding-top: 104px; padding-bottom: 64px; gap: 36px; }
+  .hero { padding-top: 108px; padding-bottom: 72px; }
   .hero-background-image { object-position: 60% 30%; }
-  .hero h1, .page-hero h1 { font-size: 46px; letter-spacing: -.04em; line-height: 1.04; }
+  .hero h1, .page-hero h1 { font-size: 50px; letter-spacing: -.04em; }
   .hero-copy > p { font-size: 16px; margin: 22px 0 30px; }
   .button-row { flex-direction: column; align-items: stretch; gap: 12px; }
   .button-row .button { width: min(100%, 280px); }
-  .hero-visual { height: 400px; border-radius: 24px; }
+  .hero-visual { height: 440px; border-radius: 24px; }
   .floating-card.availability { right: 16px; bottom: 24px; width: 280px; }
   .player { left: 16px; bottom: 44px; }
   .hero-chip { top: 56px; right: 16px; }
