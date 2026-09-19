@@ -1203,7 +1203,7 @@ a { color: inherit; }
 @media (max-width: 600px) {
   html, body { overflow-x: hidden; }
   .container { width: calc(100% - 32px); }
-  .header { height: 68px; }
+  .header { height: 68px; position: absolute; }
   .nav-links.open { top: 56px; }
   .logo { font-size: 16px; gap: 3px; }
   .mobile-menu {
@@ -1219,7 +1219,13 @@ a { color: inherit; }
     gap: 2px;
     padding: 8px;
   }
-  .nav-links.open a { padding: 14px 12px; font-size: 15px; }
+  .nav-links.open a {
+    padding: 14px 12px;
+    font-size: 15px;
+    color: rgba(255,255,255,.82);
+  }
+  .nav-links.open a.active,
+  .nav-links.open a:hover { color: var(--acid); }
 
   .hero { padding-top: 108px; padding-bottom: 72px; }
   .hero-background-image { object-position: 60% 30%; }
