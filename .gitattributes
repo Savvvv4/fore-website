@@ -20,6 +20,7 @@
 	# These website images must be available as binary files to Vercel builds.
 	src/imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg -filter -diff -merge
 	src/imports/PFP.jpeg -filter -diff -merge
+	src/imports/itish-arora.jpg -filter -diff -merge
 # ---------------------------------------------------------------------------
 # Video
 # ---------------------------------------------------------------------------
