@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
+import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
 import HeroEcosystem from './components/HeroEcosystem';
@@ -495,7 +496,9 @@ function About() {
           </div>
           <div className="founder-grid">
             <article className="founder-card">
-              <div className="founder-photo"><span>Itish Arora</span></div>
+              <div className="founder-photo">
+                <img src={itishImg} alt="Itish Arora" className="founder-photo-img" />
+              </div>
               <div className="founder-story">
                 <h3>Itish Arora</h3>
                 <small>Founder &amp; CEO</small>
@@ -510,7 +513,7 @@ function About() {
             </article>
             <article className="founder-card founder-card--alt">
               <div className="founder-photo">
-                <img src={savdeepImg} alt="Savdeep Kadian" className="founder-photo-img" />
+                <img src={savdeepImg} alt="Savdeep Kadian" className="founder-photo-img founder-photo-img--savdeep" />
               </div>
               <div className="founder-story">
                 <h3>Savdeep Kadian</h3>
