@@ -179,10 +179,14 @@ function SectionLabel({ children }: { children: ReactNode }) {
 function Home() {
   return (
     <>
-      <section
-        className="hero-bg"
-        style={{ backgroundImage: `url(${heroImg})` }}
-      >
+      <section className="hero-bg">
+        <img
+          className="hero-background-image"
+          src={heroImg}
+          alt=""
+          aria-hidden="true"
+        />
+
         <div className="hero container">
           <div className="hero-copy">
             <h1>
