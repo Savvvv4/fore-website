@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#f5f5f1;--ink:#11130f;--muted:#70766e;--line:#dfe1db;
+  --soft:#e9eee5;--card:#fff;--lime:#d9f24f;--green:#284d38;
+  --blue:#315b70;--gold:#92701f;
+}
+*{box-sizing:border-box}
+body{margin:0;background:transparent;color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased;padding:0}
+.switcher{display:flex;gap:4px;padding:5px;background:#e8e9e4;border-radius:28px;width:max-content;margin-bottom:13px}
+.switch{border:0;background:transparent;border-radius:22px;padding:11px 18px;font-size:11px;font-weight:800;color:#737970;cursor:pointer;transition:.15s}
+.switch.active{background:#11130f;color:#fff}
+.product{background:var(--soft);border-radius:30px;padding:12px}
+.product-head{display:flex;justify-content:space-between;align-items:flex-end;padding:34px 38px 27px;gap:25px}
+.product-kicker{font-size:9px;letter-spacing:1.8px;font-weight:800;color:#78806f;margin-bottom:10px}
+.product-head h2{font-size:35px;line-height:1.02;letter-spacing:-2px;font-weight:500;margin:0;font-family:inherit}
+.product-desc{max-width:390px;color:#687068;font-size:12px;line-height:1.5;margin:9px 0 0}
+.product-link{font-size:11px;font-weight:800;color:#11130f;text-decoration:none;white-space:nowrap}
+.demo{background:#fff;border-radius:22px;min-height:540px;box-shadow:0 18px 55px rgba(30,42,29,.09);overflow:hidden;position:relative}
+.demo-inner{height:100%;min-height:540px}
+.appbar{height:55px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.appbrand{font-size:13px;font-weight:850;letter-spacing:-.5px}
+.appnav{display:flex;gap:18px;font-size:9px;color:#858b83}
+.user{display:flex;align-items:center;gap:8px;font-size:9px;color:#70766f}
+.avatar{width:25px;height:25px;border-radius:50%;background:#e8eee5;display:grid;place-items:center;font-size:8px;font-weight:800}
+.appbody{display:grid;grid-template-columns:190px 1fr;min-height:485px}
+.side{border-right:1px solid var(--line);padding:22px 13px}
+.side-title{font-size:8px;text-transform:uppercase;letter-spacing:1.4px;color:#999f96;margin:0 8px 10px}
+.sideitem{padding:9px 10px;border-radius:8px;font-size:10px;font-weight:700;color:#747a72;margin-bottom:2px}
+.sideitem.active{background:#e8eee5;color:#294b37}.sideitem[data-screen]{cursor:pointer}.sideitem[data-screen]:hover{background:#f0f3ee;color:#294b37}
+.main{padding:28px 30px}
+.main-top{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:21px}
+.kicker{font-size:8px;letter-spacing:1.5px;color:#8b9189;font-weight:800}
+.main h3{font-size:25px;letter-spacing:-1.3px;font-weight:500;margin:4px 0 0;font-family:inherit}
+.smallbtn{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 11px;font-size:9px;font-weight:800;cursor:pointer}
+.grid{display:grid;gap:10px}
+.cards3{grid-template-columns:repeat(3,1fr)}
+.metric{border:1px solid var(--line);border-radius:11px;padding:13px;background:#fff}
+.metric small{display:block;font-size:8px;color:#8a9088;text-transform:uppercase;letter-spacing:.7px}
+.metric strong{display:block;font-size:22px;letter-spacing:-1px;font-weight:600;margin-top:7px}
+.metric span{font-size:8px;color:#7e857d}
+.section-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.section-head b{font-size:10px}.section-head span{font-size:8px;color:#8b9189}
+.listrow{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-top:1px solid #eceee9}
+.listrow:first-child{border-top:0}
+.listmain{display:flex;align-items:center;gap:9px}
+.dot{width:28px;height:28px;border-radius:8px;background:#edf1eb;display:grid;place-items:center;font-size:10px}
+.listrow strong{display:block;font-size:9.5px}.listrow small{display:block;font-size:8px;color:#8a9088;margin-top:3px}
+.badge{font-size:8px;font-weight:800;padding:5px 7px;border-radius:7px;background:#e8f1d8;color:#45602e}
+.chart{height:120px;display:flex;align-items:flex-end;gap:7px;padding:10px 4px 2px}
+.bar{flex:1;background:#dce7d9;border-radius:5px 5px 2px 2px;min-height:18px}
+.bar.hot{background:#8baa91}
+.timeline{display:grid;grid-template-columns:55px repeat(5,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.timeline div{min-height:37px;border-right:1px solid #eceee9;border-bottom:1px solid #eceee9;padding:7px;font-size:8px}.timeline div:nth-child(6n){border-right:0}
+.slot{background:#e8f0e5;font-weight:800;color:#31523e;border-radius:5px;margin:3px;padding:5px!important;min-height:30px!important}
+.tabsmini{display:flex;gap:4px;margin-bottom:14px}.mini{border:1px solid var(--line);background:#fff;border-radius:14px;padding:6px 10px;font-size:8px;color:#777e76;cursor:pointer}.mini.on{background:#11130f;color:#fff;border-color:#11130f}
+.golfer .main{background:#fbfcfa}.search{height:34px;border:1px solid var(--line);border-radius:8px;padding:0 11px;color:#8b9189;font-size:9px;display:flex;align-items:center;margin-bottom:17px}
+.coursegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}
+.course{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.course-img{height:100px;background:linear-gradient(135deg,#a9c19c,#dce6d6);position:relative}
+.course-img:after{content:"";position:absolute;width:65px;height:65px;border-radius:50%;border:16px solid rgba(255,255,255,.35);right:20px;top:17px}
+.course-body{padding:12px}.course-name{font-size:11px;font-weight:800}.course-meta{font-size:8px;color:#858b83;margin-top:4px}.course-foot{display:flex;justify-content:space-between;align-items:center;margin-top:11px}.price{font-size:10px;font-weight:800}.book{border:0;background:#11130f;color:#fff;border-radius:7px;padding:7px 9px;font-size:8px;font-weight:800;cursor:pointer}
+.profilebox{background:#eef3ea;border-radius:12px;padding:13px;margin-bottom:11px;display:flex;justify-content:space-between;align-items:center}.profilebox b{font-size:10px}.profilebox span{font-size:8px;color:#697268}
+.coach .main{background:#fbfcfa}.coach-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:12px}
+.insight{background:#eef4eb;border:1px solid #d9e4d5;border-radius:11px;padding:13px;margin-bottom:11px}.insight b{font-size:9px}.insight p{font-size:8px;line-height:1.5;color:#667067;margin:6px 0 0}
+.practice{border:1px solid var(--line);border-radius:11px;padding:13px}.practice-top{display:flex;justify-content:space-between}.practice h4{font-size:10px;margin:0;font-family:inherit}.practice p{font-size:8px;color:#858b83;margin:4px 0 12px}.progress{height:6px;border-radius:9px;background:#e8ebe5;overflow:hidden}.progress i{display:block;height:100%;width:72%;background:#6f9478}.coach-right .metric{margin-bottom:9px}.bookingrow{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #eceee9;padding:10px 0}.bookingrow b{font-size:9px}.bookingrow span{font-size:8px;color:#8a9088}
+.facility .appbody{grid-template-columns:170px 1fr}.facility .side{background:#284d38;color:#dbe9df;border:0}.facility .side-title{color:#91ad9c}.facility .sideitem{color:#a9c1b2}.facility .sideitem.active{background:rgba(255,255,255,.12);color:#fff}.facility .sideitem[data-screen]:hover{background:rgba(255,255,255,.08);color:#fff}.facility .appbrand{color:#284d38}
+.facility .main{background:#f8f8f5}.facility .metric strong{font-family:Georgia,serif}
+.foot{display:flex;justify-content:space-between;align-items:center;padding:15px 6px 4px;font-size:9px;color:#7b8178}.foot a{color:#11130f;text-decoration:none;font-weight:800}
+</style>
+</head>
+<body>
+
+<div class="switcher">
+  <button class="switch active" data-key="golfer">Golfers</button>
+  <button class="switch" data-key="coach">Coaches</button>
+  <button class="switch" data-key="facility">Facilities</button>
+</div>
+
+<section class="product">
+  <div class="product-head">
+    <div>
+      <div class="product-kicker" id="pk">FOR GOLFERS</div>
+      <h2 id="pt">Everything golf, in one place.</h2>
+      <p class="product-desc" id="pd">Find where to play, compare your options, and book your next round without the usual friction.</p>
+    </div>
+    <a class="product-link" id="pl" href="#">Explore the golfer experience ↗</a>
+  </div>
+
+  <div class="demo" id="demo"></div>
+
+  <div class="foot">
+    <span id="foot">A focused preview of the golfer experience.</span>
+    <a href="#">Explore the platform ↗</a>
+  </div>
+</section>
+
+<script>
+const copy={
+ golfer:{k:"FOR GOLFERS",t:"Everything golf, in one place.",d:"Find where to play, compare your options, and book your next round without the usual friction.",l:"Explore the golfer experience ↗",f:"A focused preview of the golfer experience."},
+ coach:{k:"FOR COACHES",t:"More time coaching. Less time managing.",d:"Schedule lessons, manage students, prescribe practice, track performance, and run the business behind your coaching.",l:"Explore the coach experience ↗",f:"Built around the coaching loop: diagnose → prescribe → practise → measure → adjust."},
+ facility:{k:"FOR FACILITIES",t:"Run the golf operation.",d:"Bring sales, customers, memberships, pricing, payments, and reporting together in one operating system.",l:"Explore the facility experience ↗",f:"A focused preview of the facility operating system."}
+};
+
+function appbar(name,role){
+return `<div class="appbar"><div class="appbrand">${name}</div><div class="appnav"><span>Home</span><span>Schedule</span><span>${role}</span><span>Business</span></div><div class="user"><span>Arjun</span><span class="avatar">AR</span></div></div>`;
+}
+
+function sideitem(label,screen,active=false){
+return `<div class="sideitem${active?' active':''}" data-screen="${screen}">${label}</div>`;
+}
+
+function golfer(){
+return `<div class="demo-inner golfer">${appbar("FORE","Golf")}
+<div class="appbody"><aside class="side">
+<div class="side-title">My golf</div>${sideitem('Discover','discover',true)}${sideitem('My rounds','rounds')}${sideitem('Coaches','coaches')}${sideitem('Saved','saved')}
+<div class="side-title" style="margin-top:25px">Profile</div>${sideitem('Handicap','handicap')}${sideitem('Preferences','preferences')}
+</aside><main class="main" id="screen-golfer">${golferScreen('discover')}</main></div></div>`;
+}
+
+function golferScreen(screen){
+const screens={
+ discover:`<div class="main-top"><div><div class="kicker">DISCOVER</div><h3>Find your next round.</h3></div><button class="smallbtn">Delhi · Change</button></div><div class="search">⌕ &nbsp; Search courses, locations or tee times</div><div class="profilebox"><div><b>Playing this weekend?</b><br><span>3 courses have tee times that match your preferences.</span></div><button class="smallbtn">View tee times</button></div><div class="section-card"><div class="section-head"><b>Recommended for you</b><span>Based on your preferences</span></div><div class="coursegrid"><div class="course"><div class="course-img"></div><div class="course-body"><div class="course-name">Delhi Golf Club</div><div class="course-meta">18 holes · New Delhi · 7.4 km</div><div class="course-foot"><span class="price">From ₹2,500</span><button class="book">View times</button></div></div></div><div class="course"><div class="course-img" style="background:linear-gradient(135deg,#91ad96,#d7e3d4)"></div><div class="course-body"><div class="course-name">Classic Golf & Country Club</div><div class="course-meta">18 holes · Gurugram · 29 km</div><div class="course-foot"><span class="price">From ₹2,000</span><button class="book">View times</button></div></div></div></div></div>`,
+ rounds:`<div class="main-top"><div><div class="kicker">MY ROUNDS</div><h3>Your golf, over time.</h3></div><button class="smallbtn">+ Add round</button></div><div class="grid cards3"><div class="metric"><small>ROUNDS</small><strong>24</strong><span>this season</span></div><div class="metric"><small>AVERAGE SCORE</small><strong>86.4</strong><span>↓ 2.1 vs last season</span></div><div class="metric"><small>HANDICAP</small><strong>14.2</strong><span>current index</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Recent rounds</b><span>View all</span></div><div class="listrow"><div><strong>Delhi Golf Club</strong><small>Aug 24 · 18 holes</small></div><b>82</b></div><div class="listrow"><div><strong>DLF Golf & Country Club</strong><small>Aug 17 · 18 holes</small></div><b>87</b></div><div class="listrow"><div><strong>Classic Golf & Country Club</strong><small>Aug 10 · 18 holes</small></div><b>90</b></div></div>`,
+ coaches:`<div class="main-top"><div><div class="kicker">COACHES</div><h3>Coaching that fits your game.</h3></div><button class="smallbtn">Find a coach</button></div><div class="section-card"><div class="section-head"><b>Your coaches</b><span>2 saved</span></div><div class="listrow"><div class="listmain"><div class="dot">AR</div><div><strong>Arjun Rao</strong><small>PGA Coach · Bangalore · 4.8 rating</small></div></div><span class="badge">Active</span></div><div class="listrow"><div class="listmain"><div class="dot">MS</div><div><strong>Meera Shah</strong><small>Golf Instructor · Delhi · 4.7 rating</small></div></div><button class="smallbtn">View</button></div></div>`,
+ saved:`<div class="main-top"><div><div class="kicker">SAVED</div><h3>Places worth coming back to.</h3></div><button class="smallbtn">Discover more</button></div><div class="section-card"><div class="section-head"><b>Saved courses</b><span>4 places</span></div><div class="listrow"><div><strong>Delhi Golf Club</strong><small>New Delhi · 18 holes</small></div><span class="badge">Saved</span></div><div class="listrow"><div><strong>Jaypee Greens</strong><small>Greater Noida · 18 holes</small></div><span class="badge">Saved</span></div><div class="listrow"><div><strong>Classic Golf & Country Club</strong><small>Gurugram · 18 holes</small></div><span class="badge">Saved</span></div></div>`,
+ handicap:`<div class="main-top"><div><div class="kicker">HANDICAP</div><h3>Know your game.</h3></div><button class="smallbtn">Update round</button></div><div class="grid cards3"><div class="metric"><small>INDEX</small><strong>14.2</strong><span>as of Aug 28</span></div><div class="metric"><small>BEST SCORE</small><strong>78</strong><span>this season</span></div><div class="metric"><small>LOW HANDICAP</small><strong>13.1</strong><span>season low</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Recent index trend</b><span>Last 6 rounds</span></div><div class="chart"><i class="bar" style="height:78%"></i><i class="bar" style="height:70%"></i><i class="bar" style="height:66%"></i><i class="bar" style="height:59%"></i><i class="bar hot" style="height:51%"></i><i class="bar hot" style="height:43%"></i></div></div>`,
+ preferences:`<div class="main-top"><div><div class="kicker">PREFERENCES</div><h3>Make golf feel like yours.</h3></div><button class="smallbtn">Edit</button></div><div class="section-card"><div class="section-head"><b>Playing preferences</b><span>Saved</span></div><div class="listrow"><div><strong>Location</strong><small>Delhi NCR · within 30 km</small></div><b>30 km</b></div><div class="listrow"><div><strong>Preferred tee time</strong><small>Saturday & Sunday · mornings</small></div><b>Morning</b></div><div class="listrow"><div><strong>Course type</strong><small>18-hole · championship</small></div><b>18 holes</b></div></div>`
+};
+return screens[screen]||screens.discover;
+}
+
+function coach(){
+return `<div class="demo-inner coach">${appbar("FORE COACH","Coach")}
+<div class="appbody"><aside class="side">
+<div class="side-title">Coaching</div>${sideitem('Home','home',true)}${sideitem('Schedule','schedule')}${sideitem('Students','students')}${sideitem('Practice','practice')}${sideitem('Rounds','rounds')}
+<div class="side-title" style="margin-top:24px">Business</div>${sideitem('Bookings','bookings')}${sideitem('Payments','payments')}${sideitem('Packages','packages')}${sideitem('Reviews','reviews')}
+</aside><main class="main" id="screen-coach">${coachScreen('home')}</main></div></div>`;
+}
+
+function coachScreen(screen){
+const base=`<div class="main-top"><div><div class="kicker">GOOD MORNING, ARJUN</div><h3>Your coaching at a glance.</h3></div><button class="smallbtn">+ Add session</button></div>`;
+const screens={
+ home:base+`<div class="grid cards3"><div class="metric"><small>ACTIVE GOLFERS</small><strong>18</strong><span>6 results to review</span></div><div class="metric"><small>TODAY</small><strong>4</strong><span>lessons scheduled</span></div><div class="metric"><small>AUG EARNINGS</small><strong>₹62k</strong><span>↑ 12% from July</span></div></div><div class="coach-layout" style="margin-top:11px"><div><div class="insight"><b>COACHING INSIGHT</b><p>Putting is currently the biggest scoring opportunity across your active students. Meera's 3-putts fell from 4 to 1 in her latest tournament round.</p></div><div class="practice"><div class="practice-top"><h4>Putting — Start Line</h4><span class="badge">On track</span></div><p>Meera · Daily · 3 drills · 20 min</p><div class="progress"><i></i></div><div style="display:flex;justify-content:space-between;margin-top:7px;font-size:8px;color:#7e857d"><span>Practice completion</span><b style="color:#31523d">86%</b></div></div></div><div class="section-card coach-right"><div class="section-head"><b>Today · 4 lessons</b><span>Full schedule</span></div><div class="bookingrow"><div><b>Meera Pillai</b><br><span>7:00 AM · Prestige Golf Club</span></div><span class="badge">Confirmed</span></div><div class="bookingrow"><div><b>Aditya Nair</b><br><span>9:00 AM · KGA</span></div><span class="badge">Confirmed</span></div><div class="bookingrow"><div><b>Rahul Nath</b><br><span>10:00 AM · KGA</span></div><span class="badge">Trial</span></div></div></div>`,
+ schedule:`<div class="main-top"><div><div class="kicker">SCHEDULE</div><h3>Your week, at a glance.</h3></div><button class="smallbtn">+ Add session</button></div><div class="timeline"><div></div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>9 AM</div><div></div><div class="slot">Meera · Lesson</div><div></div><div class="slot">Aditya · Lesson</div><div></div><div>10 AM</div><div class="slot">Rahul · Trial</div><div></div><div></div><div class="slot">Ananya · Lesson</div><div></div><div>11 AM</div><div></div><div class="slot">Kabir · Lesson</div><div></div><div></div><div class="slot">Meera · Review</div><div></div></div>`,
+ students:`<div class="main-top"><div><div class="kicker">STUDENTS</div><h3>Everyone you coach.</h3></div><button class="smallbtn">+ Add student</button></div><div class="section-card"><div class="section-head"><b>Active golfers</b><span>18 students</span></div><div class="listrow"><div><strong>Meera Pillai</strong><small>Handicap 12.4 · Putting · 86% practice</small></div><span class="badge">On track</span></div><div class="listrow"><div><strong>Aditya Nair</strong><small>Handicap 9.8 · Driver speed · 72% practice</small></div><span class="badge">In progress</span></div><div class="listrow"><div><strong>Rahul Nath</strong><small>Handicap 18.1 · Full swing · Trial</small></div><span class="badge">New</span></div></div>`,
+ practice:`<div class="main-top"><div><div class="kicker">PRACTICE</div><h3>Prescribe. Track. Adjust.</h3></div><button class="smallbtn">+ New assignment</button></div><div class="grid cards3"><div class="metric"><small>ACTIVE ROUTINES</small><strong>12</strong><span>across 18 golfers</span></div><div class="metric"><small>RESULTS TO REVIEW</small><strong>6</strong><span>ready for feedback</span></div><div class="metric"><small>AVG COMPLETION</small><strong>78%</strong><span>last 30 days</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Practice assignments</b><span>Latest</span></div><div class="listrow"><div><strong>Meera — Putting: Start Line</strong><small>3 drills · Daily · target 90%</small></div><b>86%</b></div><div class="listrow"><div><strong>Aditya — Driver Speed: Phase 1</strong><small>5 drills · 3x/week · target 112 mph</small></div><b>72%</b></div></div>`,
+ rounds:`<div class="main-top"><div><div class="kicker">ROUNDS</div><h3>See coaching in play.</h3></div><button class="smallbtn">+ Add round</button></div><div class="section-card"><div class="section-head"><b>Recent student rounds</b><span>Performance data</span></div><div class="listrow"><div><strong>Meera Pillai</strong><small>Latest tournament · 3-putts: 1 · Score: 84</small></div><b>84</b></div><div class="listrow"><div><strong>Aditya Nair</strong><small>Practice round · Driver: 108 mph · Score: 79</small></div><b>79</b></div></div>`,
+ bookings:`<div class="main-top"><div><div class="kicker">BOOKINGS</div><h3>Keep the calendar full.</h3></div><button class="smallbtn">View requests</button></div><div class="grid cards3"><div class="metric"><small>THIS MONTH</small><strong>42</strong><span>confirmed lessons</span></div><div class="metric"><small>REQUESTS</small><strong>3</strong><span>awaiting response</span></div><div class="metric"><small>FILL RATE</small><strong>84%</strong><span>calendar utilisation</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Lesson requests</b><span>3 pending</span></div><div class="listrow"><div><strong>Priya Shah</strong><small>Single lesson · Tomorrow · 4 PM</small></div><span class="badge">Pending</span></div><div class="listrow"><div><strong>Vikram Singh</strong><small>Trial lesson · Saturday · 9 AM</small></div><span class="badge">Pending</span></div></div>`,
+ payments:`<div class="main-top"><div><div class="kicker">PAYMENTS</div><h3>Know what you've earned.</h3></div><button class="smallbtn">Payout history</button></div><div class="grid cards3"><div class="metric"><small>AUG EARNINGS</small><strong>₹62k</strong><span>gross earnings</span></div><div class="metric"><small>PENDING PAYOUT</small><strong>₹8.2k</strong><span>next payout</span></div><div class="metric"><small>TOTAL EARNED</small><strong>₹4.1L</strong><span>since Apr 2025</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Recent payments</b><span>August</span></div><div class="listrow"><div><strong>6-Lesson Bundle · Meera Pillai</strong><small>Aug 28 · Paid</small></div><b>₹16,200</b></div><div class="listrow"><div><strong>Single Lesson · Aditya Nair</strong><small>Aug 27 · Paid</small></div><b>₹3,000</b></div></div>`,
+ packages:`<div class="main-top"><div><div class="kicker">PACKAGES</div><h3>Package your coaching.</h3></div><button class="smallbtn">+ Add package</button></div><div class="section-card"><div class="section-head"><b>Your packages</b><span>5 active</span></div><div class="listrow"><div><strong>Trial Lesson</strong><small>1 lesson · Introductory</small></div><b>₹800</b></div><div class="listrow"><div><strong>Single Lesson</strong><small>1 lesson · 60 min</small></div><b>₹3,000</b></div><div class="listrow"><div><strong>6-Lesson Bundle</strong><small>6 lessons · Save 10%</small></div><b>₹16,200</b></div><div class="listrow"><div><strong>12-Lesson Bundle</strong><small>12 lessons · Save 17%</small></div><b>₹30,000</b></div></div>`,
+ reviews:`<div class="main-top"><div><div class="kicker">REVIEWS</div><h3>What golfers say.</h3></div><button class="smallbtn">View profile</button></div><div class="grid cards3"><div class="metric"><small>RATING</small><strong>4.8</strong><span>from 340+ lessons</span></div><div class="metric"><small>RANK</small><strong>#2</strong><span>Prestige leaderboard</span></div><div class="metric"><small>EXPERIENCE</small><strong>12 yrs</strong><span>PGA Coach</span></div></div><div class="section-card" style="margin-top:11px"><div class="listrow"><div><strong>"Clear, structured and easy to follow."</strong><small>Recent student · 5 stars</small></div><span class="badge">5.0</span></div><div class="listrow"><div><strong>"The practice plan made a real difference."</strong><small>Recent student · 5 stars</small></div><span class="badge">5.0</span></div></div>`
+};
+return screens[screen]||screens.home;
+}
+
+function facility(){
+return `<div class="demo-inner facility">${appbar("FORE FACILITIES","Facility")}
+<div class="appbody"><aside class="side">
+<div class="side-title">Operations</div>${sideitem('Sell','sell',true)}${sideitem('Customers','customers')}${sideitem('Memberships','memberships')}${sideitem('Reports','reports')}${sideitem('Settings','settings')}
+<div class="side-title" style="margin-top:24px">Location</div>${sideitem('Delhi · Counter 01','location')}
+</aside><main class="main" id="screen-facility">${facilityScreen('sell')}</main></div></div>`;
+}
+
+function facilityScreen(screen){
+const screens={
+ sell:`<div class="main-top"><div><div class="kicker">TODAY AT YOUR FACILITY</div><h3>Keep the operation moving.</h3></div><button class="smallbtn">+ New sale</button></div><div class="grid cards3"><div class="metric"><small>TEE / RANGE SALES</small><strong>86</strong><span>Today's transactions</span></div><div class="metric"><small>CUSTOMERS</small><strong>30</strong><span>active customer records</span></div><div class="metric"><small>TODAY'S REVENUE</small><strong>₹1.4L</strong><span>across all sales</span></div></div><div style="margin-top:11px" class="section-card"><div class="section-head"><b>Sales & operations</b><span>Live today</span></div><div class="grid" style="grid-template-columns:1.1fr .9fr"><div><div class="tabsmini"><span class="mini on">Recent sales</span><span class="mini">Memberships</span><span class="mini">Payments</span></div><div class="listrow"><div class="listmain"><div class="dot">₹</div><div><strong>Simran Trivedi</strong><small>100 Balls · Club rental</small></div></div><b>₹690</b></div><div class="listrow"><div class="listmain"><div class="dot">₹</div><div><strong>Preeti</strong><small>100 Balls · Replacement fee</small></div></div><b>₹2,490</b></div><div class="listrow"><div class="listmain"><div class="dot">₹</div><div><strong>Amit</strong><small>Range · Group lesson</small></div></div><b>₹4,050</b></div></div><div><div class="section-head"><b>Revenue</b><span>Today</span></div><div class="chart"><i class="bar" style="height:38%"></i><i class="bar" style="height:55%"></i><i class="bar" style="height:47%"></i><i class="bar" style="height:72%"></i><i class="bar hot" style="height:90%"></i><i class="bar hot" style="height:68%"></i><i class="bar" style="height:80%"></i></div></div></div></div>`,
+ customers:`<div class="main-top"><div><div class="kicker">CUSTOMERS</div><h3>Know who walks through the door.</h3></div><button class="smallbtn">+ Add customer</button></div><div class="search">⌕ &nbsp; Search customers by name, phone or membership</div><div class="section-card"><div class="section-head"><b>Customer records</b><span>30 active</span></div><div class="listrow"><div><strong>Simran Trivedi</strong><small>Zen Card Holder · 12 visits</small></div><span class="badge">Active</span></div><div class="listrow"><div><strong>Preeti</strong><small>Regular · 8 visits · ₹2,490 latest sale</small></div><span class="badge">Active</span></div><div class="listrow"><div><strong>Amit</strong><small>Zen Card Holder · 18 visits</small></div><span class="badge">Active</span></div></div>`,
+ memberships:`<div class="main-top"><div><div class="kicker">MEMBERSHIPS</div><h3>Manage plans and renewals.</h3></div><button class="smallbtn">+ New membership</button></div><div class="grid cards3"><div class="metric"><small>ACTIVE MEMBERS</small><strong>124</strong><span>across all plans</span></div><div class="metric"><small>RENEWALS</small><strong>9</strong><span>this month</span></div><div class="metric"><small>MEMBERSHIP REVENUE</small><strong>₹18.6L</strong><span>year to date</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Plans</b><span>Pricing</span></div><div class="listrow"><div><strong>VIP Annual</strong><small>Premium membership</small></div><b>₹1,13,299</b></div><div class="listrow"><div><strong>Regular Annual</strong><small>Annual membership</small></div><b>₹75,000</b></div><div class="listrow"><div><strong>Regular 6-Month</strong><small>6-month membership</small></div><b>₹45,000</b></div></div>`,
+ reports:`<div class="main-top"><div><div class="kicker">REPORTS</div><h3>See how the facility is performing.</h3></div><button class="smallbtn">Export report</button></div><div class="grid cards3"><div class="metric"><small>REVENUE</small><strong>₹18.6L</strong><span>year to date</span></div><div class="metric"><small>TRANSACTIONS</small><strong>2,418</strong><span>year to date</span></div><div class="metric"><small>AVG TICKET</small><strong>₹770</strong><span>all sales</span></div></div><div class="section-card" style="margin-top:11px"><div class="section-head"><b>Revenue trend</b><span>Last 7 days</span></div><div class="chart"><i class="bar" style="height:48%"></i><i class="bar" style="height:60%"></i><i class="bar" style="height:52%"></i><i class="bar" style="height:75%"></i><i class="bar hot" style="height:92%"></i><i class="bar hot" style="height:68%"></i><i class="bar" style="height:81%"></i></div></div>`,
+ settings:`<div class="main-top"><div><div class="kicker">SETTINGS</div><h3>Configure the operation.</h3></div><button class="smallbtn">Save changes</button></div><div class="section-card"><div class="section-head"><b>Facility settings</b><span>Delhi · Counter 01</span></div><div class="listrow"><div><strong>Location</strong><small>Delhi · Counter 01</small></div><b>Edit</b></div><div class="listrow"><div><strong>Operators</strong><small>Shadab and 4 staff members</small></div><b>5</b></div><div class="listrow"><div><strong>Pricing</strong><small>Range, rentals, lessons and memberships</small></div><b>Manage</b></div></div>`,
+ location:`<div class="main-top"><div><div class="kicker">LOCATION</div><h3>Delhi · Counter 01.</h3></div><button class="smallbtn">Switch location</button></div><div class="section-card"><div class="section-head"><b>Counter status</b><span class="badge">Open</span></div><div class="listrow"><div><strong>Operator</strong><small>Shadab</small></div><b>Active</b></div><div class="listrow"><div><strong>Today's sales</strong><small>86 transactions</small></div><b>₹1.4L</b></div><div class="listrow"><div><strong>Current shift</strong><small>08:00 AM — 04:00 PM</small></div><b>Live</b></div></div>`
+};
+return screens[screen]||screens.sell;
+}
+
+const renders={golfer,coach,facility};
+const switches=document.querySelectorAll(".switch");
+function select(k){
+ const c=copy[k];
+ document.getElementById("pk").textContent=c.k;
+ document.getElementById("pt").textContent=c.t;
+ document.getElementById("pd").textContent=c.d;
+ document.getElementById("pl").textContent=c.l;
+ document.getElementById("foot").textContent=c.f;
+ switches.forEach(x=>x.classList.toggle("active",x.dataset.key===k));
+ const demo=document.getElementById("demo");
+ demo.style.opacity=0;demo.style.transform="translateY(6px)";
+ setTimeout(()=>{demo.innerHTML=renders[k]();demo.style.transition="opacity .25s,transform .25s";demo.style.opacity=1;demo.style.transform="translateY(0)"},90);
+}
+switches.forEach(x=>x.onclick=()=>select(x.dataset.key));
+document.getElementById('demo').addEventListener('click',e=>{
+ const item=e.target.closest('.sideitem[data-screen]');
+ if(!item) return;
+ const demo=e.currentTarget;
+ const activeRole=demo.querySelector('.demo-inner');
+ const role=activeRole.classList.contains('coach')?'coach':activeRole.classList.contains('facility')?'facility':'golfer';
+ const screen=item.dataset.screen;
+ const target=demo.querySelector(`#screen-${role}`);
+ if(!target) return;
+ target.innerHTML=role==='coach'?coachScreen(screen):role==='facility'?facilityScreen(screen):golferScreen(screen);
+ const items=demo.querySelectorAll('.sideitem[data-screen]');
+ items.forEach(x=>x.classList.toggle('active',x===item));
+});
+select("golfer");
+</script>
+</body>
+</html>

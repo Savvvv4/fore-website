@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="An interactive tour of Fore for golfers, coaches and facilities.">
+<title>Fore | Product tour</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,450;0,9..144,560;0,9..144,650;1,9..144,450&family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root{
+  --paper:#f7f6f0; --surface:#ffffff; --surface-2:#fbfbf7;
+  --ink:#171a12; --ink-soft:#454a3c; --muted:#797d6d; --muted-2:#9a9d8d;
+  --line:#e5e3d7; --line-soft:#eeece2;
+  --lime:#d8f24c; --lime-deep:#8fae1c; --lime-ink:#37430f;
+  --forest-2:#e3ecdf; --forest-ink:#233522;
+  --amber-2:#f4ecd6; --amber-deep:#8a6215;
+  --r-md:14px;
+  --sh-md:0 10px 30px -10px rgba(23,26,18,.18);
+  --sh-btn:0 1px 2px rgba(23,26,18,.06), 0 8px 18px -10px rgba(23,26,18,.22);
+  --ease:cubic-bezier(.22,.9,.32,1);
+  --stage-h:490px;
+}
+:root:not([data-theme="light"]){
+  @media (prefers-color-scheme: dark){
+    --paper:#12140f; --surface:#1a1d15; --surface-2:#1f2317;
+    --ink:#f2f1e8; --ink-soft:#cfd0c1; --muted:#98998a; --muted-2:#767869;
+    --line:#33362a; --line-soft:#262920;
+    --forest-2:#213022; --forest-ink:#cfe8c6;
+    --amber-2:#332912; --amber-deep:#e0b563;
+    --sh-md:0 10px 30px -10px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#12140f; --surface:#1a1d15; --surface-2:#1f2317;
+  --ink:#f2f1e8; --ink-soft:#cfd0c1; --muted:#98998a; --muted-2:#767869;
+  --line:#33362a; --line-soft:#262920;
+  --forest-2:#213022; --forest-ink:#cfe8c6;
+  --amber-2:#332912; --amber-deep:#e0b563;
+  --sh-md:0 10px 30px -10px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+.serif{font-family:Fraunces,Georgia,serif}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent;background:none;border:0;padding:0}
+button:disabled{cursor:default}
+:focus-visible{outline:2px solid var(--forest-ink);outline-offset:2px;border-radius:6px}
+@media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+
+/* ============ shell ============ */
+.tourWrap{
+  background:
+    radial-gradient(900px 480px at 14% -8%, rgba(216,242,76,.16), transparent 60%),
+    radial-gradient(760px 420px at 108% 12%, rgba(31,54,38,.10), transparent 55%),
+    #294d36;
+  padding:28px 16px;
+}
+.app{width:100%;max-width:1080px;margin:0 auto;display:flex;flex-direction:column;background:var(--paper);border:1px solid rgba(255,255,255,.22);border-radius:24px;overflow:hidden;box-shadow:0 28px 80px rgba(13,31,20,.28)}
+
+.top{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:12px 22px;border-bottom:1px solid var(--line-soft)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:800;font-size:15px;letter-spacing:-.2px}
+.brand .mark{width:23px;height:23px;border-radius:7px;background:var(--ink);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(216,242,76,.18)}
+.brand .mark i{width:6px;height:6px;border-radius:50%;background:var(--lime)}
+.dots{justify-self:end;display:flex;align-items:center;gap:7px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--line);transition:background .25s,transform .25s}
+.dot.done{background:var(--muted-2)}
+.dot.on{background:var(--forest-ink);transform:scale(1.5)}
+
+.switcher{display:inline-flex;gap:3px;padding:4px;background:var(--line-soft);border-radius:99px;position:relative;box-shadow:inset 0 1px 2px rgba(23,26,18,.06)}
+.switch{position:relative;z-index:2;border-radius:99px;padding:8px 16px;font-size:12.5px;font-weight:700;color:var(--muted);transition:color .35s var(--ease)}
+.switch.active{color:var(--paper)}
+.switch-thumb{position:absolute;top:4px;bottom:4px;left:4px;width:80px;border-radius:99px;background:var(--ink);z-index:1;transition:transform .45s var(--ease),width .45s var(--ease);box-shadow:var(--sh-btn)}
+
+.stage{position:relative;height:var(--stage-h);overflow:hidden}
+.step{
+  position:absolute;inset:0;display:none;
+  grid-template-columns:minmax(0,380px) minmax(0,460px);grid-template-rows:minmax(0,1fr);
+  column-gap:72px;justify-content:center;
+  padding:28px 56px;
+}
+.step.active{display:grid;animation:fadein .35s var(--ease)}
+.step.solo{grid-template-columns:minmax(0,560px);align-items:center;justify-items:center}
+
+.navBar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 22px;border-top:1px solid var(--line-soft)}
+.navBar.hidden{visibility:hidden}
+.navBack{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted);padding:10px 6px;border-radius:9px;transition:color .15s}
+.navBack:hover{color:var(--ink)}
+.navBack:disabled{opacity:0;pointer-events:none}
+.navMid{font-size:11.5px;font-weight:700;color:var(--muted-2);font-variant-numeric:tabular-nums}
+.navNext{display:inline-flex;align-items:center;gap:8px}
+
+/* ============ copy ============ */
+.narr{align-self:center}
+.eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.narr h2{font-family:Fraunces,serif;font-weight:560;font-size:clamp(28px,3.4vw,38px);letter-spacing:-.6px;line-height:1.1;margin:0 0 12px}
+.narr p{font-size:16px;color:var(--ink-soft);line-height:1.55;margin:0;max-width:34ch}
+
+.hero{text-align:center}
+.hero h1{font-family:Fraunces,serif;font-weight:560;font-size:clamp(34px,5vw,54px);letter-spacing:-1.2px;line-height:1.04;margin:0 0 16px}
+.hero p{font-size:16px;color:var(--ink-soft);line-height:1.55;max-width:38ch;margin:0 auto 28px}
+.heroBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:11px;padding:12px 20px;font-size:14px;font-weight:700;color:var(--ink);display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:border-color .15s,background .15s,transform .12s,box-shadow .2s}
+.btn:hover:not(:disabled){border-color:#c9c6b6;box-shadow:var(--sh-btn);transform:translateY(-1px)}
+.btn:active:not(:disabled){transform:scale(.97)}
+.btn.primary{background:var(--ink);border-color:var(--ink);color:var(--paper);box-shadow:var(--sh-btn)}
+.btn.accent{background:var(--lime);border-color:var(--lime);color:var(--lime-ink)}
+.btn.accent:hover:not(:disabled){background:#e2f66a;border-color:#e2f66a}
+.btn.lg{padding:14px 24px;font-size:14.5px;border-radius:13px}
+.btn.sm{padding:8px 13px;font-size:12.5px;border-radius:9px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.75}
+.glow{animation:glow 1.8s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(143,174,28,.35)}50%{box-shadow:0 0 0 9px rgba(143,174,28,0)}}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.fadein{animation:fadein .4s var(--ease) both}
+
+/* ============ demo card ============ */
+.phone{align-self:stretch;min-height:0;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 45px -18px rgba(23,26,18,.24);overflow:hidden}
+.phoneHeader{flex:none;display:flex;align-items:center;padding:11px 18px;border-bottom:1px solid var(--line-soft);background:var(--surface);}
+.phoneHeader .eyebrow{margin:0;font-size:10.5px;letter-spacing:.1em;}
+.phone-body{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px;display:flex;flex-direction:column}
+.phone-body>*{flex:none}
+.phone-body>.btn.block:last-child{margin-top:auto}
+.phone-body::-webkit-scrollbar{width:5px}
+.phone-body::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+
+.ico{width:15px;height:15px;flex:none;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+.chiplabel{font-size:12px;font-weight:700;color:var(--muted);margin:0 0 8px}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chips.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+.chips.grid3 .chip,.chips.grid2 .chip{text-align:center;padding-left:4px;padding-right:4px;white-space:nowrap}
+.chips.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:99px;padding:10px 14px;font-size:13px;font-weight:700;color:var(--ink-soft);transition:border-color .15s,background .15s,color .15s}
+.chip:hover{border-color:#c9c6b6}
+.chip.selected{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
+/* discover */
+.search{height:42px;flex:none;border:1px solid var(--line);border-radius:10px;padding:0 12px;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px;margin-bottom:12px;background:var(--surface-2)}
+.course{display:flex;align-items:center;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface);margin-bottom:8px;transition:border-color .18s,box-shadow .18s}
+.course:hover{border-color:#c9c6b6}
+.course.selected{border-color:var(--lime-deep);box-shadow:0 0 0 3px rgba(143,174,28,.16)}
+.course-img{width:54px;height:54px;flex:none;position:relative;background:linear-gradient(135deg,#a9c19c,#dfe9d8)}
+.course-img.b{background:linear-gradient(135deg,#c7b98a,#ecdfb8)}
+.course-img.c{background:linear-gradient(135deg,#93a7b8,#d7e2ea)}
+.course-img.d{background:linear-gradient(135deg,#b7a3c7,#e6dcee)}
+.course-check{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:var(--lime-ink);background:rgba(216,242,76,.85)}
+.course.selected .course-check{display:flex}
+.course-body{flex:1;padding:6px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cname{font-size:14px;font-weight:700}
+.cmeta{font-size:12px;color:var(--muted);margin-top:2px}
+.cprice{font-size:14px;font-weight:700;white-space:nowrap}
+
+/* rows */
+.row{display:flex;align-items:center;gap:12px;padding:10px 2px;border-top:1px solid var(--line-soft)}
+.row:first-child{border-top:0}
+.rchip{width:30px;height:30px;border-radius:9px;background:var(--forest-2);color:var(--forest-ink);display:grid;place-items:center;flex:none}
+.row strong{display:block;font-size:13.5px;font-weight:600}
+.row small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.row-side{margin-left:auto;text-align:right;flex:none}
+.row-side b{font-size:13px}
+.rowclick{cursor:pointer;border-radius:10px;border-top:0;padding:10px;margin:0 0 4px;border:1.5px solid var(--line-soft);transition:border-color .15s,background .15s}
+.rowclick:hover{background:var(--surface-2)}
+.rowclick.selected{border-color:var(--lime-deep);background:var(--forest-2)}
+.picked .rowclick:not(.selected){display:none}
+.picked .rowclick.selected::after{content:"Change";margin-left:auto;font-size:11.5px;font-weight:700;color:var(--muted)}
+
+.divider{height:1px;background:var(--line-soft);margin:12px 0}
+.totalRow{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 14px;font-size:13px;color:var(--muted)}
+.totalRow b{font-family:Fraunces,serif;font-size:22px;font-weight:560;color:var(--ink)}
+.callout{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 13px;margin:0 0 12px;border:1px solid #bfd77a;border-radius:11px;background:var(--forest-2);font-size:13px;font-weight:600;color:var(--forest-ink)}
+.callout b{color:var(--lime-deep)}
+
+/* confirmation */
+.confirm{margin:auto 0;text-align:center;padding:0 6px}
+.check{width:50px;height:50px;border-radius:50%;background:var(--lime);color:var(--lime-ink);display:grid;place-items:center;margin:0 auto 14px;animation:pop .5s var(--ease)}
+.check .ico{width:22px;height:22px}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+.confirm.declined .check{background:var(--line-soft);color:var(--muted)}
+.confirm h3{font-family:Fraunces,serif;font-weight:560;font-size:22px;margin:0 0 6px;letter-spacing:-.3px}
+.confirm p{font-size:13px;color:var(--muted);line-height:1.5;margin:0 auto;max-width:260px}
+
+/* coach cards (golfer) */
+.coach{border:1.5px solid var(--line);border-radius:var(--r-md);background:var(--surface);margin-bottom:8px;overflow:hidden;transition:border-color .18s}
+.coach.open{border-color:var(--lime-deep)}
+.coachhead{display:flex;align-items:center;gap:11px;padding:10px 13px;width:100%;text-align:left}
+.coachface{width:34px;height:34px;border-radius:50%;background:var(--forest-2);color:var(--forest-ink);display:grid;place-items:center;font-size:10.5px;font-weight:800;flex:none}
+.coachhead b{font-size:13.5px;display:block}
+.coachhead small{font-size:11.5px;color:var(--muted);display:block;margin-top:1px}
+.cright{margin-left:auto;text-align:right}
+.coach-detail{max-height:0;overflow:hidden;transition:max-height .3s var(--ease)}
+.coach.open .coach-detail{max-height:200px}
+.coach-detail-in{padding:2px 13px 13px}
+
+/* options */
+.optionGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.optionGrid.stack{grid-template-columns:1fr}
+.option{display:block;border:1.5px solid var(--line);border-radius:11px;padding:11px 13px;background:var(--surface);text-align:left;width:100%;transition:border-color .15s,background .15s}
+.option:hover{border-color:#c9c6b6}
+.option.active{border-color:var(--lime-deep);background:var(--forest-2)}
+.option.locked{cursor:default}
+.option b{display:block;font-size:13.5px;font-weight:700}
+.option span{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.badge{display:inline-block;font-style:normal;font-size:9px;font-weight:800;color:var(--lime-ink);background:var(--lime);padding:2px 6px;border-radius:5px;margin-left:6px;vertical-align:1px}
+
+/* toggles + slots */
+.tswitch{width:38px;height:22px;border-radius:99px;background:var(--line);position:relative;flex:none;transition:background .2s;cursor:pointer}
+.tswitch i{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--surface);transition:transform .2s var(--ease);box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.tswitch.on{background:var(--lime-deep)}
+.tswitch.on i{transform:translateX(16px)}
+.dayNav{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.dayNav strong{font-size:13.5px}
+.dayNav button{width:30px;height:30px;border:1px solid var(--line);border-radius:8px;font-size:18px;line-height:1}
+.dayNav button:disabled{opacity:.3}
+.slotList{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.slotRow{width:100%;min-height:50px;display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px 13px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface-2);text-align:left;transition:border-color .15s,background .15s}
+button.slotRow:hover:not(:disabled){border-color:#c9c6b6}
+.slotRow.on{border-color:var(--lime-deep);background:var(--forest-2)}
+.slotRow.lesson{background:var(--surface);cursor:default}
+.slotRow.dim{opacity:.5}
+.timeLabel{font-size:12px;font-weight:800;color:var(--muted);white-space:nowrap}
+.slotMain b{display:block;font-size:13.5px}
+.slotMain small{display:block;font-size:11.5px;color:var(--muted);margin-top:1px}
+.pill{font-size:10.5px;font-weight:800;padding:5px 9px;border-radius:99px;background:var(--forest-2);color:var(--forest-ink)}
+
+/* requests */
+.reqCard{border:1.5px solid var(--lime-deep);border-radius:var(--r-md);background:var(--forest-2);padding:14px}
+.tag{display:inline-block;font-size:10.5px;padding:4px 9px;border-radius:99px;font-weight:700;background:var(--amber-2);color:var(--amber-deep);margin-bottom:8px}
+.reqCard b{display:block;font-size:14px;color:var(--forest-ink)}
+.reqCard small{display:block;font-size:12px;color:var(--ink-soft);margin-top:3px}
+.reqActions{display:flex;gap:8px;margin-top:13px}
+.reqActions .btn{flex:1}
+
+/* payments */
+.miniTabs{display:flex;gap:6px;margin-bottom:12px}
+.miniChip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font-size:12px;font-weight:700;color:var(--ink-soft)}
+.miniChip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.metric{border:1px solid var(--line);border-radius:var(--r-md);background:var(--surface-2);padding:12px 13px}
+.metric small{display:block;font-size:11px;color:var(--muted);font-weight:700}
+.metric strong{display:block;font-family:Fraunces,serif;font-weight:560;font-size:22px;letter-spacing:-.3px;margin-top:3px}
+.metric span{font-size:11px;color:var(--muted-2)}
+.metric span.up{color:var(--lime-deep);font-weight:700}
+
+/* explore cards */
+.mcard{display:grid;grid-template-columns:36px minmax(0,1fr) 22px;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;margin-bottom:8px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);transition:border-color .18s,box-shadow .18s}
+.mcard:hover{border-color:#c9c6b6}
+.mcard.open{border-color:var(--lime-deep)}
+.mico{width:36px;height:36px;border-radius:10px;background:var(--forest-2);color:var(--forest-ink);display:grid;place-items:center}
+.mcard b{display:block;font-size:14.5px;font-weight:700}
+.mcard small{display:block;font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+.reveal{display:none;margin-top:7px;font-size:12px;font-weight:600;color:var(--forest-ink);background:var(--forest-2);padding:6px 10px;border-radius:8px}
+.mcard.open .reveal{display:block}
+.mplus{width:22px;height:22px;border-radius:50%;background:var(--line-soft);position:relative;transition:transform .25s var(--ease)}
+.mplus:before,.mplus:after{content:"";position:absolute;left:6px;right:6px;top:10px;height:2px;border-radius:2px;background:var(--muted)}
+.mplus:after{transform:rotate(90deg)}
+.mcard.open .mplus{transform:rotate(45deg)}
+
+/* gear */
+.fitCard{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;margin-bottom:16px;border:1.5px solid var(--line);border-radius:12px;background:var(--forest-2)}
+.fitCard b{display:block;font-size:14px}
+.fitCard small{display:block;font-size:12px;color:var(--ink-soft);margin-top:2px}
+.equipmentList{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.equipmentItem{display:flex;flex-direction:column;gap:2px;padding:11px 13px;border:1.5px solid var(--line);border-radius:11px;background:var(--surface-2);text-align:left;transition:border-color .15s,background .15s}
+.equipmentItem:hover{border-color:#c9c6b6}
+.equipmentItem.active{border-color:var(--lime-deep);background:var(--forest-2)}
+.equipmentItem span{font-size:13px;font-weight:700}
+.equipmentItem strong{font-size:12.5px;color:var(--muted);font-weight:600}
+.orderRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:1px solid var(--line-soft);font-size:13px;font-weight:700;color:var(--ink-soft)}
+
+/* ============ tablet: stack ============ */
+@media(max-width:860px){
+  :root{--stage-h:620px}
+  .step{grid-template-columns:minmax(0,460px);grid-template-rows:auto minmax(0,1fr);row-gap:22px;padding:24px 28px;align-content:stretch}
+  .step.solo{grid-template-rows:auto;align-content:center}
+  .narr{text-align:center}
+  .narr p{margin:0 auto}
+}
+
+/* ============ mobile: fixed 360×680 frame, scaled to the screen ============ */
+@media(max-width:600px){
+  html,body{height:100%;overflow:hidden;overscroll-behavior:none}
+  .tourWrap{padding:0;height:100vh;height:100dvh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+  .app{flex:none;width:360px;height:680px;max-width:none;border-radius:20px;transform:scale(var(--fs,1));transform-origin:center}
+  .top{grid-template-columns:auto 1fr;row-gap:8px;padding:10px 14px 10px 16px;border:0}
+  .switcher{justify-self:end}
+  .switch{padding:8px 12px;font-size:13px}
+  .dots{grid-column:1/-1;justify-self:stretch;gap:4px}
+  .dot{flex:1;width:auto;height:4px;border-radius:99px;position:relative}
+  .dot.on{transform:none}
+  .dot::after{content:"";position:absolute;inset:-9px 0}
+
+  .stage{flex:1;height:auto;min-height:0}
+  .step{padding:6px 16px 12px;row-gap:10px}
+  .step.solo{padding:12px 16px}
+  .narr{text-align:left}
+  .narr p{margin:0;font-size:13.5px;line-height:1.4;max-width:none}
+  .narr h2{font-size:22px;margin:0 0 5px}
+  .eyebrow{margin:0 0 4px}
+
+  .phone{border-radius:16px}
+  .phoneHeader{padding:9px 14px}
+  .phone-body{overflow:hidden;padding:14px}
+
+  .navBar{padding:7px 14px}
+  .navBar.hidden{display:none}
+
+  .hero h1{font-size:32px;letter-spacing:-.8px}
+  .hero p{font-size:14.5px;margin-bottom:22px}
+  .hero .heroBtns{display:grid;grid-template-columns:1fr}
+  .hero .heroBtns .btn{width:100%}
+
+  .chip{padding:9px 12px}
+  .slotRow{min-height:46px;padding:6px 12px;grid-template-columns:62px minmax(0,1fr) auto;gap:8px}
+  .mcard{padding:10px 12px;margin-bottom:7px}
+  .mcard small{font-size:12px}
+  .metric strong{font-size:20px}
+}
+</style>
+</head>
+<body>
+<div class="tourWrap">
+<div class="app">
+
+  <header class="top">
+    <div class="brand" aria-hidden="true"></div>
+    <div class="switcher" id="switcher">
+      <button type="button" class="switch active" data-role="golfer" onclick="switchRole('golfer')">Golfer</button>
+      <button type="button" class="switch" data-role="coach" onclick="switchRole('coach')">Coach</button>
+      <button type="button" class="switch" data-role="facility" onclick="switchRole('facility')">Facility</button>
+      <div class="switch-thumb" id="thumb"></div>
+    </div>
+    <div class="dots" id="dots"></div>
+  </header>
+
+  <main class="stage" id="stage">
+
+    <!-- COVER -->
+    <section class="step solo active">
+      <div class="hero">
+        <h1 class="serif" id="cvH1">Golf, without the runaround.</h1>
+        <p id="cvP">Find a course, book a round or a coach, and keep everything in one place.</p>
+        <div class="heroBtns"><button class="btn primary lg glow" onclick="startTour()">Show me around</button></div>
+      </div>
+    </section>
+
+    <!-- ================= GOLFER ================= -->
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Find your next round.</h2><p>See nearby courses, live tee times and prices in one place.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Discover</div></div><div class="phone-body">
+        <div class="search"><i class="icn" data-i="search"></i>Find a course or coach</div>
+        <button type="button" class="course" onclick="golferPickCourse(this,'Delhi Golf Club',2900)"><div class="course-img"><div class="course-check"><i class="icn" data-i="check"></i></div></div><div class="course-body"><div><div class="cname">Delhi Golf Club</div><div class="cmeta">4.2 km · 4.7★</div></div><div class="cprice">₹2,900</div></div></button>
+        <button type="button" class="course" onclick="golferPickCourse(this,'Qutub Golf Course',1800)"><div class="course-img b"><div class="course-check"><i class="icn" data-i="check"></i></div></div><div class="course-body"><div><div class="cname">Qutub Golf Course</div><div class="cmeta">6.8 km · 4.4★</div></div><div class="cprice">₹1,800</div></div></button>
+        <button type="button" class="course" onclick="golferPickCourse(this,'DLF Golf &amp; Country Club',4200)"><div class="course-img c"><div class="course-check"><i class="icn" data-i="check"></i></div></div><div class="course-body"><div><div class="cname">DLF Golf &amp; Country Club</div><div class="cmeta">9.1 km · 4.8★</div></div><div class="cprice">₹4,200</div></div></button>
+        <button type="button" class="course" onclick="golferPickCourse(this,'Classic Golf &amp; Country Club',6500)"><div class="course-img d"><div class="course-check"><i class="icn" data-i="check"></i></div></div><div class="course-body"><div><div class="cname">Classic Golf &amp; Country Club</div><div class="cmeta">12.6 km · 4.9★</div></div><div class="cprice">₹6,500</div></div></button>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Book your round in a few taps.</h2><p>Pick a time and add what you need. The rest is sorted.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Rounds</div></div><div class="phone-body" id="bookBody" data-reset>
+        <div class="chiplabel" id="bookLabel">Delhi Golf Club · 6 tee times</div>
+        <div class="chips grid3" id="slotRow">
+          <button type="button" class="chip" onclick="golferPickSlot(this,'6:40 AM')">6:40 AM</button>
+          <button type="button" class="chip" onclick="golferPickSlot(this,'7:20 AM')">7:20 AM</button>
+          <button type="button" class="chip" onclick="golferPickSlot(this,'8:10 AM')">8:10 AM</button>
+          <button type="button" class="chip" onclick="golferPickSlot(this,'9:00 AM')">9:00 AM</button>
+          <button type="button" class="chip" onclick="golferPickSlot(this,'9:40 AM')">9:40 AM</button>
+          <button type="button" class="chip" onclick="golferPickSlot(this,'10:20 AM')">10:20 AM</button>
+        </div>
+        <div id="addOns"></div>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Find a coach who fits your game.</h2><p>Try a first lesson before you commit to a full package.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Coaches</div></div><div class="phone-body" id="coachBody" data-reset></div></div>
+    </section>
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Make progress with a plan.</h2><p>Stay with the coach you like and save on a lesson package.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Lessons</div></div><div class="phone-body" id="pkgBody" data-reset></div></div>
+    </section>
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Practice when you have the time.</h2><p>Pay for your range session, add balls or a club, and get on with your practice.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Range</div></div><div class="phone-body" id="rangeBody" data-reset></div></div>
+    </section>
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Find the right gear, then buy it.</h2><p>Book a fitting, or order straight from partner shops.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Gear</div></div><div class="phone-body">
+        <div class="fitCard"><div><b>Club fitting</b><small id="fitText">Sat · 11:00 AM · 60 min</small></div><button type="button" class="btn accent sm" onclick="golferBookFitting(this)">Book</button></div>
+        <div class="chiplabel">Available gear</div>
+        <div class="equipmentList" id="equipmentList">
+          <button type="button" class="equipmentItem active" onclick="selectEquipment(this)"><span>TaylorMade Qi4D</span><strong>₹59,900</strong></button>
+          <button type="button" class="equipmentItem" onclick="selectEquipment(this)"><span>Callaway Quantum Max</span><strong>₹54,900</strong></button>
+          <button type="button" class="equipmentItem" onclick="selectEquipment(this)"><span>Titleist GTS2</span><strong>₹62,900</strong></button>
+          <button type="button" class="equipmentItem" onclick="selectEquipment(this)"><span>Pro V1x Left Dash</span><strong>₹5,500</strong></button>
+        </div>
+        <div class="orderRow"><span id="equipText">TaylorMade Qi4D · ₹59,900</span><button type="button" class="btn accent sm" onclick="golferBuyEquipment(this)">Order</button></div>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="golfer">
+      <div class="narr"><h2 class="serif">Everything else, in one place.</h2><p>Keep your membership, rewards, golf history and payments together.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">More</div></div><div class="phone-body">
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="shield"></i></span><span><b>Membership</b><small>Your member rate is applied automatically.</small><span class="reveal">Your member rate is ready when you book. Join, renew or pause whenever it suits you.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="gift"></i></span><span><b>Loyalty</b><small>Turn your bookings into rewards.</small><span class="reveal">You have 1,240 points ready to use. That's ₹500 toward your next round.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="history"></i></span><span><b>Golf record</b><small>Keep every round and score in one place.</small><span class="reveal">Your handicap moved from 16.8 to 14.2 in three months. Your progress is easy to see.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="wallet"></i></span><span><b>Payments</b><small>Keep every payment and receipt together.</small><span class="reveal">Rounds, lessons and purchases are all saved here, so every receipt is easy to find.</span></span><span class="mplus"></span></button>
+      </div></div>
+    </section>
+
+    <section class="step solo" data-role="golfer">
+      <div class="hero">
+        <h1 class="serif">Your whole golf life, in one place.</h1>
+        <p>Stay connected with your coach, course and golf history in one place.</p>
+        <div class="heroBtns">
+          <button class="btn primary lg" onclick="switchRole('coach',true)">See the coach demo</button>
+          <button class="btn lg" onclick="switchRole('facility',true)">See the facility demo</button>
+          <button class="btn lg" onclick="goTo(0)">Restart</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COACH ================= -->
+
+    <section class="step" data-role="coach">
+      <div class="narr"><h2 class="serif">Help the right students find you.</h2><p>Show your experience, specialties and pricing before a golfer books.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Your profile</div></div><div class="phone-body">
+        <div class="row"><div class="coachface">MS</div><div><strong>Meera Shah</strong><small>Delhi Golf Club · Category A · 4.9 ★ (112)</small></div></div>
+        <div class="chiplabel" style="margin-top:8px">Specialties</div>
+        <div class="chips"><button type="button" class="chip selected" onclick="this.classList.toggle('selected')">Full swing</button><button type="button" class="chip" onclick="this.classList.toggle('selected')">Course strategy</button><button type="button" class="chip" onclick="this.classList.toggle('selected')">Beginners</button></div>
+        <div class="chiplabel">Lesson price</div>
+        <div class="chips" id="coachPriceRow"><button type="button" class="chip" onclick="coachSelectPrice(this,1500)">₹1,500</button><button type="button" class="chip selected" onclick="coachSelectPrice(this,1800)">₹1,800</button><button type="button" class="chip" onclick="coachSelectPrice(this,2200)">₹2,200</button></div>
+        <div class="chiplabel">Packages</div>
+        <div class="optionGrid">
+          <div class="option"><b>5 lessons</b><span id="coachPkg5">₹8,100 · 10% off</span></div>
+          <div class="option"><b>10 lessons</b><span id="coachPkg10">₹14,400 · 20% off</span></div>
+        </div>
+        <button type="button" class="btn primary block" onclick="saveBtn(this,'Save profile')">Save profile</button>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="coach">
+      <div class="narr"><h2 class="serif">Set your availability around your day.</h2><p>Only the times you open are bookable, so your calendar stays under control.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Availability</div></div><div class="phone-body">
+        <div class="dayNav"><button type="button" id="schedulePrev" aria-label="Previous day" onclick="coachDayShift(-1)">‹</button><strong id="dayLabel">Today</strong><button type="button" id="scheduleNext" aria-label="Next day" onclick="coachDayShift(1)">›</button></div>
+        <div class="slotList" id="scheduleGrid"></div>
+        <button type="button" class="btn primary block" onclick="saveBtn(this,'Save changes')">Save changes</button>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="coach">
+      <div class="narr"><h2 class="serif">Handle lesson requests in a few taps.</h2><p>See the golfer, time and lesson details before you respond.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Lesson requests</div></div><div class="phone-body" id="bookingReqBody" data-reset>
+        <div class="reqCard">
+          <span class="tag">Pending</span>
+          <b>Vikram Rao · Lesson</b>
+          <small>Today · 5:30 PM · Delhi Golf Club · <span id="reqPrice">₹1,800</span></small>
+          <div class="reqActions">
+            <button type="button" class="btn sm" onclick="coachRespond(false)">Decline</button>
+            <button type="button" class="btn sm accent" onclick="coachRespond(true)">Accept</button>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="coach">
+      <div class="narr"><h2 class="serif">Keep every student close.</h2><p>See who needs attention and walk into every lesson prepared.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Students</div></div><div class="phone-body">
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="users"></i></span><span><b>Roster</b><small>See your active students and upcoming lessons.</small><span class="reveal">18 active students and 3 lessons booked this week. Your schedule and income stay together.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="history"></i></span><span><b>History</b><small>Know where each student left off.</small><span class="reveal">Vikram Rao has 12 lessons logged, with his wedge notes ready before the next lesson.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="target"></i></span><span><b>Feedback</b><small>Keep practice focused between lessons.</small><span class="reveal">Assign a drill in seconds, such as driver dispersion three times a week, so students know exactly what to practise.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="trend"></i></span><span><b>Progress</b><small>See the progress your coaching creates.</small><span class="reveal">Vikram Rao's handicap moved from 16.8 to 14.2. Progress like this makes the value of continued coaching easy to see.</span></span><span class="mplus"></span></button>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="coach">
+      <div class="narr"><h2 class="serif">Keep your earnings clear.</h2><p>See lessons, packages and payouts together, so you always know what you've earned.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Payments</div></div><div class="phone-body">
+        <div class="miniTabs" id="periodTabs">
+          <button type="button" class="miniChip on" onclick="coachSwitchPeriod(this,'month')">This month</button>
+          <button type="button" class="miniChip" onclick="coachSwitchPeriod(this,'last')">Last month</button>
+        </div>
+        <div class="grid2">
+          <div class="metric"><small>Revenue</small><strong id="revMetric">₹1,29,960</strong><span class="up" id="deltaMetric">↑ 12% vs last month</span></div>
+          <div class="metric"><small>Lessons</small><strong id="lessonMetric">76</strong><span id="avgMetric">avg ₹1,710</span></div>
+        </div>
+        <div class="chiplabel">Recent</div>
+        <div class="row"><div class="rchip"><i class="icn" data-i="wallet"></i></div><div><strong>Vikram Rao</strong><small>Lesson · Thu</small></div><div class="row-side"><b id="tx1">₹1,800</b></div></div>
+        <div class="row"><div class="rchip"><i class="icn" data-i="wallet"></i></div><div><strong>Priya Nair</strong><small>5-lesson pack · Wed</small></div><div class="row-side"><b id="tx2">₹8,100</b></div></div>
+      </div></div>
+    </section>
+
+    <section class="step solo" data-role="coach">
+      <div class="hero">
+        <h1 class="serif">Your coaching business, in one place.</h1>
+        <p>Use student progress to build longer coaching relationships, not just one-off lessons.</p>
+        <div class="heroBtns">
+          <button class="btn primary lg" onclick="switchRole('facility',true)">See the facility demo</button>
+          <button class="btn lg" onclick="switchRole('golfer',true)">See the golfer demo</button>
+          <button class="btn lg" onclick="goTo(0)">Restart</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FACILITY ================= -->
+
+    <section class="step" data-role="facility">
+      <div class="narr"><h2 class="serif">Check golfers in without the queue.</h2><p>Check golfers in faster and keep the first tee moving.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Green-fee desk</div></div><div class="phone-body" id="deskBody" data-reset>
+        <div class="chiplabel">Golfer</div>
+        <div class="row rowclick" onclick="facilityPick(this,'desk')"><div class="rchip"><i class="icn" data-i="users"></i></div><div><strong>Sameer Kohli</strong><small>First visit</small></div></div>
+        <div class="row rowclick" onclick="facilityPick(this,'desk')"><div class="rchip"><i class="icn" data-i="users"></i></div><div><strong>Neha Bansal</strong><small>Returning guest</small></div></div>
+        <div class="deskStep"></div>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="facility">
+      <div class="narr"><h2 class="serif">Keep range check-in moving.</h2><p>A simple check-in means less waiting and more time on the range.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Range</div></div><div class="phone-body" id="rangeDeskBody" data-reset>
+        <div class="chiplabel">Customer</div>
+        <div class="row rowclick" onclick="facilityPick(this,'range')"><div class="rchip"><i class="icn" data-i="users"></i></div><div><strong>Rohit Verma</strong><small>Range pass holder</small></div></div>
+        <div class="row rowclick" onclick="facilityPick(this,'range')"><div class="rchip"><i class="icn" data-i="users"></i></div><div><strong>Ananya Iyer</strong><small>Walk-in</small></div></div>
+        <div class="deskStep"></div>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="facility">
+      <div class="narr"><h2 class="serif">Keep every coach on the same schedule.</h2><p>See and update coach availability without leaving the desk.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Coach schedules</div></div><div class="phone-body">
+        <div class="chips grid2" id="facCoachChips">
+          <button type="button" class="chip selected" onclick="facilityPickCoach(this,'meera')">Meera Shah</button>
+          <button type="button" class="chip" onclick="facilityPickCoach(this,'arjun')">Arjun Mehta</button>
+        </div>
+        <div class="slotList" id="facAvailGrid"></div>
+        <button type="button" class="btn primary block" onclick="saveBtn(this,'Save changes')">Save changes</button>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="facility">
+      <div class="narr"><h2 class="serif">Keep every lesson request moving.</h2><p>Handle bookings for any coach right from the front desk.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Lesson requests</div></div><div class="phone-body" id="facBookingBody" data-reset>
+        <div class="reqCard">
+          <span class="tag">Pending</span>
+          <b>Neha Bansal · Lesson</b>
+          <small>Arjun Mehta · Fri 4:00 PM</small>
+          <div class="reqActions">
+            <button type="button" class="btn sm" onclick="facilityRespond(false)">Decline</button>
+            <button type="button" class="btn sm accent" onclick="facilityRespond(true)">Accept</button>
+          </div>
+        </div>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="facility">
+      <div class="narr"><h2 class="serif">See the whole facility at a glance.</h2><p>Keep the day-to-day work in one place.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Operations</div></div><div class="phone-body">
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="calendar"></i></span><span><b>Tee sheet</b><small>Update the tee sheet in a few taps.</small><span class="reveal">Block 7:20 AM for group play in two taps. The tee sheet updates right away.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="wallet"></i></span><span><b>Pricing</b><small>Fill quieter tee times with smarter pricing.</small><span class="reveal">Set 11:00 AM at ₹2,900 when demand is quiet and give golfers a reason to book.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="shield"></i></span><span><b>Memberships</b><small>Stay on top of every membership.</small><span class="reveal">Track 212 active members and see the 14 renewals coming due.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="chart"></i></span><span><b>Analytics</b><small>See when your facility is busiest.</small><span class="reveal">Utilization is up 9% this month. See which hours are full and where you have room to grow.</span></span><span class="mplus"></span></button>
+      </div></div>
+    </section>
+
+    <section class="step" data-role="facility">
+      <div class="narr"><h2 class="serif">Find more revenue in the traffic you already have.</h2><p>See the opportunities across your facility.</p></div>
+      <div class="phone"><div class="phoneHeader"><div class="eyebrow">Growth</div></div><div class="phone-body">
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="mail"></i></span><span><b>Marketing</b><small>Bring past golfers back.</small><span class="reveal">340 lapsed golfers received a timely message, and 61 returned within a week.</span></span><span class="mplus"></span></button>
+        <button type="button" class="mcard" onclick="toggleCard(this)"><span class="mico"><i class="icn" data-i="cart"></i></span><span><b>Pro shop &amp; F&amp;B</b><small>Make each round worth a little more.</small><span class="reveal">A simple checkout suggestion adds an average of ₹380 per round without extra work for your staff.</span></span><span class="mplus"></span></button>
+      </div></div>
+    </section>
+
+    <section class="step solo" data-role="facility">
+      <div class="hero">
+        <h1 class="serif">Your desk, tee sheet and payments, together.</h1>
+        <p>Use pricing and operations tools to make more of every available slot.</p>
+        <div class="heroBtns">
+          <button class="btn primary lg" onclick="switchRole('golfer',true)">See the golfer demo</button>
+          <button class="btn lg" onclick="switchRole('coach',true)">See the coach demo</button>
+          <button class="btn lg" onclick="goTo(0)">Restart</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="navBar hidden" id="navBar">
+    <button class="navBack" id="prevBtn" onclick="step(-1)"><i class="icn" data-i="chevronLeft"></i>Back</button>
+    <button class="btn primary navNext" id="nextBtn" onclick="step(1)">Next<i class="icn" data-i="chevronRight"></i></button>
+  </div>
+
+</div>
+</div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const inr=n=>'₹'+Math.round(n).toLocaleString('en-IN');
+const ADV=1100;
+const ICONS={
+ search:'<circle cx="10.2" cy="10.2" r="6.2"/><line x1="14.9" y1="14.9" x2="19.6" y2="19.6"/>',
+ check:'<polyline points="5,13 10,18 19,7"/>',
+ x:'<line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/>',
+ target:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor" stroke="none"/>',
+ flag:'<line x1="5" y1="3" x2="5" y2="21"/><path d="M5 4h13l-3 4 3 4H5"/>',
+ users:'<circle cx="9" cy="8" r="3"/><path d="M3.3 19c0-3 2.6-5.2 5.7-5.2s5.7 2.2 5.7 5.2"/><circle cx="17.3" cy="9" r="2.3"/><path d="M15.7 14c2.6.3 4.6 2.2 5 4.7"/>',
+ shield:'<path d="M12 3.4l6.8 2.5v5.2c0 4.9-2.9 7.9-6.8 8.9-3.9-1-6.8-4-6.8-8.9V5.9z"/><polyline points="9,12 11,14 15.2,9.4"/>',
+ trend:'<polyline points="4,17 9,10.5 13,13.3 20,5.3"/><polyline points="14.3,5.3 20,5.3 20,11"/>',
+ calendar:'<rect x="4" y="5.5" width="16" height="15" rx="2.5"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="8.5" y1="3.2" x2="8.5" y2="7"/><line x1="15.5" y1="3.2" x2="15.5" y2="7"/>',
+ wallet:'<path d="M4.5 7.2h13a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z"/><path d="M4.5 7.2 15 4.6a1.6 1.6 0 0 1 2 1.5v1.1"/><circle cx="16.3" cy="13.5" r="1.1" fill="currentColor" stroke="none"/>',
+ chart:'<line x1="5" y1="20" x2="5" y2="10"/><line x1="12" y1="20" x2="12" y2="5.5"/><line x1="19" y1="20" x2="19" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/>',
+ gift:'<rect x="4" y="9.5" width="16" height="10.5" rx="1.5"/><line x1="4" y1="13.4" x2="20" y2="13.4"/><line x1="12" y1="9.5" x2="12" y2="20"/><path d="M12 9.5C9.8 9.5 8.2 8 9 6.3c.6-1.3 2.3-1 3 .3.7-1.3 2.4-1.6 3-.3.8 1.7-.8 3.2-3 3.2z"/>',
+ history:'<circle cx="12" cy="12" r="8.4"/><polyline points="12,7.6 12,12.2 15,13.8"/><path d="M4 5.2v4h4"/>',
+ cart:'<circle cx="9.5" cy="19" r="1.3"/><circle cx="17" cy="19" r="1.3"/><path d="M3.5 4.5h2.6l2.1 11h9.6l1.9-7.6H7"/>',
+ mail:'<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><polyline points="4,6.5 12,13 20,6.5"/>',
+ chevronLeft:'<polyline points="15.5,5 8.5,12 15.5,19"/>',
+ chevronRight:'<polyline points="8.5,5 15.5,12 8.5,19"/>'
+};
+function I(n){return '<svg class="ico" viewBox="0 0 24 24">'+(ICONS[n]||'')+'</svg>';}
+function hydrate(root){(root||document).querySelectorAll('i.icn[data-i]').forEach(el=>{el.outerHTML=I(el.dataset.i);});}
+
+/* confirmation screen replaces a demo's body; step resets when re-entered */
+function done(body,title,text,declined){
+  body.innerHTML='<div class="confirm fadein'+(declined?' declined':'')+'"><div class="check">'+I(declined?'x':'check')+'</div><h3 class="serif">'+title+'</h3><p>'+text+'</p></div>';
+  const st=body.closest('.step'); if(st) st.dataset.dirty='1';
+}
+/* save-style buttons: show a tick, then move on */
+function saveBtn(btn,label){
+  btn.dataset.orig=label; btn.textContent='Saved ✓'; btn.disabled=true; btn.dataset.saved='1';
+  advance();
+}
+function resetSavedButtons(){
+  document.querySelectorAll('[data-saved]').forEach(b=>{b.textContent=b.dataset.orig;b.disabled=false;b.removeAttribute('data-saved');});
+  gearBooked=false; gearOrdered=false;
+}
+function advance(){const i=idx;setTimeout(()=>{if(idx===i)goTo(i+1);},ADV);}
+function selectOne(el,sel){el.parentElement.querySelectorAll(sel||'.chip').forEach(c=>c.classList.remove('selected'));el.classList.add('selected');}
+function toggleCard(el){
+  const wasOpen=el.classList.contains('open');
+  el.parentElement.querySelectorAll('.mcard.open').forEach(c=>c.classList.remove('open'));
+  if(!wasOpen) el.classList.add('open');
+}
+
+/* ---------- role + step engine ---------- */
+const HERO={
+  golfer:{h1:'Golf, without the runaround.',p:'Find a course, book a round or a coach, and keep everything in one place.'},
+  coach:{h1:'Keep your coaching in one place.',p:'Manage lessons, students and payments without the back-and-forth.'},
+  facility:{h1:'Keep your facility moving.',p:'Manage golfers, coaches and daily operations from one place.'}
+};
+let currentRole='golfer', idx=0, list=[];
+const allSteps=Array.from(document.querySelectorAll('.step'));
+const dotsWrap=$('dots'), navBar=$('navBar'), prevBtn=$('prevBtn'), switcher=$('switcher'), thumb=$('thumb');
+const snap={};
+const HOOK={pkgBody:()=>renderPackages(),rangeBody:()=>renderRange(),bookBody:()=>setBookLabel()};
+
+function rebuildList(){
+  list=allSteps.filter(s=>!s.dataset.role||s.dataset.role===currentRole);
+  dotsWrap.innerHTML='';
+  list.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.type='button';b.className='dot';b.setAttribute('aria-label','Go to step '+(i+1));
+    b.onclick=()=>goTo(i);
+    dotsWrap.appendChild(b);
+  });
+}
+function resetStep(st){
+  st.querySelectorAll('[data-reset]').forEach(b=>{
+    if(!HOOK[b.id]||b.id==='bookBody') b.innerHTML=snap[b.id];
+    b.classList.remove('picked');
+    if(HOOK[b.id]) HOOK[b.id]();
+  });
+  delete st.dataset.dirty;
+}
+function goTo(n){
+  idx=Math.max(0,Math.min(list.length-1,n));
+  allSteps.forEach(s=>s.classList.remove('active'));
+  const st=list[idx]; st.classList.add('active');
+  if(st.dataset.dirty) resetStep(st);
+  resetSavedButtons();
+  Array.from(dotsWrap.children).forEach((d,i)=>{d.classList.toggle('on',i===idx);d.classList.toggle('done',i<idx);});
+  const first=idx===0,last=idx===list.length-1;
+  navBar.classList.toggle('hidden',first||last);
+  prevBtn.disabled=idx<=0;
+  const pb=st.querySelector('.phone-body'); if(pb) pb.scrollTop=0;
+}
+function step(d){goTo(idx+d);}
+function startTour(){goTo(1);}
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')goTo(idx+1);
+  if(e.key==='ArrowLeft')goTo(idx-1);
+});
+
+function moveThumb(btn){
+  thumb.style.width=btn.offsetWidth+'px';
+  thumb.style.transform='translateX('+(btn.offsetLeft-4)+'px)';
+}
+function switchRole(role,start){
+  currentRole=role;
+  switcher.querySelectorAll('.switch').forEach(b=>{
+    const on=b.dataset.role===role;
+    b.classList.toggle('active',on);
+    if(on) moveThumb(b);
+  });
+  $('cvH1').textContent=HERO[role].h1;
+  $('cvP').textContent=HERO[role].p;
+  rebuildList();
+  goTo(start?1:0);
+}
+
+/* mobile: scale the fixed 360×680 frame to the screen */
+const mqMobile=window.matchMedia('(max-width:600px)');
+function fitFrame(){
+  const app=document.querySelector('.app');
+  if(!mqMobile.matches){app.style.removeProperty('--fs');return;}
+  app.style.setProperty('--fs',Math.min(innerWidth/360,innerHeight/680,1.3).toFixed(3));
+}
+
+/* ---------- golfer: discover + book a round ---------- */
+let course={name:'Delhi Golf Club',price:2900};
+function setBookLabel(){const l=$('bookLabel'); if(l) l.textContent=course.name+' · 6 tee times today';}
+function golferPickCourse(el,name,price){
+  document.querySelectorAll('.course').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  course={name:name.replace(/&amp;/g,'&'),price};
+  const bs=$('bookBody').closest('.step'); bs.dataset.dirty='1';
+  advance();
+}
+const CADDY=650, CART=800;
+function golferPickSlot(el,time){
+  selectOne(el);
+  $('addOns').innerHTML=
+    '<div class="row fadein"><div class="rchip">'+I('flag')+'</div><div><strong>Caddy</strong><small>Ravi Kumar · assigned for you</small></div><div class="row-side"><b>'+inr(CADDY)+'</b></div></div>'
+   +'<div class="row fadein"><div class="rchip">'+I('shield')+'</div><div><strong>Cart</strong><small>Ready for your round</small></div><div class="row-side"><b>'+inr(CART)+'</b></div></div>'
+   +'<div class="divider"></div>'
+   +'<div class="totalRow"><span>Total</span><b class="serif">'+inr(course.price+CADDY+CART)+'</b></div>'
+   +'<button type="button" class="btn primary block" onclick="golferConfirmBooking(\''+time+'\')">Confirm &amp; pay</button>';
+}
+function golferConfirmBooking(time){
+  done($('bookBody'),'You’re booked','You can reschedule up to 24 hours before your tee time.');
+  advance();
+}
+
+/* ---------- golfer: coaches ---------- */
+const COACH={
+  meera:{n:'Meera Shah',i:'MS',price:1800,trial:800,r:'4.9',rev:112,slots:['Tue 5:30 PM','Wed 7:00 AM']},
+  arjun:{n:'Arjun Mehta',i:'AM',price:2200,trial:900,r:'4.8',rev:86,slots:['Thu 6:15 PM','Sat 8:00 AM']},
+  kabir:{n:'Kabir Singh',i:'KS',price:1500,trial:700,r:'4.7',rev:54,slots:['Mon 4:00 PM','Fri 6:30 AM']}
+};
+let pkgCoach='meera';
+function renderCoaches(){
+  $('coachBody').innerHTML=Object.keys(COACH).map(k=>{
+    const c=COACH[k];
+    return '<div class="coach" id="coach-'+k+'"><button type="button" class="coachhead" onclick="golferToggleCoach(\''+k+'\')">'
+     +'<div class="coachface">'+c.i+'</div><div><b>'+c.n+'</b><small>Category A · '+c.r+' ★ ('+c.rev+')</small></div>'
+     +'<div class="cright"><b>'+inr(c.price)+'</b><small>/ lesson</small></div></button>'
+     +'<div class="coach-detail"><div class="coach-detail-in"><div class="chiplabel">Trial lesson · '+inr(c.trial)+'</div>'
+     +'<div class="chips grid2">'+c.slots.map((s,j)=>'<button type="button" class="chip'+(j===0?' selected':'')+'" onclick="selectOne(this)">'+s+'</button>').join('')+'</div>'
+     +'<button type="button" class="btn accent block" onclick="golferBookTrial(\''+k+'\')">Try this coach · '+inr(c.trial)+'</button></div></div></div>';
+  }).join('');
+}
+function golferToggleCoach(key){
+  Object.keys(COACH).forEach(k=>{
+    const el=$('coach-'+k);
+    el.classList.toggle('open',k===key&&!el.classList.contains('open'));
+  });
+}
+function golferBookTrial(key){
+  const c=COACH[key], slot=document.querySelector('#coach-'+key+' .chip.selected').textContent;
+  done($('coachBody'),'First lesson booked',c.n+' · '+slot);
+  pkgCoach=key; $('pkgBody').closest('.step').dataset.dirty='1';
+  advance();
+}
+
+/* ---------- golfer: packages ---------- */
+function renderPackages(){
+  const c=COACH[pkgCoach], p=c.price;
+  const opt=(name,total,list,badge)=>'<button type="button" class="option" data-name="'+name+'" data-total="'+total+'" data-list="'+list+'" onclick="golferPickPackage(this)"><b>'+name+(badge?'<i class="badge">Most booked</i>':'')+'</b><span>'+inr(total)+(total<list?' · save '+Math.round((1-total/list)*100)+'%':'')+'</span></button>';
+  $('pkgBody').innerHTML='<div class="chiplabel">'+c.n+'</div>'
+    +'<div class="optionGrid stack">'+opt('1 lesson',p,p)+opt('5 lessons',p*5*.9,p*5,true)+opt('10 lessons',p*10*.8,p*10)+'</div>'
+    +'<div id="pkgSummary"></div>';
+}
+function golferPickPackage(el){
+  el.parentElement.querySelectorAll('.option').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  const total=+el.dataset.total, list=+el.dataset.list, save=list-total;
+  $('pkgSummary').innerHTML='<div class="fadein">'
+    +(save?'<div class="callout"><span>You save</span><b>₹'+inr(save).replace('₹','')+'</b></div>':'')
+    +'<div class="totalRow"><span>Total</span><b class="serif">'+inr(total)+'</b></div>'
+    +'<button type="button" class="btn primary block" onclick="golferPurchase()">Book package</button></div>';
+}
+function golferPurchase(){
+  done($('pkgBody'),'Package booked','Your sessions with '+COACH[pkgCoach].n+' are ready to book.');
+  advance();
+}
+
+/* ---------- range (shared by golfer + facility) ---------- */
+function rangeBlock(mode,cta){
+  const o=(n,p,g)=>'<button type="button" class="option" data-price="'+p+'"'+(g?' data-group="balls"':'')+' onclick="rangeToggle(this)"><b>'+n+'</b><span>'+inr(p)+'</span></button>';
+  return '<div class="rangeBlock fadein" data-mode="'+mode+'"><div class="optionGrid">'
+    +'<div class="option active locked" data-price="300"><b>Range entry</b><span>'+inr(300)+' · required</span></div>'
+    +o('50 balls',150,1)+o('100 balls',300,1)+o('Rental club',200,0)
+    +'</div><div class="divider"></div>'
+    +'<div class="totalRow"><span>Total</span><b class="serif" data-total>'+inr(300)+'</b></div>'
+    +'<button type="button" class="btn primary block" onclick="rangeConfirm(this)">'+cta+'</button></div>';
+}
+function rangeToggle(el){
+  const blk=el.closest('.rangeBlock');
+  if(el.dataset.group){
+    const was=el.classList.contains('active');
+    blk.querySelectorAll('[data-group]').forEach(o=>o.classList.remove('active'));
+    if(!was) el.classList.add('active');
+  }else el.classList.toggle('active');
+  const total=Array.from(blk.querySelectorAll('.option.active')).reduce((s,o)=>s+ +o.dataset.price,0);
+  blk.querySelector('[data-total]').textContent=inr(total);
+}
+function rangeConfirm(btn){
+  const blk=btn.closest('.rangeBlock'), body=btn.closest('.phone-body');
+  const total=blk.querySelector('[data-total]').textContent;
+  if(blk.dataset.mode==='golfer') done(body,'Range session booked','ZEN GOLF Range · '+total);
+  else done(body,'Payment complete','Receipt sent to the golfer.');
+  advance();
+}
+function renderRange(){$('rangeBody').innerHTML='<div class="chiplabel">ZEN GOLF Range &amp; Academy</div>'+rangeBlock('golfer','Book &amp; pay');}
+
+/* ---------- golfer: gear ---------- */
+function selectEquipment(btn){
+  btn.parentElement.querySelectorAll('.equipmentItem').forEach(o=>o.classList.remove('active'));
+  btn.classList.add('active');
+  $('equipText').textContent=btn.querySelector('span').textContent+' · '+btn.querySelector('strong').textContent;
+}
+let gearBooked=false, gearOrdered=false;
+function checkGearAdvance(){if(gearBooked&&gearOrdered) advance();}
+function golferBuyEquipment(btn){btn.dataset.orig='Order';btn.textContent='Ordered ✓';btn.disabled=true;btn.dataset.saved='1';gearOrdered=true;checkGearAdvance();}
+function golferBookFitting(btn){btn.dataset.orig='Book';btn.textContent='Booked ✓';btn.disabled=true;btn.dataset.saved='1';gearBooked=true;checkGearAdvance();}
+
+/* ---------- coach: profile ---------- */
+let coachPrice=1800, period='month';
+function coachSelectPrice(el,price){
+  coachPrice=price; selectOne(el);
+  $('coachPkg5').textContent=inr(price*5*.9)+' · 10% off';
+  $('coachPkg10').textContent=inr(price*10*.8)+' · 20% off';
+  $('reqPrice').textContent=inr(price);
+  updatePaymentMetrics();
+}
+
+/* ---------- slot rows (coach + facility availability) ---------- */
+const LESSONS={
+  '18-9':{name:'Priya Nair',club:'Delhi Golf Club'},
+  '19-8':{name:'Aditya Nair',club:'Delhi Golf Club'},
+  '19-10':{name:'Rohit Jain',club:'Qutub Golf Course'},
+  '20-9':{name:'Priya Nair',club:'Delhi Golf Club'}
+};
+const HOURS=[8,9,10,11];
+const fmt=h=>(h>12?h-12:h)+':00 '+(h>=12?'PM':'AM');
+function slotRow(h,lesson,open,disabled,click){
+  if(lesson) return '<div class="slotRow lesson'+(disabled?' dim':'')+'"><span class="timeLabel">'+fmt(h)+'</span><span class="slotMain"><b>'+lesson.name+'</b><small>'+lesson.club+'</small></span><span class="pill">Confirmed</span></div>';
+  return '<button type="button" class="slotRow'+(open?' on':'')+(disabled?' dim':'')+'"'+(disabled?' disabled':'')+' onclick="'+click+'"><span class="timeLabel">'+fmt(h)+'</span><span class="slotMain"><b>'+(open?'Available':'Unavailable')+'</b></span><span class="tswitch'+(open?' on':'')+'"><i></i></span></button>';
+}
+const cs={offset:0,day:19,open:new Set(['19-9'])};
+function coachDayShift(d){cs.offset=Math.max(-1,Math.min(1,cs.offset+d));renderCoachDay();}
+function coachToggleSlot(key){cs.open.has(key)?cs.open.delete(key):cs.open.add(key);renderCoachDay();}
+function renderCoachDay(){
+  const day=cs.day+cs.offset, past=cs.offset===-1;
+  $('scheduleGrid').innerHTML=HOURS.map(h=>{
+    const key=day+'-'+h;
+    return slotRow(h,LESSONS[key],cs.open.has(key),past,"coachToggleSlot('"+key+"')");
+  }).join('');
+  $('dayLabel').textContent=['Yesterday','Today','Tomorrow'][cs.offset+1];
+  $('schedulePrev').disabled=past;
+  $('scheduleNext').disabled=cs.offset===1;
+}
+
+/* ---------- coach: bookings ---------- */
+function coachRespond(accept){
+  const body=$('bookingReqBody');
+  if(accept) done(body,'Lesson accepted','Vikram Rao · Today, 5:30 PM. Payout '+inr(coachPrice)+'.');
+  else done(body,'Request declined','Vikram Rao has been notified.',true);
+  advance();
+}
+
+/* ---------- coach: payments ---------- */
+const PERIODS={month:{les:76,f:.95,d:'↑ 12% vs last month'},last:{les:68,f:.93,d:'↑ 4% vs prior month'}};
+function updatePaymentMetrics(){
+  const p=PERIODS[period], rev=p.les*coachPrice*p.f;
+  $('revMetric').textContent=inr(rev);
+  $('lessonMetric').textContent=p.les;
+  $('deltaMetric').textContent=p.d;
+  $('avgMetric').textContent='avg '+inr(rev/p.les);
+  $('tx1').textContent=inr(coachPrice);
+  $('tx2').textContent=inr(coachPrice*5*.9);
+}
+function coachSwitchPeriod(el,key){
+  period=key; selectOne(el,'.miniChip'); el.parentElement.querySelectorAll('.miniChip').forEach(c=>c.classList.toggle('on',c===el));
+  updatePaymentMetrics();
+}
+
+/* ---------- facility: desk + range desk ---------- */
+function facilityPick(el,kind){
+  const body=el.closest('.phone-body'), slot=body.querySelector('.deskStep');
+  if(body.classList.contains('picked')&&el.classList.contains('selected')){
+    body.classList.remove('picked'); el.classList.remove('selected'); slot.innerHTML=''; return;
+  }
+  body.classList.add('picked');
+  body.querySelectorAll('.rowclick').forEach(r=>r.classList.remove('selected'));
+  el.classList.add('selected');
+  slot.innerHTML= kind==='desk'
+    ? '<div class="chiplabel" style="margin-top:12px">Choose a tee time</div><div class="chips grid3">'
+      +['10:20 AM','11:00 AM','11:40 AM'].map(t=>'<button type="button" class="chip" onclick="facilityPickSlot(this)">'+t+'</button>').join('')
+      +'</div><div id="deskAddOns"></div>'
+    : rangeBlock('facility','Take payment');
+}
+function facilityPickSlot(el){
+  selectOne(el);
+  $('deskAddOns').innerHTML=
+    '<div class="row fadein"><div class="rchip">'+I('flag')+'</div><div><strong>Caddy</strong><small>'+inr(CADDY)+'</small></div><div class="row-side"><div class="tswitch on" data-price="'+CADDY+'" onclick="deskAddon(this)"><i></i></div></div></div>'
+   +'<div class="row fadein"><div class="rchip">'+I('shield')+'</div><div><strong>Cart</strong><small>'+inr(CART)+'</small></div><div class="row-side"><div class="tswitch" data-price="'+CART+'" onclick="deskAddon(this)"><i></i></div></div></div>'
+   +'<div class="divider"></div>'
+   +'<div class="totalRow"><span>Total</span><b class="serif" id="deskTotal"></b></div>'
+   +'<button type="button" class="btn primary block" onclick="facilityConfirmDesk()">Complete payment</button>';
+  deskAddon();
+}
+function deskAddon(el){
+  if(el) el.classList.toggle('on');
+  const add=Array.from(document.querySelectorAll('#deskAddOns .tswitch.on')).reduce((s,t)=>s+ +t.dataset.price,0);
+  $('deskTotal').textContent=inr(2900+add);
+}
+function facilityConfirmDesk(){done($('deskBody'),'Payment complete','Receipt sent to the golfer.');advance();}
+
+/* ---------- facility: coach calendars ---------- */
+const fs={coach:'meera',open:{meera:new Set([9]),arjun:new Set([8,11])}};
+function renderFacAvail(){
+  $('facAvailGrid').innerHTML=HOURS.map(h=>{
+    const lesson=fs.coach==='meera'?LESSONS['19-'+h]:null;
+    return slotRow(h,lesson,fs.open[fs.coach].has(h),false,'facilityToggleSlot('+h+')');
+  }).join('');
+}
+function facilityToggleSlot(h){const s=fs.open[fs.coach];s.has(h)?s.delete(h):s.add(h);renderFacAvail();}
+function facilityPickCoach(el,key){selectOne(el);fs.coach=key;renderFacAvail();}
+
+/* ---------- facility: coach bookings ---------- */
+function facilityRespond(accept){
+  const body=$('facBookingBody');
+  if(accept) done(body,'Lesson accepted','Neha Bansal with Arjun Mehta, Fri 4:00 PM.');
+  else done(body,'Request declined','Neha Bansal has been notified.',true);
+  advance();
+}
+
+/* ---------- boot ---------- */
+hydrate(document);
+renderCoaches(); renderPackages(); renderRange(); renderCoachDay(); renderFacAvail(); updatePaymentMetrics();
+document.querySelectorAll('[data-reset]').forEach(b=>{snap[b.id]=b.innerHTML;});
+rebuildList(); goTo(0);
+const firstThumbBtn=switcher.querySelector('.switch.active');
+requestAnimationFrame(()=>moveThumb(firstThumbBtn));
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>moveThumb(switcher.querySelector('.switch.active')));
+fitFrame();
+window.addEventListener('resize',()=>{fitFrame();moveThumb(switcher.querySelector('.switch.active'));});
+window.addEventListener('orientationchange',fitFrame);
+</script>
+</body>
+</html>
