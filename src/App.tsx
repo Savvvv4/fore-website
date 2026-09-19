@@ -1,4 +1,4 @@
-import React, { useState, type ReactNode, type FormEvent } from 'react';
+import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
@@ -54,6 +54,29 @@ function Logo() {
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const scrollDelta = currentScrollY - lastScrollY.current;
+
+      if (currentScrollY < 24) {
+        setHidden(false);
+      } else if (scrollDelta > 4) {
+        setHidden(true);
+        setOpen(false);
+      } else if (scrollDelta < -4) {
+        setHidden(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const links = [
     ['Golfers', '/golfers'],
@@ -63,7 +86,7 @@ function Header() {
   ];
 
   return (
-    <header className="header">
+    <header className={hidden ? 'header is-hidden' : 'header'}>
       <div className="nav container">
         <Logo />
 
