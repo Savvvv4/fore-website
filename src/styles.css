@@ -173,12 +173,21 @@ a { color: inherit; }
   padding-top: 168px;
   padding-bottom: 96px;
   display: grid;
-  grid-template-columns: 1.1fr .9fr;
+  grid-template-columns: 1fr;
   align-items: center;
+  align-content: center;
+  justify-content: center;
   gap: 80px;
   position: relative;
   z-index: 2;
 }
+.hero-copy {
+  width: min(100%, 760px);
+  margin: 0 auto;
+  text-align: center;
+}
+.hero-copy > p { margin-left: auto; margin-right: auto; }
+.hero .button-row { justify-content: center; }
 
 /* H1 — used on hero and page-hero */
 .hero h1, .page-hero h1 {
@@ -221,7 +230,8 @@ a { color: inherit; }
   line-height: 1.65;
   color: var(--muted);
   max-width: 500px;
-  margin: 30px 0 44px;
+  margin: 30px auto 44px;
+  text-align: center;
 }
 
 .button-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -1251,10 +1261,10 @@ a { color: inherit; }
   .nav-links.open a.active,
   .nav-links.open a:hover { color: var(--forest); }
 
-  .hero { padding-top: 108px; padding-bottom: 72px; }
+  .hero { padding-top: 108px; padding-bottom: 44px; }
   .hero-background-image { object-position: 60% 30%; }
   .hero h1, .page-hero h1 { font-size: 50px; letter-spacing: -.04em; }
-  .hero-copy > p { font-size: 16px; margin: 22px 0 30px; }
+  .hero-copy > p { font-size: 16px; margin: 22px auto 30px; }
   .button-row { flex-direction: column; align-items: center; gap: 12px; }
   .button-row .button { width: min(100%, 280px); }
   .page-hero > .button,

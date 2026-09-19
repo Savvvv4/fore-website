@@ -3,7 +3,6 @@ import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
-import HeroEcosystem from './components/HeroEcosystem';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
@@ -232,7 +231,6 @@ function Home() {
             </div>
           </div>
 
-          <HeroEcosystem />
         </div>
       </section>
 
