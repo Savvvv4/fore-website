@@ -6,7 +6,7 @@ import ProductDemo from './components/ProductDemo';
 import { supabase } from './lib/supabase';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 
 const audiences = [
@@ -192,15 +192,16 @@ function Layout() {
 
 function FloatingWaitlistCTA() {
   const location = useLocation();
-  const [dismissed, setDismissed] = useState(false);
+  const [minimized, setMinimized] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [heroPassed, setHeroPassed] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
-    setDismissed(sessionStorage.getItem('fore-early-member-cta-dismissed') === 'true');
+    setMinimized(false);
     setModalOpen(false);
     setSubmitted(false);
   }, []);
@@ -259,30 +260,39 @@ function FloatingWaitlistCTA() {
     }
   };
 
-  const dismiss = () => {
-    sessionStorage.setItem('fore-early-member-cta-dismissed', 'true');
-    setDismissed(true);
+  const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
   };
 
-  if (dismissed || !heroPassed || footerVisible) return null;
+  const handleTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
+    if (touchStartX.current === null) return;
+    const distance = event.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (distance < -60) setMinimized(true);
+  };
+
+  if (!heroPassed || footerVisible) return null;
 
   return (
     <>
-      <aside className="floating-waitlist-cta" aria-label="Become an early member">
+      {minimized ? (
+        <button className="floating-waitlist-restore" type="button" onClick={() => setMinimized(false)} aria-label="Restore early member invitation">
+          <ChevronRight size={17} />
+        </button>
+      ) : (
+      <aside className="floating-waitlist-cta" aria-label="Become an early member" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
         <div className="floating-waitlist-copy">
           <strong>Get in early.</strong>
           <span>Become an early member.</span>
         </div>
         <div className="floating-waitlist-actions">
-          <button className="floating-waitlist-dismiss" type="button" onClick={dismiss} aria-label="Dismiss early member invitation">
-            <X size={15} />
-          </button>
           <button className="button dark small floating-waitlist-button" type="button" onClick={() => { setSubmitted(false); setModalOpen(true); }}>
             Join Fore
             <ArrowUpRight size={14} />
           </button>
         </div>
       </aside>
+      )}
 
       {modalOpen && (
         <div className="early-member-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setModalOpen(false); }}>
@@ -357,6 +367,26 @@ async function submitWaitlist(submission: WaitlistSubmission) {
   if (error) {
     throw new Error(`Supabase submission failed: ${error.message}`);
   }
+}
+
+function SubmissionConfirmation({ role, onClose }: { role: 'general' | 'golfer' | 'coach' | 'facility'; onClose: () => void }) {
+  const copy = {
+    general: ['Thanks for reaching out.', 'We have your details and will be in touch soon.'],
+    golfer: ['You’re on the list.', 'We’ll let you know as soon as Fore is ready for your next round.'],
+    coach: ['Profile reserved.', 'We’ll be in touch soon to help you get set up on Fore.'],
+    facility: ['Let’s build together.', 'We’ll be in touch soon to talk about bringing your facility onto Fore.'],
+  }[role];
+
+  return (
+    <div className="form-confirmation-overlay" role="presentation">
+      <section className="form-confirmation" role="dialog" aria-modal="true" aria-labelledby="form-confirmation-title">
+        <div className="early-member-success-icon">✓</div>
+        <h2 id="form-confirmation-title">{copy[0]}</h2>
+        <p>{copy[1]}</p>
+        <button className="button dark" type="button" onClick={onClose}>Done</button>
+      </section>
+    </div>
+  );
 }
 
 
@@ -459,7 +489,7 @@ function Ecosystem() {
               <div className="card-eyebrow">{a.label.toUpperCase()}</div>
               <h3>{a.title}</h3>
               <p>{a.copy}</p>
-              <Link className="ecosystem-cta" to={`${a.href}#join`}>
+              <Link className="ecosystem-cta" to={`${a.href}${i === 0 ? '#how' : i === 1 ? '#business' : '#revenue'}`}>
                 {i === 0 ? 'For golfers' : i === 1 ? 'For coaches' : 'For facilities'}
                 <ArrowUpRight size={16} />
               </Link>
@@ -607,6 +637,7 @@ function PageHero({
 }
 
 function JoinForm({ title }: { title: string }) {
+  const [confirmed, setConfirmed] = useState(false);
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -621,7 +652,7 @@ function JoinForm({ title }: { title: string }) {
         role: 'general',
         source: 'contact',
       });
-      toast.success("Thanks — you’re on the early-access list.");
+      setConfirmed(true);
       form.reset();
     } catch (error) {
       console.error('Waitlist submission failed', error);
@@ -630,6 +661,7 @@ function JoinForm({ title }: { title: string }) {
   };
 
   return (
+    <>
     <section id="join" className="form-section">
       <div className="container form-layout">
         <div>
@@ -667,12 +699,14 @@ function JoinForm({ title }: { title: string }) {
           </div>
 
           <button className="button dark" type="submit">
-            Join the waitlist
+            Send enquiry
             <ArrowUpRight />
           </button>
         </form>
       </div>
     </section>
+    {confirmed && <SubmissionConfirmation role="general" onClose={() => setConfirmed(false)} />}
+    </>
   );
 }
 
@@ -868,6 +902,7 @@ function Legal({ title }: { title: string }) {
 // ─── Audience join forms ──────────────────────────────────────────
 
 function GolferJoinForm() {
+  const [confirmed, setConfirmed] = useState(false);
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -882,7 +917,7 @@ function GolferJoinForm() {
         role: 'golfer',
         source: 'golfer_join',
       });
-      toast.success("You're on the list — we'll be in touch.");
+      setConfirmed(true);
       form.reset();
     } catch (error) {
       console.error('Golfer waitlist submission failed', error);
@@ -890,6 +925,7 @@ function GolferJoinForm() {
     }
   };
   return (
+    <>
     <section id="join" className="form-section">
       <div className="container form-layout">
         <div>
@@ -905,15 +941,18 @@ function GolferJoinForm() {
             <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
           </div>
           <button className="button dark" type="submit">
-            Get early access <ArrowUpRight size={16} />
+            Join Fore <ArrowUpRight size={16} />
           </button>
         </form>
       </div>
     </section>
+    {confirmed && <SubmissionConfirmation role="golfer" onClose={() => setConfirmed(false)} />}
+    </>
   );
 }
 
 function CoachJoinForm() {
+  const [confirmed, setConfirmed] = useState(false);
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -928,7 +967,7 @@ function CoachJoinForm() {
         role: 'coach',
         source: 'coach_join',
       });
-      toast.success("Thanks — we'll reach out soon.");
+      setConfirmed(true);
       form.reset();
     } catch (error) {
       console.error('Coach waitlist submission failed', error);
@@ -936,6 +975,7 @@ function CoachJoinForm() {
     }
   };
   return (
+    <>
     <section id="join" className="form-section">
       <div className="container form-layout">
         <div>
@@ -951,15 +991,18 @@ function CoachJoinForm() {
             <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
           </div>
           <button className="button dark" type="submit">
-            Apply for early access <ArrowUpRight size={16} />
+            Reserve coach profile <ArrowUpRight size={16} />
           </button>
         </form>
       </div>
     </section>
+    {confirmed && <SubmissionConfirmation role="coach" onClose={() => setConfirmed(false)} />}
+    </>
   );
 }
 
 function FacilityJoinForm() {
+  const [confirmed, setConfirmed] = useState(false);
   const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
@@ -975,7 +1018,7 @@ function FacilityJoinForm() {
         source: 'facility_join',
         facility_name: String(data.get('facility') ?? ''),
       });
-      toast.success("Thanks — someone from Fore will be in touch shortly.");
+      setConfirmed(true);
       form.reset();
     } catch (error) {
       console.error('Facility waitlist submission failed', error);
@@ -983,6 +1026,7 @@ function FacilityJoinForm() {
     }
   };
   return (
+    <>
     <section id="join" className="form-section">
       <div className="container form-layout">
         <div>
@@ -999,11 +1043,13 @@ function FacilityJoinForm() {
             <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
           </div>
           <button className="button dark" type="submit">
-            Get in touch <ArrowUpRight size={16} />
+            Let’s build together <ArrowUpRight size={16} />
           </button>
         </form>
       </div>
     </section>
+    {confirmed && <SubmissionConfirmation role="facility" onClose={() => setConfirmed(false)} />}
+    </>
   );
 }
 
