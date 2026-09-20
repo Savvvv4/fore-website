@@ -69,7 +69,7 @@ a { color: inherit; }
   line-height: 1.35;
 }
 .floating-waitlist-button { align-self: end; white-space: nowrap; }
-.floating-waitlist-actions { display: flex; align-items: center; gap: 8px; }
+.floating-waitlist-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
 .floating-waitlist-dismiss {
   width: 28px;
   height: 28px;
@@ -142,6 +142,26 @@ a { color: inherit; }
   color: var(--ink);
   font: inherit;
 }
+.early-member-role-fieldset { margin: 0; padding: 0; border: 0; }
+.early-member-role-fieldset legend { margin-bottom: 8px; color: var(--ink); font-size: 13px; font-weight: 700; }
+.early-member-role-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.early-member-role-option { position: relative; display: block; cursor: pointer; }
+.early-member-role-option input { position: absolute; opacity: 0; pointer-events: none; }
+.early-member-role-option span {
+  display: grid;
+  min-height: 44px;
+  place-items: center;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+.early-member-role-option input:checked + span { border-color: var(--forest); background: var(--sage); color: var(--forest); }
+.early-member-role-option input:focus-visible + span { outline: 2px solid var(--forest); outline-offset: 2px; }
 .early-member-form .button { margin-top: 8px; justify-content: center; }
 .early-member-form .button:disabled { opacity: .65; cursor: wait; }
 .early-member-success { text-align: center; padding: 18px 0 4px; }
@@ -1441,6 +1461,7 @@ a { color: inherit; }
 @media (max-width: 600px) {
   html, body { overflow-x: hidden; }
   .container { width: calc(100% - 32px); }
+  .form-fields input, .form-fields select, .early-member-form input, .early-member-form select { font-size: 16px; }
   .floating-waitlist-cta {
     right: 16px;
     bottom: 16px;

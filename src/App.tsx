@@ -274,12 +274,12 @@ function FloatingWaitlistCTA() {
           <span>Become an early member.</span>
         </div>
         <div className="floating-waitlist-actions">
+          <button className="floating-waitlist-dismiss" type="button" onClick={dismiss} aria-label="Dismiss early member invitation">
+            <X size={15} />
+          </button>
           <button className="button dark small floating-waitlist-button" type="button" onClick={() => { setSubmitted(false); setModalOpen(true); }}>
             Join Fore
             <ArrowUpRight size={14} />
-          </button>
-          <button className="floating-waitlist-dismiss" type="button" onClick={dismiss} aria-label="Dismiss early member invitation">
-            <X size={15} />
           </button>
         </div>
       </aside>
@@ -299,7 +299,17 @@ function FloatingWaitlistCTA() {
                 <form className="early-member-form" onSubmit={submitFloatingForm}>
                   <label>Name<input required name="name" placeholder="Your name" /></label>
                   <label>Phone<input required name="phone" type="tel" placeholder="+91" /></label>
-                  <label>User type<select required name="role" defaultValue=""><option value="" disabled>Select one</option><option value="golfer">Golfer</option><option value="coach">Coach</option><option value="facility">Facility</option></select></label>
+                  <fieldset className="early-member-role-fieldset">
+                    <legend>I am a</legend>
+                    <div className="early-member-role-options">
+                      {(['golfer', 'coach', 'facility'] as const).map((role) => (
+                        <label key={role} className="early-member-role-option">
+                          <input required type="radio" name="role" value={role} />
+                          <span>{role === 'facility' ? 'Facility Rep' : role[0].toUpperCase() + role.slice(1)}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
                   <button className="button dark" type="submit" disabled={submitting}>{submitting ? 'Joining...' : 'Join Fore'}</button>
                 </form>
               </>
@@ -345,7 +355,7 @@ async function submitWaitlist(submission: WaitlistSubmission) {
   const { error } = await supabase.from('waitlist_submissions').insert(submission);
 
   if (error) {
-    throw error;
+    throw new Error(`Supabase submission failed: ${error.message}`);
   }
 }
 
