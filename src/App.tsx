@@ -183,8 +183,70 @@ function Layout() {
       </main>
 
       <Footer />
+      <FloatingWaitlistCTA />
       <Toaster position="bottom-center" />
     </>
+  );
+}
+
+function FloatingWaitlistCTA() {
+  const location = useLocation();
+  const [dismissed, setDismissed] = useState(false);
+  const [heroPassed, setHeroPassed] = useState(false);
+  const [footerVisible, setFooterVisible] = useState(false);
+
+  useEffect(() => {
+    setDismissed(sessionStorage.getItem('fore-waitlist-cta-dismissed') === 'true');
+  }, []);
+
+  useEffect(() => {
+    setHeroPassed(false);
+    setFooterVisible(false);
+
+    const hero = document.querySelector<HTMLElement>('.hero-bg, .aud-hero-section, .about-hero, .page-hero');
+    const footer = document.querySelector<HTMLElement>('.footer');
+    if (!hero || !footer) return;
+
+    const updateHeroState = () => {
+      setHeroPassed(hero.getBoundingClientRect().bottom <= 0);
+    };
+
+    updateHeroState();
+    window.addEventListener('scroll', updateHeroState, { passive: true });
+
+    const footerObserver = new IntersectionObserver(
+      ([entry]) => setFooterVisible(entry.isIntersecting),
+      { threshold: 0.01 },
+    );
+    footerObserver.observe(footer);
+
+    return () => {
+      window.removeEventListener('scroll', updateHeroState);
+      footerObserver.disconnect();
+    };
+  }, [location.pathname]);
+
+  const dismiss = () => {
+    sessionStorage.setItem('fore-waitlist-cta-dismissed', 'true');
+    setDismissed(true);
+  };
+
+  if (dismissed || !heroPassed || footerVisible) return null;
+
+  return (
+    <aside className="floating-waitlist-cta" aria-label="Join the Fore waitlist">
+      <button className="floating-waitlist-dismiss" type="button" onClick={dismiss} aria-label="Dismiss waitlist invitation">
+        <X size={16} />
+      </button>
+      <div className="floating-waitlist-copy">
+        <strong>Get in early.</strong>
+        <span>Join the waitlist for Fore.</span>
+      </div>
+      <Link className="button dark small floating-waitlist-button" to="/golfers#join">
+        Join waitlist
+        <ArrowUpRight size={14} />
+      </Link>
+    </aside>
   );
 }
 
@@ -236,6 +298,7 @@ function Home() {
 
       <Ecosystem />
       <ProductTeaser />
+      <FAQ />
       <FinalCTA />
     </>
   );
@@ -267,9 +330,9 @@ function Ecosystem() {
         <div className="section-intro ecosystem-intro">
           <div>
             <h2>
-              Making the game
+              Built for golfers, coaches,
               <br />
-              bigger, together.
+              and facilities.
             </h2>
           </div>
 
@@ -313,12 +376,74 @@ function ProductTeaser() {
     <section className="product-teaser-section">
       <div className="section container">
       <div className="product-teaser-intro">
-        <h2>The platform for <span>modern golf.</span></h2>
+        <h2>One place for <span>every part of golf.</span></h2>
         <p>
           One connected ecosystem for playing, coaching, and operating golf.
         </p>
       </div>
       <ProductDemo />
+      </div>
+    </section>
+  );
+}
+
+const faqItems = [
+  {
+    question: 'When does Fore actually launch?',
+    answer: 'We\'re in early access now, onboarding a small group of golfers, coaches and facilities in Delhi NCR. Public booking opens in phases as we onboard more facilities — early sign-ups get first access.',
+  },
+  {
+    question: 'Is it free to join?',
+    answer: 'Yes. Joining as a golfer or coach during early access is free. Facilities get a walkthrough of pricing before agreeing to anything.',
+  },
+  {
+    question: 'How are coaches and facilities vetted?',
+    answer: 'Every coach profile is verified for qualifications and current affiliation before it goes live. Facilities are onboarded individually by our team, not self-served, during early access.',
+  },
+  {
+    question: 'Which cities are next after Delhi NCR?',
+    answer: 'We\'re focused on Delhi NCR first to get the experience right. Mumbai and Bangalore are next, based on waitlist demand — join early to help us prioritise your city.',
+  },
+  {
+    question: 'What does partnering cost a facility or coach?',
+    answer: 'There\'s no upfront cost to join. Facilities pay a small commission only on bookings made through Fore; coaches keep full pricing control and only pay for bookings sourced through the platform. Full terms shared before you commit.',
+  },
+];
+
+function FAQ() {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+  return (
+    <section className="faq-section section">
+      <div className="container faq-layout">
+        <div className="faq-intro">
+          <h2>Good Questions</h2>
+        </div>
+
+        <div className="faq-list">
+          {faqItems.map((item, index) => {
+            const isOpen = openIndex === index;
+            const answerId = `faq-answer-${index}`;
+
+            return (
+              <div className={`faq-item${isOpen ? ' is-open' : ''}`} key={item.question}>
+                <button
+                  className="faq-question"
+                  type="button"
+                  aria-expanded={isOpen}
+                  aria-controls={answerId}
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                >
+                  <span>{item.question}</span>
+                  <span className="faq-plus" aria-hidden="true" />
+                </button>
+                <div className="faq-answer" id={answerId} hidden={!isOpen}>
+                  <p>{item.answer}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
@@ -729,6 +854,7 @@ function GolfersMock() {
         <span className="mock-dot" />
         <span className="mock-dot" />
         <span className="mock-bar-label">FORE · DISCOVER</span>
+        <span className="mock-preview-badge">Concept preview</span>
       </div>
       <div className="mock-body">
         <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: 'var(--label)' }}>
@@ -775,6 +901,7 @@ function CoachesMock() {
         <span className="mock-dot" />
         <span className="mock-dot" />
         <span className="mock-bar-label">FORE · COACH PROFILE</span>
+        <span className="mock-preview-badge">Concept preview</span>
       </div>
       <div className="mock-body">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -819,6 +946,7 @@ function FacilitiesMock() {
         <span className="mock-dot" />
         <span className="mock-dot" />
         <span className="mock-bar-label">FORE · FACILITY</span>
+        <span className="mock-preview-badge">Concept preview</span>
       </div>
       <div className="mock-body">
         <div>
@@ -865,7 +993,7 @@ function GolfersPage() {
                 Join as a golfer <ArrowUpRight size={18} />
               </a>
               <a className="button light" href="#how">
-                See the experience <ArrowUpRight size={18} />
+                See how it works <ArrowUpRight size={18} />
               </a>
             </div>
           </motion.div>
@@ -981,7 +1109,7 @@ function CoachesPage() {
                 Join as a coach <ArrowUpRight size={18} />
               </a>
               <a className="button light" href="#business">
-                See what you get <ArrowUpRight size={18} />
+                See how it works <ArrowUpRight size={18} />
               </a>
             </div>
           </motion.div>
@@ -1152,7 +1280,7 @@ function FacilitiesPage() {
                 Partner with Fore <ArrowUpRight size={18} />
               </a>
               <a className="button light" href="#revenue">
-                See the platform <ArrowUpRight size={18} />
+                See how it works <ArrowUpRight size={18} />
               </a>
             </div>
           </motion.div>

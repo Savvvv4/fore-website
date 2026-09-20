@@ -1257,12 +1257,28 @@ const TOUR_CSS = `
   box-shadow: 0 28px 80px rgba(13,31,20,.18);
 }
 .fore-tour .ft-top {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 12px 22px;
   border-bottom: 1px solid var(--ft-line-soft);
   background: var(--ft-paper);
+}
+.fore-tour .ft-preview-badge {
+  position: absolute;
+  top: 50%;
+  right: 22px;
+  transform: translateY(-50%);
+  padding: 5px 9px;
+  border: 1px solid var(--ft-line);
+  border-radius: 99px;
+  background: var(--ft-surface);
+  color: var(--ft-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
 }
 .fore-tour .ft-dots {
   display: flex;
@@ -1825,6 +1841,7 @@ export default function ProductDemo() {
         <div className="ft-app">
           {/* App top bar – dots only, centered */}
           <header className="ft-top">
+            <span className="ft-preview-badge">Concept preview</span>
             <div className="ft-dots">
               {Array.from({ length: totalSteps }, (_, i) => (
                 <button
