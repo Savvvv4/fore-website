@@ -489,7 +489,7 @@ function Ecosystem() {
               <div className="card-eyebrow">{a.label.toUpperCase()}</div>
               <h3>{a.title}</h3>
               <p>{a.copy}</p>
-              <Link className="ecosystem-cta" to={`${a.href}${i === 0 ? '#how' : i === 1 ? '#business' : '#revenue'}`}>
+              <Link className="ecosystem-cta" to={a.href}>
                 {i === 0 ? 'For golfers' : i === 1 ? 'For coaches' : 'For facilities'}
                 <ArrowUpRight size={16} />
               </Link>

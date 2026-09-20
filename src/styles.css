@@ -610,7 +610,6 @@ a { color: inherit; }
 }
 .ecosystem-cta:hover { transform: translateY(-2px); color: #2d5038; }
 .text-link { color: var(--ink); }
-#how, #business, #revenue { scroll-margin-top: 104px; }
 
 /* ─── Network section ────────────────────────────────────────── */
 .network-section { background: var(--forest); color: #fff; padding: 160px 0; }
