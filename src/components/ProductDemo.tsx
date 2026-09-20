@@ -1,7 +1,8 @@
-import { useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
+import { Link } from 'react-router-dom';
 
 type Role = 'golfer' | 'coach' | 'facility';
-const ADV = 1100;
+const ADV = 1400;
 
 // ─── SVG icons ───────────────────────────────────────────────────
 const ICONS: Record<string, string> = {
@@ -43,19 +44,59 @@ function ConfirmScreen({ title, body, declined }: { title: string; body: string;
   );
 }
 
-function Phone({ header, children }: { header: string; children: ReactNode }) {
+const PHONE_GUIDES: Record<string, string> = {
+  Discover: 'Select a course',
+  Rounds: 'Pick a tee time',
+  Coaches: 'Choose a coach',
+  Lessons: 'Choose a lesson plan',
+  Range: 'Book your range session',
+  Gear: 'Get fitting and equipment',
+  More: 'Click a card to learn more',
+  'Your profile': 'Set your profile',
+  Availability: 'Open a time slot',
+  'Lesson requests': 'Respond to a request',
+  Students: 'Click a card to learn more',
+  Payments: 'Review your earnings',
+  'Green-fee desk': 'Select a golfer',
+  'Coach schedules': 'Manage coaching schedules',
+  Operations: 'Click a card to learn more',
+  Growth: 'Click a card to learn more',
+};
+
+const DemoBackContext = createContext<(() => void) | null>(null);
+
+function Phone({ header, guide, children, onContinue, continueLabel = 'Continue' }: { header: string; guide?: string; children: ReactNode; onContinue?: () => void; continueLabel?: string }) {
+  const onBack = useContext(DemoBackContext);
+
   return (
     <div className="ft-phone">
       <div className="ft-phoneHeader">
-        <div className="ft-eyebrow">{header}</div>
+        {onBack && (
+          <button className="ft-phoneBack" type="button" onClick={onBack} aria-label="Back to previous step">
+            <Ico name="chevronLeft" />
+          </button>
+        )}
+        <div className="ft-phone-guide">{guide ?? PHONE_GUIDES[header] ?? header}</div>
       </div>
       <div className="ft-phone-body">{children}</div>
+      {onContinue && (
+        <div className="ft-phone-footer">
+          <button className="ft-btn ft-primary ft-block" type="button" onClick={onContinue}>
+            {continueLabel} <Ico name="chevronRight" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
-function Narr({ children }: { children: ReactNode }) {
-  return <div className="ft-narr">{children}</div>;
+function Narr({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div className="ft-narr">
+      <div className="ft-eyebrow">{label}</div>
+      {children}
+    </div>
+  );
 }
 
 function inr(n: number) {
@@ -96,7 +137,7 @@ function GolferStep1({
   ];
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Discover">
         <h2 className="ft-serif">Find your next round.</h2>
         <p>See nearby courses, live tee times and prices in one place.</p>
       </Narr>
@@ -145,7 +186,7 @@ function GolferStep2({ course, advance }: { course: { name: string; price: numbe
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Rounds">
         <h2 className="ft-serif">Book your round in a few taps.</h2>
         <p>Pick a time and add what you need. The rest is sorted.</p>
       </Narr>
@@ -237,7 +278,7 @@ function GolferStep3({
   if (confirmed) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Coaches">
           <h2 className="ft-serif">Find a coach who fits your game.</h2>
           <p>Try a first lesson before you commit to a full package.</p>
         </Narr>
@@ -250,7 +291,7 @@ function GolferStep3({
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Coaches">
         <h2 className="ft-serif">Find a coach who fits your game.</h2>
         <p>Try a first lesson before you commit to a full package.</p>
       </Narr>
@@ -324,7 +365,7 @@ function GolferStep4({ coachKey, advance }: { coachKey: string; advance: () => v
   if (confirmed) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Lessons">
           <h2 className="ft-serif">Make progress with a plan.</h2>
           <p>Stay with the coach you like and save on a lesson package.</p>
         </Narr>
@@ -339,7 +380,7 @@ function GolferStep4({ coachKey, advance }: { coachKey: string; advance: () => v
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Lessons">
         <h2 className="ft-serif">Make progress with a plan.</h2>
         <p>Stay with the coach you like and save on a lesson package.</p>
       </Narr>
@@ -407,7 +448,7 @@ function GolferStep5({ advance }: { advance: () => void }) {
   if (confirmed) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Range">
           <h2 className="ft-serif">Practice when you have the time.</h2>
           <p>Pay for your range session, add balls or a club, and get on with your practice.</p>
         </Narr>
@@ -420,7 +461,7 @@ function GolferStep5({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Range">
         <h2 className="ft-serif">Practice when you have the time.</h2>
         <p>Pay for your range session, add balls or a club, and get on with your practice.</p>
       </Narr>
@@ -492,7 +533,7 @@ function GolferStep6({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Gear">
         <h2 className="ft-serif">Find the right gear, then buy it.</h2>
         <p>Book a fitting, or order straight from partner shops.</p>
       </Narr>
@@ -573,16 +614,16 @@ function MCard({ icon, title, small, reveal, open, onToggle }: { icon: string; t
   );
 }
 
-function GolferStep7() {
+function GolferStep7({ advance }: { advance: () => void }) {
   const [open, setOpen] = useState<string | null>(null);
   const toggle = (key: string) => setOpen(prev => prev === key ? null : key);
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="More">
         <h2 className="ft-serif">Everything else, in one place.</h2>
         <p>Keep your membership, rewards, golf history and payments together.</p>
       </Narr>
-      <Phone header="More">
+      <Phone header="More" onContinue={advance} continueLabel="End tour">
         <MCard icon="shield" title="Membership" small="Your member rate is applied automatically." reveal="Your member rate is ready when you book. Join, renew or pause whenever it suits you." open={open === 'membership'} onToggle={() => toggle('membership')} />
         <MCard icon="gift" title="Loyalty" small="Turn your bookings into rewards." reveal="You have 1,240 points ready to use. That's ₹500 toward your next round." open={open === 'loyalty'} onToggle={() => toggle('loyalty')} />
         <MCard icon="history" title="Golf record" small="Keep every round and score in one place." reveal="Your handicap moved from 16.8 to 14.2 in three months. Your progress is easy to see." open={open === 'record'} onToggle={() => toggle('record')} />
@@ -614,7 +655,7 @@ function CoachStep1({
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Profile">
         <h2 className="ft-serif">Help the right students find you.</h2>
         <p>Show your experience, specialties and pricing before a golfer books.</p>
       </Narr>
@@ -698,7 +739,7 @@ function CoachStep2({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Availability">
         <h2 className="ft-serif">Set your availability around your day.</h2>
         <p>Only the times you open are bookable, so your calendar stays under control.</p>
       </Narr>
@@ -768,7 +809,7 @@ function CoachStep3({ coachPrice, advance }: { coachPrice: number; advance: () =
   if (result !== null) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Lesson requests">
           <h2 className="ft-serif">Handle lesson requests in a few taps.</h2>
           <p>See the golfer, time and lesson details before you respond.</p>
         </Narr>
@@ -788,7 +829,7 @@ function CoachStep3({ coachPrice, advance }: { coachPrice: number; advance: () =
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Lesson requests">
         <h2 className="ft-serif">Handle lesson requests in a few taps.</h2>
         <p>See the golfer, time and lesson details before you respond.</p>
       </Narr>
@@ -809,16 +850,16 @@ function CoachStep3({ coachPrice, advance }: { coachPrice: number; advance: () =
 
 // ─── Coach Step 4: Students ───────────────────────────────────────
 
-function CoachStep4() {
+function CoachStep4({ advance }: { advance: () => void }) {
   const [open, setOpen] = useState<string | null>(null);
   const toggle = (key: string) => setOpen(prev => prev === key ? null : key);
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Students">
         <h2 className="ft-serif">Keep every student close.</h2>
         <p>See who needs attention and walk into every lesson prepared.</p>
       </Narr>
-      <Phone header="Students">
+      <Phone header="Students" onContinue={advance} continueLabel="Continue to payments">
         <MCard icon="users" title="Roster" small="See your active students and upcoming lessons." reveal="18 active students and 3 lessons booked this week. Your schedule and income stay together." open={open === 'roster'} onToggle={() => toggle('roster')} />
         <MCard icon="history" title="History" small="Know where each student left off." reveal="Vikram Rao has 12 lessons logged, with his wedge notes ready before the next lesson." open={open === 'history'} onToggle={() => toggle('history')} />
         <MCard icon="target" title="Feedback" small="Keep practice focused between lessons." reveal="Assign a drill in seconds, such as driver dispersion three times a week, so students know exactly what to practise." open={open === 'feedback'} onToggle={() => toggle('feedback')} />
@@ -842,7 +883,7 @@ function CoachStep5({ coachPrice }: { coachPrice: number }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Payments">
         <h2 className="ft-serif">Keep your earnings clear.</h2>
         <p>See lessons, packages and payouts together, so you always know what you've earned.</p>
       </Narr>
@@ -901,13 +942,12 @@ function FacilityStep1({ advance }: { advance: () => void }) {
 
   const golfers = [
     { name: 'Sameer Kohli', meta: 'First visit' },
-    { name: 'Neha Bansal', meta: 'Returning guest' },
   ];
 
   if (confirmed) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Green-fee desk">
           <h2 className="ft-serif">Check golfers in without the queue.</h2>
           <p>Check golfers in faster and keep the first tee moving.</p>
         </Narr>
@@ -920,12 +960,12 @@ function FacilityStep1({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Green-fee desk">
         <h2 className="ft-serif">Check golfers in without the queue.</h2>
         <p>Check golfers in faster and keep the first tee moving.</p>
       </Narr>
       <Phone header="Green-fee desk">
-        <div className="ft-chiplabel">Golfer</div>
+        <div className="ft-chiplabel">Golfers in queue</div>
         {golfers.map((g) => (
           <div
             key={g.name}
@@ -938,7 +978,6 @@ function FacilityStep1({ advance }: { advance: () => void }) {
           >
             <div className="ft-rchip"><Ico name="users" /></div>
             <div><strong>{g.name}</strong><small>{g.meta}</small></div>
-            {picked === g.name && <span style={{ marginLeft: 'auto', fontSize: 11.5, fontWeight: 700, color: 'var(--ft-muted)' }}>Change</span>}
           </div>
         ))}
         {picked && (
@@ -1004,7 +1043,7 @@ function FacilityStep2({ advance }: { advance: () => void }) {
   if (confirmed) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Range">
           <h2 className="ft-serif">Keep range check-in moving.</h2>
           <p>A simple check-in means less waiting and more time on the range.</p>
         </Narr>
@@ -1017,11 +1056,11 @@ function FacilityStep2({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Range">
         <h2 className="ft-serif">Keep range check-in moving.</h2>
         <p>A simple check-in means less waiting and more time on the range.</p>
       </Narr>
-      <Phone header="Range">
+      <Phone header="Range" guide={picked ? 'Choose items' : 'Select the golfer'}>
         <div className="ft-chiplabel">Customer</div>
         {customers.map((c) => (
           <div
@@ -1031,7 +1070,6 @@ function FacilityStep2({ advance }: { advance: () => void }) {
           >
             <div className="ft-rchip"><Ico name="users" /></div>
             <div><strong>{c.name}</strong><small>{c.meta}</small></div>
-            {picked === c.name && <span style={{ marginLeft: 'auto', fontSize: 11.5, fontWeight: 700, color: 'var(--ft-muted)' }}>Change</span>}
           </div>
         ))}
         {picked && (
@@ -1069,7 +1107,7 @@ function FacilityStep3({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Coach schedules">
         <h2 className="ft-serif">Keep every coach on the same schedule.</h2>
         <p>See and update coach availability without leaving the desk.</p>
       </Narr>
@@ -1123,7 +1161,7 @@ function FacilityStep4({ advance }: { advance: () => void }) {
   if (result !== null) {
     return (
       <section className="ft-step ft-active">
-        <Narr>
+        <Narr label="Lesson requests">
           <h2 className="ft-serif">Keep every lesson request moving.</h2>
           <p>Handle bookings for any coach right from the front desk.</p>
         </Narr>
@@ -1140,7 +1178,7 @@ function FacilityStep4({ advance }: { advance: () => void }) {
 
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Lesson requests">
         <h2 className="ft-serif">Keep every lesson request moving.</h2>
         <p>Handle bookings for any coach right from the front desk.</p>
       </Narr>
@@ -1161,16 +1199,16 @@ function FacilityStep4({ advance }: { advance: () => void }) {
 
 // ─── Facility Step 5: Operations ─────────────────────────────────
 
-function FacilityStep5() {
+function FacilityStep5({ advance }: { advance: () => void }) {
   const [open, setOpen] = useState<string | null>(null);
   const toggle = (key: string) => setOpen(prev => prev === key ? null : key);
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Operations">
         <h2 className="ft-serif">See the whole facility at a glance.</h2>
         <p>Keep the day-to-day work in one place.</p>
       </Narr>
-      <Phone header="Operations">
+      <Phone header="Operations" onContinue={advance} continueLabel="Continue to growth">
         <MCard icon="calendar" title="Tee sheet" small="Update the tee sheet in a few taps." reveal="Block 7:20 AM for group play in two taps. The tee sheet updates right away." open={open === 'teesheet'} onToggle={() => toggle('teesheet')} />
         <MCard icon="wallet" title="Pricing" small="Fill quieter tee times with smarter pricing." reveal="Set 11:00 AM at ₹2,900 when demand is quiet and give golfers a reason to book." open={open === 'pricing'} onToggle={() => toggle('pricing')} />
         <MCard icon="shield" title="Memberships" small="Stay on top of every membership." reveal="Track 212 active members and see the 14 renewals coming due." open={open === 'memberships'} onToggle={() => toggle('memberships')} />
@@ -1182,16 +1220,16 @@ function FacilityStep5() {
 
 // ─── Facility Step 6: Growth ──────────────────────────────────────
 
-function FacilityStep6() {
+function FacilityStep6({ advance }: { advance: () => void }) {
   const [open, setOpen] = useState<string | null>(null);
   const toggle = (key: string) => setOpen(prev => prev === key ? null : key);
   return (
     <section className="ft-step ft-active">
-      <Narr>
+      <Narr label="Growth">
         <h2 className="ft-serif">Find more revenue in the traffic you already have.</h2>
         <p>See the opportunities across your facility.</p>
       </Narr>
-      <Phone header="Growth">
+      <Phone header="Growth" onContinue={advance} continueLabel="End tour">
         <MCard icon="mail" title="Marketing" small="Bring past golfers back." reveal="340 lapsed golfers received a timely message, and 61 returned within a week." open={open === 'marketing'} onToggle={() => toggle('marketing')} />
         <MCard icon="cart" title="Pro shop &amp; F&amp;B" small="Make each round worth a little more." reveal="A simple checkout suggestion adds an average of ₹380 per round without extra work for your staff." open={open === 'proshop'} onToggle={() => toggle('proshop')} />
       </Phone>
@@ -1265,21 +1303,26 @@ const TOUR_CSS = `
   border-bottom: 1px solid var(--ft-line-soft);
   background: var(--ft-paper);
 }
-.fore-tour .ft-preview-badge {
+.fore-tour .ft-windowBack {
   position: absolute;
+  left: 16px;
   top: 50%;
-  right: 22px;
-  transform: translateY(-50%);
-  padding: 5px 9px;
-  border: 1px solid var(--ft-line);
-  border-radius: 99px;
-  background: var(--ft-surface);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px 5px 4px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
   color: var(--ft-muted);
-  font-size: 10px;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1;
   font-weight: 700;
-  letter-spacing: .02em;
-  white-space: nowrap;
+  cursor: pointer;
+  transform: translateY(-50%);
 }
+.fore-tour .ft-windowBack:hover { background: var(--ft-line-soft); color: var(--ft-ink); }
 .fore-tour .ft-dots {
   display: flex;
   align-items: center;
@@ -1314,7 +1357,7 @@ const TOUR_CSS = `
   justify-content: center;
   padding: 28px 56px;
 }
-.fore-tour .ft-step.ft-active { display: grid; animation: ft-stepin .42s cubic-bezier(.16,1,.3,1); }
+.fore-tour .ft-step.ft-active { display: grid; animation: ft-stepin .3s ease-out; }
 .fore-tour .ft-step.ft-solo {
   grid-template-columns: minmax(0,560px);
   align-items: center;
@@ -1393,6 +1436,8 @@ const TOUR_CSS = `
   margin: 0 auto 28px;
 }
 .fore-tour .ft-heroBtns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+.fore-tour .ft-completionPrimary { flex-basis: 100%; width: max-content; text-decoration: none; }
+.fore-tour .ft-completionSecondary { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; margin-top: 18px; }
 
 /* buttons */
 .fore-tour .ft-btn {
@@ -1429,7 +1474,7 @@ const TOUR_CSS = `
   42%, 100% { transform: translateX(280%) skewX(-20deg); opacity: 0; }
 }
 @keyframes ft-fadein { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
-@keyframes ft-stepin { from{opacity:0;transform:scale(.98) translateY(6px)} to{opacity:1;transform:scale(1) translateY(0)} }
+@keyframes ft-stepin { from{opacity:0} to{opacity:1} }
 .fore-tour .ft-glow { position: relative; overflow: hidden; }
 .fore-tour .ft-glow::before {
   content: '';
@@ -1441,6 +1486,7 @@ const TOUR_CSS = `
   pointer-events: none;
 }
 .fore-tour .ft-fadein { animation: ft-fadein .4s var(--ft-ease) both; }
+.fore-tour .ft-confirm.ft-fadein { animation-duration: .65s; }
 
 /* phone */
 .fore-tour .ft-phone {
@@ -1458,11 +1504,37 @@ const TOUR_CSS = `
   flex: none;
   display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
   padding: 11px 18px;
   border-bottom: 1px solid var(--ft-line-soft);
   background: var(--ft-surface);
 }
-.fore-tour .ft-phoneHeader .ft-eyebrow { margin: 0; font-size: 10.5px; letter-spacing: .1em; }
+.fore-tour .ft-phone-guide {
+  margin: 0;
+  color: var(--ft-ink);
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  line-height: 1.2;
+}
+.fore-tour .ft-phoneBack {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ft-muted);
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+.fore-tour .ft-phoneBack:hover { background: var(--ft-line-soft); color: var(--ft-ink); }
 .fore-tour .ft-phone-body {
   flex: 1;
   min-height: 0;
@@ -1475,6 +1547,12 @@ const TOUR_CSS = `
 .fore-tour .ft-phone-body > * { flex: none; }
 .fore-tour .ft-phone-body::-webkit-scrollbar { width: 5px; }
 .fore-tour .ft-phone-body::-webkit-scrollbar-thumb { background: var(--ft-line); border-radius: 99px; }
+.fore-tour .ft-phone-footer {
+  flex: none;
+  padding: 12px 18px 18px;
+  border-top: 1px solid var(--ft-line-soft);
+  background: var(--ft-surface);
+}
 
 .fore-tour .ft-ico {
   width: 15px; height: 15px; flex: none;
@@ -1797,10 +1875,6 @@ export default function ProductDemo() {
   const [pkgCoach, setPkgCoach] = useState<string>('meera');
   const [coachPrice, setCoachPrice] = useState(1800);
 
-  const totalSteps = TOTAL_STEPS[role];
-  const isFirst = stepIdx === 0;
-  const isLast = stepIdx === totalSteps - 1;
-
   const advance = useCallback(() => {
     setTimeout(() => setStepIdx((s) => s + 1), ADV);
   }, []);
@@ -1839,24 +1913,9 @@ export default function ProductDemo() {
       <style>{TOUR_CSS}</style>
       <div className="fore-tour">
         <div className="ft-app">
-          {/* App top bar – dots only, centered */}
-          <header className="ft-top">
-            <span className="ft-preview-badge">Concept preview</span>
-            <div className="ft-dots">
-              {Array.from({ length: totalSteps }, (_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  className={`ft-dot${i === stepIdx ? ' ft-on' : i < stepIdx ? ' ft-done' : ''}`}
-                  aria-label={`Go to step ${i + 1}`}
-                  onClick={() => setStepIdx(i)}
-                />
-              ))}
-            </div>
-          </header>
-
           {/* Stage */}
-          <main className="ft-stage">
+          <DemoBackContext.Provider value={() => setStepIdx((s) => Math.max(0, s - 1))}>
+            <main className="ft-stage">
             {/* Cover */}
             {stepIdx === 0 && (
               <section className="ft-step ft-solo ft-active">
@@ -1895,7 +1954,7 @@ export default function ProductDemo() {
             )}
             {role === 'golfer' && stepIdx === 5 && <GolferStep5 key="g5" advance={advance} />}
             {role === 'golfer' && stepIdx === 6 && <GolferStep6 key="g6" advance={advance} />}
-            {role === 'golfer' && stepIdx === 7 && <GolferStep7 key="g7" />}
+            {role === 'golfer' && stepIdx === 7 && <GolferStep7 key="g7" advance={advance} />}
 
             {/* ── Coach steps ── */}
             {role === 'coach' && stepIdx === 1 && (
@@ -1910,7 +1969,7 @@ export default function ProductDemo() {
             {role === 'coach' && stepIdx === 3 && (
               <CoachStep3 key="c3" coachPrice={coachPrice} advance={advance} />
             )}
-            {role === 'coach' && stepIdx === 4 && <CoachStep4 key="c4" />}
+            {role === 'coach' && stepIdx === 4 && <CoachStep4 key="c4" advance={advance} />}
             {role === 'coach' && stepIdx === 5 && (
               <CoachStep5 key="c5" coachPrice={coachPrice} />
             )}
@@ -1920,8 +1979,8 @@ export default function ProductDemo() {
             {role === 'facility' && stepIdx === 2 && <FacilityStep2 key="f2" advance={advance} />}
             {role === 'facility' && stepIdx === 3 && <FacilityStep3 key="f3" advance={advance} />}
             {role === 'facility' && stepIdx === 4 && <FacilityStep4 key="f4" advance={advance} />}
-            {role === 'facility' && stepIdx === 5 && <FacilityStep5 key="f5" />}
-            {role === 'facility' && stepIdx === 6 && <FacilityStep6 key="f6" />}
+            {role === 'facility' && stepIdx === 5 && <FacilityStep5 key="f5" advance={advance} />}
+            {role === 'facility' && stepIdx === 6 && <FacilityStep6 key="f6" advance={advance} />}
 
             {/* Completion screens */}
             {role === 'golfer' && stepIdx === 8 && (
@@ -1930,9 +1989,12 @@ export default function ProductDemo() {
                   <h1 className="ft-serif">{COMPLETION_TEXT.golfer.h1}</h1>
                   <p>{COMPLETION_TEXT.golfer.p}</p>
                   <div className="ft-heroBtns">
-                    <button className="ft-btn ft-primary ft-lg" onClick={() => switchRole('coach', true)}>See the coach demo</button>
-                    <button className="ft-btn ft-lg" onClick={() => switchRole('facility', true)}>See the facility demo</button>
-                    <button className="ft-btn ft-lg" onClick={() => switchRole('golfer', false)}>Restart</button>
+                    <Link className="ft-btn ft-primary ft-lg ft-completionPrimary" to="/golfers#join">Join as a golfer</Link>
+                    <div className="ft-completionSecondary">
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('coach', true)}>See the coach demo</button>
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('facility', true)}>See the facility demo</button>
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('golfer', false)}>Restart</button>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -1943,9 +2005,12 @@ export default function ProductDemo() {
                   <h1 className="ft-serif">{COMPLETION_TEXT.coach.h1}</h1>
                   <p>{COMPLETION_TEXT.coach.p}</p>
                   <div className="ft-heroBtns">
-                    <button className="ft-btn ft-primary ft-lg" onClick={() => switchRole('facility', true)}>See the facility demo</button>
-                    <button className="ft-btn ft-lg" onClick={() => switchRole('golfer', true)}>See the golfer demo</button>
-                    <button className="ft-btn ft-lg" onClick={() => switchRole('coach', false)}>Restart</button>
+                    <Link className="ft-btn ft-primary ft-lg ft-completionPrimary" to="/coaches#join">Join as a coach</Link>
+                    <div className="ft-completionSecondary">
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('facility', true)}>See the facility demo</button>
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('golfer', true)}>See the golfer demo</button>
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('coach', false)}>Restart</button>
+                    </div>
                   </div>
                 </div>
               </section>
@@ -1956,33 +2021,19 @@ export default function ProductDemo() {
                   <h1 className="ft-serif">{COMPLETION_TEXT.facility.h1}</h1>
                   <p>{COMPLETION_TEXT.facility.p}</p>
                   <div className="ft-heroBtns">
-                    <button className="ft-btn ft-primary ft-lg" onClick={() => switchRole('golfer', true)}>See the golfer demo</button>
-                    <button className="ft-btn ft-lg" onClick={() => switchRole('coach', true)}>See the coach demo</button>
-                    <button className="ft-btn ft-lg" onClick={() => switchRole('facility', false)}>Restart</button>
+                    <Link className="ft-btn ft-primary ft-lg ft-completionPrimary" to="/facilities#join">Join as a facility</Link>
+                    <div className="ft-completionSecondary">
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('golfer', true)}>See the golfer demo</button>
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('coach', true)}>See the coach demo</button>
+                      <button className="ft-btn ft-lg" onClick={() => switchRole('facility', false)}>Restart</button>
+                    </div>
                   </div>
                 </div>
               </section>
             )}
-          </main>
+            </main>
+          </DemoBackContext.Provider>
 
-          {/* Nav bar – hidden on first and last steps */}
-          {!isFirst && !isLast && (
-            <div className="ft-navBar">
-              <button
-                className="ft-navBack"
-                disabled={stepIdx <= 0}
-                onClick={() => setStepIdx((s) => Math.max(0, s - 1))}
-              >
-                <Ico name="chevronLeft" /> Back
-              </button>
-              <button
-                className="ft-btn ft-primary ft-navNext"
-                onClick={() => setStepIdx((s) => Math.min(totalSteps - 1, s + 1))}
-              >
-                Next <Ico name="chevronRight" />
-              </button>
-            </div>
-          )}
         </div>
       </div>
     </div>

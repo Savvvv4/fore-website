@@ -69,10 +69,8 @@ a { color: inherit; }
   line-height: 1.35;
 }
 .floating-waitlist-button { align-self: end; white-space: nowrap; }
+.floating-waitlist-actions { display: flex; align-items: center; gap: 8px; }
 .floating-waitlist-dismiss {
-  position: absolute;
-  top: 8px;
-  right: 8px;
   width: 28px;
   height: 28px;
   display: grid;
@@ -80,11 +78,11 @@ a { color: inherit; }
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: transparent;
+  background: var(--bg);
   color: var(--muted);
   cursor: pointer;
 }
-.floating-waitlist-dismiss:hover { background: var(--bg); color: var(--ink); }
+.floating-waitlist-dismiss:hover { background: var(--line); color: var(--ink); }
 @keyframes floating-waitlist-in {
   from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
@@ -92,6 +90,75 @@ a { color: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .floating-waitlist-cta { animation: none; }
 }
+
+.early-member-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(17,19,15,.42);
+}
+.early-member-modal {
+  position: relative;
+  width: min(480px, 100%);
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 28px 80px rgba(17,19,15,.24);
+}
+.early-member-modal-header { display: flex; justify-content: space-between; gap: 20px; }
+.early-member-modal-header .section-label { margin-bottom: 16px; }
+.early-member-modal h2, .early-member-success h2 {
+  margin: 0;
+  color: var(--ink);
+  font-family: Manrope;
+  font-size: clamp(30px, 5vw, 46px);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+.early-member-close {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+.early-member-form { display: grid; gap: 14px; margin-top: 28px; }
+.early-member-form label { display: grid; gap: 6px; color: var(--ink); font-size: 13px; font-weight: 700; }
+.early-member-form input, .early-member-form select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+}
+.early-member-form .button { margin-top: 8px; justify-content: center; }
+.early-member-form .button:disabled { opacity: .65; cursor: wait; }
+.early-member-success { text-align: center; padding: 18px 0 4px; }
+.early-member-success-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: var(--acid);
+  color: var(--forest);
+  font-size: 28px;
+  font-weight: 800;
+}
+.early-member-success p { margin: 16px auto 26px; color: var(--muted); font-size: 17px; line-height: 1.6; }
+.early-member-success .button { justify-content: center; }
 
 /* ─── Navigation ─────────────────────────────────────────────── */
 .header {
@@ -1381,6 +1448,7 @@ a { color: inherit; }
     max-width: none;
     padding: 18px;
   }
+  .early-member-modal { padding: 24px; border-radius: 20px; }
   .header {
     height: 68px;
     position: fixed;

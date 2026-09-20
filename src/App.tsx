@@ -3,6 +3,7 @@ import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
+import { supabase } from './lib/supabase';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, Menu, X } from 'lucide-react';
@@ -140,7 +141,7 @@ function Footer() {
         <div>
           <span>Company</span>
           <Link to="/about">About</Link>
-          <Link to="/contact">Contact</Link>
+          <Link to="/facilities#join">Partner with Fore</Link>
         </div>
 
         <div>
@@ -192,11 +193,16 @@ function Layout() {
 function FloatingWaitlistCTA() {
   const location = useLocation();
   const [dismissed, setDismissed] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [heroPassed, setHeroPassed] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
 
   useEffect(() => {
-    setDismissed(sessionStorage.getItem('fore-waitlist-cta-dismissed') === 'true');
+    setDismissed(sessionStorage.getItem('fore-early-member-cta-dismissed') === 'true');
+    setModalOpen(false);
+    setSubmitted(false);
   }, []);
 
   useEffect(() => {
@@ -226,27 +232,89 @@ function FloatingWaitlistCTA() {
     };
   }, [location.pathname]);
 
+  const submitFloatingForm = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      if (!supabase) {
+        throw new Error('Supabase is not configured');
+      }
+      await submitWaitlist({
+        name: String(data.get('name') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        city: '',
+        role: String(data.get('role') ?? 'general') as WaitlistSubmission['role'],
+        source: 'floating_cta',
+      });
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      console.error('Floating waitlist submission failed', error);
+      toast.error('We could not save your details. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const dismiss = () => {
-    sessionStorage.setItem('fore-waitlist-cta-dismissed', 'true');
+    sessionStorage.setItem('fore-early-member-cta-dismissed', 'true');
     setDismissed(true);
   };
 
   if (dismissed || !heroPassed || footerVisible) return null;
 
   return (
-    <aside className="floating-waitlist-cta" aria-label="Join the Fore waitlist">
-      <button className="floating-waitlist-dismiss" type="button" onClick={dismiss} aria-label="Dismiss waitlist invitation">
-        <X size={16} />
-      </button>
-      <div className="floating-waitlist-copy">
-        <strong>Get in early.</strong>
-        <span>Join the waitlist for Fore.</span>
-      </div>
-      <Link className="button dark small floating-waitlist-button" to="/golfers#join">
-        Join waitlist
-        <ArrowUpRight size={14} />
-      </Link>
-    </aside>
+    <>
+      <aside className="floating-waitlist-cta" aria-label="Become an early member">
+        <div className="floating-waitlist-copy">
+          <strong>Get in early.</strong>
+          <span>Become an early member.</span>
+        </div>
+        <div className="floating-waitlist-actions">
+          <button className="button dark small floating-waitlist-button" type="button" onClick={() => { setSubmitted(false); setModalOpen(true); }}>
+            Join Fore
+            <ArrowUpRight size={14} />
+          </button>
+          <button className="floating-waitlist-dismiss" type="button" onClick={dismiss} aria-label="Dismiss early member invitation">
+            <X size={15} />
+          </button>
+        </div>
+      </aside>
+
+      {modalOpen && (
+        <div className="early-member-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setModalOpen(false); }}>
+          <section className="early-member-modal" role="dialog" aria-modal="true" aria-labelledby="early-member-title">
+            {!submitted ? (
+              <>
+                <div className="early-member-modal-header">
+                  <div>
+                    <span className="section-label">Get in early</span>
+                    <h2 id="early-member-title">Become an early member.</h2>
+                  </div>
+                  <button className="early-member-close" type="button" onClick={() => setModalOpen(false)} aria-label="Close early member form">{String.fromCharCode(215)}</button>
+                </div>
+                <form className="early-member-form" onSubmit={submitFloatingForm}>
+                  <label>Name<input required name="name" placeholder="Your name" /></label>
+                  <label>Phone<input required name="phone" type="tel" placeholder="+91" /></label>
+                  <label>User type<select required name="role" defaultValue=""><option value="" disabled>Select one</option><option value="golfer">Golfer</option><option value="coach">Coach</option><option value="facility">Facility</option></select></label>
+                  <button className="button dark" type="submit" disabled={submitting}>{submitting ? 'Joining...' : 'Join Fore'}</button>
+                </form>
+              </>
+            ) : (
+              <div className="early-member-success">
+                <div className="early-member-success-icon">✓</div>
+                <h2 id="early-member-title">You’re on the list.</h2>
+                <p>Thanks for joining Fore early. We’ll be in touch soon.</p>
+                <button className="button dark" type="button" onClick={() => setModalOpen(false)}>Done</button>
+              </div>
+            )}
+          </section>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -257,6 +325,28 @@ function SectionLabel({ children }: { children: ReactNode }) {
       {children}
     </div>
   );
+}
+
+type WaitlistSubmission = {
+  name: string;
+  email?: string;
+  phone?: string;
+  city: string;
+  role: 'general' | 'golfer' | 'coach' | 'facility';
+  source: 'contact' | 'golfer_join' | 'coach_join' | 'facility_join' | 'floating_cta';
+  facility_name?: string;
+};
+
+async function submitWaitlist(submission: WaitlistSubmission) {
+  if (!supabase) {
+    throw new Error('Supabase is not configured');
+  }
+
+  const { error } = await supabase.from('waitlist_submissions').insert(submission);
+
+  if (error) {
+    throw error;
+  }
 }
 
 
@@ -507,12 +597,26 @@ function PageHero({
 }
 
 function JoinForm({ title }: { title: string }) {
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const form = e.currentTarget;
+    const data = new FormData(form);
 
-    toast.success("Thanks — you’re on the early-access list.");
-
-    e.currentTarget.reset();
+    try {
+      await submitWaitlist({
+        name: String(data.get('name') ?? ''),
+        email: String(data.get('email') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        city: String(data.get('city') ?? ''),
+        role: 'general',
+        source: 'contact',
+      });
+      toast.success("Thanks — you’re on the early-access list.");
+      form.reset();
+    } catch (error) {
+      console.error('Waitlist submission failed', error);
+      toast.error('We could not save your details. Please try again.');
+    }
   };
 
   return (
@@ -754,10 +858,26 @@ function Legal({ title }: { title: string }) {
 // ─── Audience join forms ──────────────────────────────────────────
 
 function GolferJoinForm() {
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("You're on the list — we'll be in touch.");
-    e.currentTarget.reset();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      await submitWaitlist({
+        name: String(data.get('name') ?? ''),
+        email: String(data.get('email') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        city: String(data.get('city') ?? ''),
+        role: 'golfer',
+        source: 'golfer_join',
+      });
+      toast.success("You're on the list — we'll be in touch.");
+      form.reset();
+    } catch (error) {
+      console.error('Golfer waitlist submission failed', error);
+      toast.error('We could not save your details. Please try again.');
+    }
   };
   return (
     <section id="join" className="form-section">
@@ -784,10 +904,26 @@ function GolferJoinForm() {
 }
 
 function CoachJoinForm() {
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Thanks — we'll reach out soon.");
-    e.currentTarget.reset();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      await submitWaitlist({
+        name: String(data.get('name') ?? ''),
+        email: String(data.get('email') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        city: String(data.get('city') ?? ''),
+        role: 'coach',
+        source: 'coach_join',
+      });
+      toast.success("Thanks — we'll reach out soon.");
+      form.reset();
+    } catch (error) {
+      console.error('Coach waitlist submission failed', error);
+      toast.error('We could not save your details. Please try again.');
+    }
   };
   return (
     <section id="join" className="form-section">
@@ -814,10 +950,27 @@ function CoachJoinForm() {
 }
 
 function FacilityJoinForm() {
-  const submit = (e: FormEvent<HTMLFormElement>) => {
+  const submit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast.success("Thanks — someone from Fore will be in touch shortly.");
-    e.currentTarget.reset();
+    const form = e.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      await submitWaitlist({
+        name: String(data.get('name') ?? ''),
+        email: String(data.get('email') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        city: String(data.get('city') ?? ''),
+        role: 'facility',
+        source: 'facility_join',
+        facility_name: String(data.get('facility') ?? ''),
+      });
+      toast.success("Thanks — someone from Fore will be in touch shortly.");
+      form.reset();
+    } catch (error) {
+      console.error('Facility waitlist submission failed', error);
+      toast.error('We could not save your details. Please try again.');
+    }
   };
   return (
     <section id="join" className="form-section">
