@@ -9,6 +9,48 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 
+const SITE_URL = 'https://foresports.in';
+const SITE_NAME = 'ForeSports';
+const DEFAULT_DESCRIPTION = 'Fore connects golfers, coaches, and facilities to make golf easier to discover, book, and grow in India.';
+type PageMeta = { title: string; description: string; noindex?: boolean };
+const pageMetadata: Record<string, PageMeta> = {
+  '/': { title: 'Golf, connected.', description: DEFAULT_DESCRIPTION },
+  '/golfers': { title: 'For Golfers', description: 'Discover places to play, coaches to learn from, and opportunities that fit your game with Fore.' },
+  '/coaches': { title: 'For Golf Coaches', description: 'Give your golf coaching business a modern home for discovery, bookings, and reputation with Fore.' },
+  '/facilities': { title: 'For Golf Facilities', description: 'Help golfers discover your facility, fill availability, and manage operations with Fore.' },
+  '/about': { title: 'About', description: 'Learn why ForeSports is building a more connected golf ecosystem, starting in India.' },
+  '/privacy': { title: 'Privacy Policy', description: 'Read the ForeSports website privacy policy.' },
+  '/terms': { title: 'Terms of Service', description: 'Read the ForeSports website terms of service.' },
+  '/404': { title: 'Page Not Found', description: 'The requested ForeSports page could not be found.', noindex: true },
+};
+function setMeta(selector: string, attribute: 'name' | 'property', value: string) {
+  let element = document.head.querySelector<HTMLMetaElement>(selector);
+  if (!element) { element = document.createElement('meta'); element.setAttribute(attribute, selector.match(/="([^"]+)"/)?.[1] ?? ''); document.head.appendChild(element); }
+  element.content = value;
+}
+function Seo() {
+  const location = useLocation();
+  const meta = pageMetadata[location.pathname] ?? pageMetadata['/404'];
+  const canonical = `${SITE_URL}${location.pathname === '/' ? '/' : location.pathname}`;
+  useEffect(() => {
+    document.title = `${meta.title} | ${SITE_NAME}`;
+    document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href', canonical);
+    setMeta('meta[name="description"]', 'name', meta.description);
+    setMeta('meta[name="robots"]', 'name', meta.noindex ? 'noindex,follow' : 'index,follow');
+    setMeta('meta[property="og:title"]', 'property', `${meta.title} | ${SITE_NAME}`);
+    setMeta('meta[property="og:description"]', 'property', meta.description);
+    setMeta('meta[property="og:url"]', 'property', canonical);
+    setMeta('meta[name="twitter:title"]', 'name', `${meta.title} | ${SITE_NAME}`);
+    setMeta('meta[name="twitter:description"]', 'name', meta.description);
+  }, [canonical, meta]);
+  const schema = { '@context': 'https://schema.org', '@graph': [
+    { '@type': 'Organization', name: SITE_NAME, url: SITE_URL, email: 'hello@foresports.in', areaServed: 'IN' },
+    { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL, inLanguage: 'en-IN' },
+    { '@type': 'WebPage', name: `${meta.title} | ${SITE_NAME}`, description: meta.description, url: canonical, isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } },
+  ] };
+  return <script type="application/ld+json">{JSON.stringify(schema)}</script>;
+}
+
 const audiences = [
   {
     id: 'golfers',
@@ -91,7 +133,7 @@ function Header() {
       <div className="nav container">
         <Logo />
 
-        <nav className={open ? 'nav-links open' : 'nav-links'}>
+        <nav id="primary-navigation" className={open ? 'nav-links open' : 'nav-links'} aria-label="Primary navigation">
           {links.map(([label, href]) => (
             <NavLink
               key={href}
@@ -111,8 +153,11 @@ function Header() {
 
           <button
             className="icon-button mobile-menu"
+            type="button"
             onClick={() => setOpen(!open)}
             aria-label="Menu"
+            aria-expanded={open}
+            aria-controls="primary-navigation"
           >
             {open ? <X /> : <Menu />}
           </button>
@@ -146,8 +191,8 @@ function Footer() {
 
         <div>
           <span>Legal</span>
-          <Link to="/privacy">Privacy</Link>
-          <Link to="/terms">Terms</Link>
+          <Link to="/privacy">Privacy Policy</Link>
+          <Link to="/terms">Terms of Service</Link>
         </div>
       </div>
 
@@ -162,24 +207,25 @@ function Footer() {
 function Layout() {
   return (
     <>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
       <Header />
 
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/golfers" element={<GolfersPage />} />
           <Route path="/coaches" element={<CoachesPage />} />
           <Route path="/facilities" element={<FacilitiesPage />} />
           <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
           <Route
             path="/privacy"
-            element={<Legal title="Privacy Policy" />}
+            element={<Privacy />}
           />
           <Route
             path="/terms"
-            element={<Legal title="Terms of Use" />}
+            element={<Terms />}
           />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
 
@@ -369,7 +415,7 @@ type WaitlistSubmission = {
   phone?: string;
   city: string;
   role: 'general' | 'golfer' | 'coach' | 'facility';
-  source: 'contact' | 'golfer_join' | 'coach_join' | 'facility_join' | 'floating_cta';
+  source: 'golfer_join' | 'coach_join' | 'facility_join' | 'floating_cta';
   facility_name?: string;
 };
 
@@ -657,80 +703,6 @@ function PageHero({
   );
 }
 
-function JoinForm({ title }: { title: string }) {
-  const [confirmed, setConfirmed] = useState(false);
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await submitWaitlist({
-        name: String(data.get('name') ?? ''),
-        email: String(data.get('email') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-        city: String(data.get('city') ?? ''),
-        role: 'general',
-        source: 'contact',
-      });
-      setConfirmed(true);
-      form.reset();
-    } catch (error) {
-      console.error('Waitlist submission failed', error);
-      toast.error('We could not save your details. Please try again.');
-    }
-  };
-
-  return (
-    <>
-    <section id="join" className="form-section">
-      <div className="container form-layout">
-        <div>
-          <SectionLabel>Get in early</SectionLabel>
-
-          <h2>{title}</h2>
-
-          <p>
-            We're working with a small group of early users and partners as
-            the product takes shape.
-          </p>
-        </div>
-
-        <form className="form-card" onSubmit={submit}>
-          <div className="form-fields">
-            <label>
-              Name
-              <input required name="name" />
-            </label>
-
-            <label>
-              Email
-              <input required type="email" name="email" />
-            </label>
-
-            <label>
-              City
-              <input required name="city" />
-            </label>
-
-            <label>
-              Phone
-              <input name="phone" />
-            </label>
-          </div>
-
-          <button className="button acid" type="submit">
-            Send enquiry
-            <ArrowUpRight />
-          </button>
-        </form>
-      </div>
-    </section>
-    {confirmed && <SubmissionConfirmation role="general" onClose={() => setConfirmed(false)} />}
-    </>
-  );
-}
-
 function About() {
   return (
     <>
@@ -874,51 +846,30 @@ function About() {
   );
 }
 
-function Contact() {
-  return (
-    <>
-      <PageHero
-        label="Contact"
-        title={
-          <>
-            Let's build the
-            <br />
-            <em>next layer of golf.</em>
-          </>
-        }
-        desc="For facilities, coaches, investors, partners, press and general enquiries."
-      />
-
-      <JoinForm title="Get in touch." />
-    </>
-  );
+function Privacy() {
+  return <><PageHero label="Legal" title="Privacy Policy" desc="How ForeSports handles information collected through this website." /><section className="section container legal">
+    <p><strong>Last updated: September 21, 2026.</strong> This policy applies to the ForeSports website and waitlist forms.</p>
+    <h2>Information we collect</h2><p>When you submit a form, we collect the details you provide, such as your name, email address, phone number, city, role, and facility name where applicable. We may also receive basic technical information automatically provided by your browser, such as IP address, device, and request logs.</p>
+    <h2>How we use information</h2><p>We use submitted information to respond to enquiries, manage the Fore waitlist, communicate about the planned product, and operate and protect this website. We do not use the website for advertising or sell personal information.</p>
+    <h2>Sharing and storage</h2><p>Information is stored using service providers that support the website and form submissions. We share information only when needed to operate those services, comply with law, or protect our rights and users. We retain it only for as long as reasonably needed for these purposes, unless a longer period is required by law.</p>
+    <h2>Cookies</h2><p>This website does not currently use analytics, advertising, or tracking cookies. Essential browser storage or cookies may be used by services supporting form delivery or security. If this changes, this policy will be updated.</p>
+    <h2>Your choices</h2><p>You may request access, correction, deletion, or to stop receiving marketing communications by contacting us. Some requests may be limited by applicable law or operational requirements.</p>
+    <h2>Children and changes</h2><p>The website is not directed to children. We may update this policy as the website and product develop; the updated version will be posted here with a revised date.</p>
+    <h2>Contact</h2><p>For privacy questions, contact <a href="mailto:hello@foresports.in">hello@foresports.in</a>.</p>
+  </section></>;
 }
-
-function Legal({ title }: { title: string }) {
-  return (
-    <>
-      <PageHero
-        label="Legal"
-        title={title}
-        desc="Information governing use of the ForeSports website."
-      />
-
-      <section className="section container legal">
-        <h2>Website purpose</h2>
-
-        <p>
-          This website provides information about ForeSports and its planned
-          product. Product descriptions and previews are directional and may
-          change before launch.
-        </p>
-
-        <h2>Contact</h2>
-
-        <p>Questions can be sent to hello@foresports.in.</p>
-      </section>
-    </>
-  );
+function Terms() {
+  return <><PageHero label="Legal" title="Terms of Service" desc="Terms governing your use of the ForeSports website." /><section className="section container legal">
+    <p><strong>Last updated: September 21, 2026.</strong> These terms govern use of the ForeSports website.</p>
+    <h2>Acceptance and use</h2><p>By using this website, you agree to these terms. You may use it for lawful, personal, and business-information purposes. Do not misuse the site, interfere with its operation, submit false information, or attempt to access systems or data without permission.</p>
+    <h2>Website and product information</h2><p>The website describes ForeSports and a planned product. Features, availability, and product previews are directional and may change. Submitting a waitlist or enquiry form does not create a contract, account, partnership, or guarantee product access.</p>
+    <h2>Intellectual property</h2><p>The ForeSports name, branding, website content, and design are owned by or licensed to ForeSports Private Limited. You may not copy, modify, distribute, or use them without prior written permission, except as permitted by law.</p>
+    <h2>Third-party services and links</h2><p>Where the website uses third-party services to operate, their terms and policies may also apply. ForeSports is not responsible for third-party content or services outside its control.</p>
+    <h2>Disclaimers and liability</h2><p>The website is provided on an “as is” and “as available” basis. To the extent permitted by applicable law, ForeSports disclaims warranties and is not liable for indirect, incidental, special, consequential, or punitive damages arising from use of the website.</p>
+    <h2>Changes and contact</h2><p>We may update these terms by posting a revised version here. Questions can be sent to <a href="mailto:hello@foresports.in">hello@foresports.in</a>. These terms are governed by the laws of the National Capital Territory of Delhi, India, and disputes will be subject to its applicable courts.</p>
+  </section></>;
 }
+function NotFound() { return <><PageHero label="404" title="Page not found." desc="The page you were looking for does not exist or may have moved." /><section className="section container legal"><Link className="button acid" to="/">Return to ForeSports <ArrowUpRight /></Link></section></>; }
 
 type AudienceRole = 'golfer' | 'coach' | 'facility';
 
@@ -1708,6 +1659,8 @@ export default function App() {
   const location = useLocation();
 
   return (
+    <>
+      <Seo />
     <AnimatePresence mode="wait">
       <motion.div
         key={location.pathname}
@@ -1719,5 +1672,6 @@ export default function App() {
         <Layout />
       </motion.div>
     </AnimatePresence>
+    </>
   );
 }
