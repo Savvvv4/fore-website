@@ -1,55 +1,19 @@
+'use client';
+
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
 import { supabase } from './lib/supabase';
-import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
+import NextLink from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 
-const SITE_URL = 'https://foresports.in';
-const SITE_NAME = 'ForeSports';
-const DEFAULT_DESCRIPTION = 'Fore connects golfers, coaches, and facilities to make golf easier to discover, book, and grow in India.';
-type PageMeta = { title: string; description: string; noindex?: boolean };
-const pageMetadata: Record<string, PageMeta> = {
-  '/': { title: 'Golf, connected.', description: DEFAULT_DESCRIPTION },
-  '/golfers': { title: 'For Golfers', description: 'Discover places to play, coaches to learn from, and opportunities that fit your game with Fore.' },
-  '/coaches': { title: 'For Golf Coaches', description: 'Give your golf coaching business a modern home for discovery, bookings, and reputation with Fore.' },
-  '/facilities': { title: 'For Golf Facilities', description: 'Help golfers discover your facility, fill availability, and manage operations with Fore.' },
-  '/about': { title: 'About', description: 'Learn why ForeSports is building a more connected golf ecosystem, starting in India.' },
-  '/privacy': { title: 'Privacy Policy', description: 'Read the ForeSports website privacy policy.' },
-  '/terms': { title: 'Terms of Service', description: 'Read the ForeSports website terms of service.' },
-  '/404': { title: 'Page Not Found', description: 'The requested ForeSports page could not be found.', noindex: true },
-};
-function setMeta(selector: string, attribute: 'name' | 'property', value: string) {
-  let element = document.head.querySelector<HTMLMetaElement>(selector);
-  if (!element) { element = document.createElement('meta'); element.setAttribute(attribute, selector.match(/="([^"]+)"/)?.[1] ?? ''); document.head.appendChild(element); }
-  element.content = value;
-}
-function Seo() {
-  const location = useLocation();
-  const meta = pageMetadata[location.pathname] ?? pageMetadata['/404'];
-  const canonical = `${SITE_URL}${location.pathname === '/' ? '/' : location.pathname}`;
-  useEffect(() => {
-    document.title = `${meta.title} | ${SITE_NAME}`;
-    document.head.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute('href', canonical);
-    setMeta('meta[name="description"]', 'name', meta.description);
-    setMeta('meta[name="robots"]', 'name', meta.noindex ? 'noindex,follow' : 'index,follow');
-    setMeta('meta[property="og:title"]', 'property', `${meta.title} | ${SITE_NAME}`);
-    setMeta('meta[property="og:description"]', 'property', meta.description);
-    setMeta('meta[property="og:url"]', 'property', canonical);
-    setMeta('meta[name="twitter:title"]', 'name', `${meta.title} | ${SITE_NAME}`);
-    setMeta('meta[name="twitter:description"]', 'name', meta.description);
-  }, [canonical, meta]);
-  const schema = { '@context': 'https://schema.org', '@graph': [
-    { '@type': 'Organization', name: SITE_NAME, url: SITE_URL, email: 'hello@foresports.in', areaServed: 'IN' },
-    { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL, inLanguage: 'en-IN' },
-    { '@type': 'WebPage', name: `${meta.title} | ${SITE_NAME}`, description: meta.description, url: canonical, isPartOf: { '@type': 'WebSite', name: SITE_NAME, url: SITE_URL } },
-  ] };
-  return <script type="application/ld+json">{JSON.stringify(schema)}</script>;
-}
+type AppLinkProps = Omit<React.ComponentProps<typeof NextLink>, 'href'> & { to: string };
+function Link({ to, ...props }: AppLinkProps) { return <NextLink href={to} {...props} />; }
+function NavLink({ to, ...props }: AppLinkProps) { return <NextLink href={to} {...props} />; }
 
 const audiences = [
   {
@@ -204,29 +168,17 @@ function Footer() {
   );
 }
 
-function Layout() {
+export type Page = 'home' | 'golfers' | 'coaches' | 'facilities' | 'about' | 'privacy' | 'terms' | 'not-found';
+
+function Layout({ page }: { page: Page }) {
+  const content = { home: <Home />, golfers: <GolfersPage />, coaches: <CoachesPage />, facilities: <FacilitiesPage />, about: <About />, privacy: <Privacy />, terms: <Terms />, 'not-found': <NotFound /> }[page];
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
       <Header />
 
       <main id="main-content" tabIndex={-1}>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/golfers" element={<GolfersPage />} />
-          <Route path="/coaches" element={<CoachesPage />} />
-          <Route path="/facilities" element={<FacilitiesPage />} />
-          <Route path="/about" element={<About />} />
-          <Route
-            path="/privacy"
-            element={<Privacy />}
-          />
-          <Route
-            path="/terms"
-            element={<Terms />}
-          />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        {content}
       </main>
 
       <Footer />
@@ -237,7 +189,6 @@ function Layout() {
 }
 
 function FloatingWaitlistCTA() {
-  const location = useLocation();
   const [minimized, setMinimized] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -290,7 +241,7 @@ function FloatingWaitlistCTA() {
       footerObserver.disconnect();
       demoObserver?.disconnect();
     };
-  }, [location.pathname]);
+  }, []);
 
   const submitFloatingForm = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -459,7 +410,7 @@ function Home() {
       <section className="hero-bg">
         <img
           className="hero-background-image"
-          src={heroImg}
+          src={heroImg.src}
           alt=""
           aria-hidden="true"
         />
@@ -761,7 +712,7 @@ function About() {
           <div className="founder-grid">
             <article className="founder-card">
               <div className="founder-photo">
-                <img src={itishImg} alt="Itish Arora" className="founder-photo-img" />
+                <img src={itishImg.src} alt="Itish Arora" className="founder-photo-img" />
               </div>
               <div className="founder-story">
                 <h3>Itish Arora</h3>
@@ -777,7 +728,7 @@ function About() {
             </article>
             <article className="founder-card founder-card--alt">
               <div className="founder-photo">
-                <img src={savdeepImg} alt="Savdeep Kadian" className="founder-photo-img founder-photo-img--savdeep" />
+                <img src={savdeepImg.src} alt="Savdeep Kadian" className="founder-photo-img founder-photo-img--savdeep" />
               </div>
               <div className="founder-story">
                 <h3>Savdeep Kadian</h3>
@@ -1655,23 +1606,18 @@ function FacilitiesPage() {
   );
 }
 
-export default function App() {
-  const location = useLocation();
-
+export default function App({ page }: { page: Page }) {
   return (
-    <>
-      <Seo />
     <AnimatePresence mode="wait">
       <motion.div
-        key={location.pathname}
+        key={page}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.18 }}
       >
-        <Layout />
+        <Layout page={page} />
       </motion.div>
     </AnimatePresence>
-    </>
   );
 }
