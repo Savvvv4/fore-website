@@ -1888,7 +1888,7 @@ export default function ProductDemo() {
   }
 
   return (
-    <div>
+    <div className="product-demo">
       {/* Existing role switcher – kept exactly as before */}
       <div style={{ display: 'flex', gap: 4, padding: 5, background: '#e8e9e4', borderRadius: 28, width: '100%', marginBottom: 13 }}>
         {(['golfer', 'coach', 'facility'] as Role[]).map((r) => (
@@ -1924,7 +1924,7 @@ export default function ProductDemo() {
                   <p>{HERO_TEXT[role].p}</p>
                   <div className="ft-heroBtns">
                     <button className="ft-btn ft-primary ft-lg ft-glow" onClick={() => setStepIdx(1)}>
-                      Show me around
+                      Take a tour
                     </button>
                   </div>
                 </div>

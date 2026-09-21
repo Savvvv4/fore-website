@@ -6,7 +6,7 @@ import ProductDemo from './components/ProductDemo';
 import { supabase } from './lib/supabase';
 import { Link, NavLink, Route, Routes, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, ChevronRight, Menu, X } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
 import { Toaster, toast } from 'sonner';
 
 const audiences = [
@@ -198,6 +198,7 @@ function FloatingWaitlistCTA() {
   const [submitting, setSubmitting] = useState(false);
   const [heroPassed, setHeroPassed] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
+  const [productDemoVisible, setProductDemoVisible] = useState(false);
   const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
@@ -209,6 +210,7 @@ function FloatingWaitlistCTA() {
   useEffect(() => {
     setHeroPassed(false);
     setFooterVisible(false);
+    setProductDemoVisible(false);
 
     const hero = document.querySelector<HTMLElement>('.hero-bg, .aud-hero-section, .about-hero, .page-hero');
     const footer = document.querySelector<HTMLElement>('.footer');
@@ -227,9 +229,20 @@ function FloatingWaitlistCTA() {
     );
     footerObserver.observe(footer);
 
+    const productDemo = document.querySelector<HTMLElement>('.product-demo');
+    const mobileQuery = window.matchMedia('(max-width: 600px)');
+    const demoObserver = productDemo
+      ? new IntersectionObserver(
+          ([entry]) => setProductDemoVisible(mobileQuery.matches && entry.isIntersecting),
+          { threshold: 0.1 },
+        )
+      : null;
+    if (productDemo) demoObserver?.observe(productDemo);
+
     return () => {
       window.removeEventListener('scroll', updateHeroState);
       footerObserver.disconnect();
+      demoObserver?.disconnect();
     };
   }, [location.pathname]);
 
@@ -271,7 +284,7 @@ function FloatingWaitlistCTA() {
     if (distance < -60) setMinimized(true);
   };
 
-  if (!heroPassed || footerVisible) return null;
+  if (!heroPassed || footerVisible || productDemoVisible) return null;
 
   return (
     <>
@@ -281,12 +294,15 @@ function FloatingWaitlistCTA() {
         </button>
       ) : (
       <aside className="floating-waitlist-cta" aria-label="Become an early member" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+        <button className="floating-waitlist-minimize" type="button" onClick={() => setMinimized(true)} aria-label="Minimize early member invitation" title="Minimize">
+          <ChevronDown size={15} />
+        </button>
         <div className="floating-waitlist-copy">
           <strong>Get in early.</strong>
           <span>Become an early member.</span>
         </div>
         <div className="floating-waitlist-actions">
-          <button className="button dark small floating-waitlist-button" type="button" onClick={() => { setSubmitted(false); setModalOpen(true); }}>
+          <button className="button acid small floating-waitlist-button" type="button" onClick={() => { setSubmitted(false); setModalOpen(true); }}>
             Join Fore
             <ArrowUpRight size={14} />
           </button>
@@ -320,7 +336,7 @@ function FloatingWaitlistCTA() {
                       ))}
                     </div>
                   </fieldset>
-                  <button className="button dark" type="submit" disabled={submitting}>{submitting ? 'Joining...' : 'Join Fore'}</button>
+                  <button className="button acid" type="submit" disabled={submitting}>{submitting ? 'Joining...' : 'Join Fore'}</button>
                 </form>
               </>
             ) : (
@@ -413,13 +429,18 @@ function Home() {
               to discover and book, grow revenue, and streamline operations.
             </p>
 
-            <div className="button-row">
+            <div className="button-row hero-cta-row">
               <Link className="button acid" to="/facilities">
                 For facilities <ArrowUpRight />
               </Link>
-              <Link className="button hero-ghost" to="/golfers">
-                For golfers <ArrowUpRight />
-              </Link>
+              <div className="hero-audience-ctas">
+                <Link className="button hero-ghost" to="/golfers">
+                  For golfers <ArrowUpRight />
+                </Link>
+                <Link className="button hero-ghost" to="/coaches">
+                  For coaches <ArrowUpRight />
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -698,7 +719,7 @@ function JoinForm({ title }: { title: string }) {
             </label>
           </div>
 
-          <button className="button dark" type="submit">
+          <button className="button acid" type="submit">
             Send enquiry
             <ArrowUpRight />
           </button>
@@ -899,6 +920,78 @@ function Legal({ title }: { title: string }) {
   );
 }
 
+type AudienceRole = 'golfer' | 'coach' | 'facility';
+
+function AudienceSignupModal({ role, onClose }: { role: AudienceRole; onClose: () => void }) {
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const isFacility = role === 'facility';
+  const details = {
+    golfer: { label: 'Join as a golfer', title: 'Be one of the first.', button: 'Join Fore', source: 'golfer_join' as const },
+    coach: { label: 'Join as a coach', title: 'Get on Fore early.', button: 'Reserve coach profile', source: 'coach_join' as const },
+    facility: { label: 'Partner with Fore', title: 'Build with us.', button: 'Let’s build together', source: 'facility_join' as const },
+  }[role];
+
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setSubmitting(true);
+    const form = event.currentTarget;
+    const data = new FormData(form);
+
+    try {
+      await submitWaitlist({
+        name: String(data.get('name') ?? ''),
+        email: String(data.get('email') ?? ''),
+        phone: String(data.get('phone') ?? ''),
+        city: String(data.get('city') ?? ''),
+        role,
+        source: details.source,
+        ...(isFacility ? { facility_name: String(data.get('facility') ?? '') } : {}),
+      });
+      setSubmitted(true);
+      form.reset();
+    } catch (error) {
+      console.error(`${role} waitlist submission failed`, error);
+      toast.error('We could not save your details. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="early-member-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <section className="early-member-modal" role="dialog" aria-modal="true" aria-labelledby="audience-signup-title">
+        {submitted ? (
+          <div className="early-member-success">
+            <div className="early-member-success-icon">✓</div>
+            <h2 id="audience-signup-title">{role === 'coach' ? 'Profile reserved.' : role === 'facility' ? 'Let’s build together.' : 'You’re on the list.'}</h2>
+            <p>We’ll be in touch soon.</p>
+            <button className="button dark" type="button" onClick={onClose}>Done</button>
+          </div>
+        ) : (
+          <>
+            <div className="early-member-modal-header">
+              <div>
+                <SectionLabel>{details.label}</SectionLabel>
+                <h2 id="audience-signup-title">{details.title}</h2>
+              </div>
+              <button className="early-member-close" type="button" onClick={onClose} aria-label="Close sign-up form"><X size={18} /></button>
+            </div>
+            <form className="early-member-form" onSubmit={submit}>
+              {isFacility && <label>Facility name<input required name="facility" placeholder="Name of your golf facility" /></label>}
+              <label>{isFacility ? 'Your name' : 'Name'}<input required name="name" placeholder={isFacility ? 'Contact name' : 'Your name'} /></label>
+              <label>Email<input required type="email" name="email" placeholder={isFacility ? 'you@facility.com' : 'you@email.com'} /></label>
+              <label>Phone<input name="phone" placeholder="+91" /></label>
+              <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
+              <button className="button acid" type="submit" disabled={submitting}>{submitting ? 'Saving...' : <>{details.button} <ArrowUpRight size={16} /></>}</button>
+            </form>
+          </>
+        )}
+      </section>
+    </div>
+  );
+}
+
 // ─── Audience join forms ──────────────────────────────────────────
 
 function GolferJoinForm() {
@@ -940,7 +1033,7 @@ function GolferJoinForm() {
             <label>Phone<input name="phone" placeholder="+91" /></label>
             <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
           </div>
-          <button className="button dark" type="submit">
+          <button className="button acid" type="submit">
             Join Fore <ArrowUpRight size={16} />
           </button>
         </form>
@@ -990,7 +1083,7 @@ function CoachJoinForm() {
             <label>Phone<input name="phone" placeholder="+91" /></label>
             <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
           </div>
-          <button className="button dark" type="submit">
+          <button className="button acid" type="submit">
             Reserve coach profile <ArrowUpRight size={16} />
           </button>
         </form>
@@ -1036,13 +1129,13 @@ function FacilityJoinForm() {
         </div>
         <form className="form-card" onSubmit={submit}>
           <div className="form-fields">
-            <label className="full-width">Facility name<input required name="facility" placeholder="Name of your course, range or academy" /></label>
+            <label className="full-width">Facility name<input required name="facility" placeholder="Name of your golf facility" /></label>
             <label>Your name<input required name="name" placeholder="Contact name" /></label>
             <label>Email<input required type="email" name="email" placeholder="you@facility.com" /></label>
             <label>Phone<input name="phone" placeholder="+91" /></label>
             <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
           </div>
-          <button className="button dark" type="submit">
+          <button className="button acid" type="submit">
             Let’s build together <ArrowUpRight size={16} />
           </button>
         </form>
@@ -1185,6 +1278,8 @@ function FacilitiesMock() {
 // ─── Audience page components ─────────────────────────────────────
 
 function GolfersPage() {
+  const [signupOpen, setSignupOpen] = useState(false);
+
   return (
     <>
       <section className="aud-hero-section">
@@ -1198,9 +1293,9 @@ function GolfersPage() {
             <h1>Play beyond <em>your usual.</em></h1>
             <p>Discover more places to play, find the right coach, and book golf in a few taps — all in one place.</p>
             <div className="button-row">
-              <a className="button acid" href="#join">
+              <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
                 Join as a golfer <ArrowUpRight size={18} />
-              </a>
+              </button>
               <a className="button light" href="#how">
                 See how it works <ArrowUpRight size={18} />
               </a>
@@ -1296,11 +1391,14 @@ function GolfersPage() {
       </section>
 
       <GolferJoinForm />
+      {signupOpen && <AudienceSignupModal role="golfer" onClose={() => setSignupOpen(false)} />}
     </>
   );
 }
 
 function CoachesPage() {
+  const [signupOpen, setSignupOpen] = useState(false);
+
   return (
     <>
       <section className="aud-hero-section">
@@ -1314,9 +1412,9 @@ function CoachesPage() {
             <h1>Coach beyond <em>your network.</em></h1>
             <p>Get discovered by more golfers, fill your calendar, and run your coaching business from one place.</p>
             <div className="button-row">
-              <a className="button acid" href="#join">
+              <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
                 Join as a coach <ArrowUpRight size={18} />
-              </a>
+              </button>
               <a className="button light" href="#business">
                 See how it works <ArrowUpRight size={18} />
               </a>
@@ -1461,11 +1559,13 @@ function CoachesPage() {
       </section>
 
       <CoachJoinForm />
+      {signupOpen && <AudienceSignupModal role="coach" onClose={() => setSignupOpen(false)} />}
     </>
   );
 }
 
 function FacilitiesPage() {
+  const [signupOpen, setSignupOpen] = useState(false);
   const pricingRows = [
     { time: '09:00', standard: '₹2,500', fore: '₹2,500', status: 'high' as const, statusLabel: 'High demand' },
     { time: '11:00', standard: '₹2,500', fore: '₹1,800', status: 'fill' as const, statusLabel: 'Fill' },
@@ -1485,9 +1585,9 @@ function FacilitiesPage() {
             <h1>Increase revenue. <em>Streamline operations.</em></h1>
             <p>Reach more golfers, fill more tee times and bays, and run your facility from one connected system.</p>
             <div className="button-row">
-              <a className="button acid" href="#join">
+              <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
                 Partner with Fore <ArrowUpRight size={18} />
-              </a>
+              </button>
               <a className="button light" href="#revenue">
                 See how it works <ArrowUpRight size={18} />
               </a>
@@ -1599,6 +1699,7 @@ function FacilitiesPage() {
       </section>
 
       <FacilityJoinForm />
+      {signupOpen && <AudienceSignupModal role="facility" onClose={() => setSignupOpen(false)} />}
     </>
   );
 }
