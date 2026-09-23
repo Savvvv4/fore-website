@@ -1282,7 +1282,7 @@ const TOUR_CSS = `
   -webkit-font-smoothing: antialiased;
 }
 .fore-tour .ft-serif {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
 }
 
 /* shell */
@@ -1401,7 +1401,7 @@ const TOUR_CSS = `
   text-transform: uppercase; color: var(--ft-muted); margin: 0 0 10px;
 }
 .fore-tour .ft-narr h2 {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 700;
   font-size: clamp(26px,3.2vw,36px);
   letter-spacing: -.04em;
@@ -1420,7 +1420,7 @@ const TOUR_CSS = `
 /* hero */
 .fore-tour .ft-hero { text-align: center; }
 .fore-tour .ft-hero h1 {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-weight: 800;
   font-size: clamp(32px,5vw,50px);
   letter-spacing: -.04em;
@@ -1656,7 +1656,7 @@ const TOUR_CSS = `
 /* divider / total */
 .fore-tour .ft-divider { height: 1px; background: var(--ft-line-soft); margin: 12px 0; }
 .fore-tour .ft-totalRow { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 14px; font-size: 13px; color: var(--ft-muted); }
-.fore-tour .ft-totalRow b { font-family: Manrope, sans-serif; font-size: 22px; font-weight: 700; color: var(--ft-ink); }
+.fore-tour .ft-totalRow b { font-family: var(--font-manrope), sans-serif; font-size: 22px; font-weight: 700; color: var(--ft-ink); }
 .fore-tour .ft-callout {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 10px 13px; margin: 0 0 12px;
@@ -1677,7 +1677,7 @@ const TOUR_CSS = `
 .fore-tour .ft-check .ft-ico { width: 22px; height: 22px; }
 @keyframes ft-pop { 0%{transform:scale(.4);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
 .fore-tour .ft-confirm.ft-declined .ft-check { background: var(--ft-line-soft); color: var(--ft-muted); }
-.fore-tour .ft-confirm h3 { font-family: Manrope, sans-serif; font-weight: 700; font-size: 22px; margin: 0 0 6px; letter-spacing: -.3px; color: var(--ft-ink); }
+.fore-tour .ft-confirm h3 { font-family: var(--font-manrope), sans-serif; font-weight: 700; font-size: 22px; margin: 0 0 6px; letter-spacing: -.3px; color: var(--ft-ink); }
 .fore-tour .ft-confirm p { font-size: 13px; color: var(--ft-muted); line-height: 1.5; margin: 0 auto; max-width: 260px; }
 
 /* coach cards */
@@ -1771,7 +1771,7 @@ const TOUR_CSS = `
 .fore-tour .ft-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 .fore-tour .ft-metric { border: 1px solid var(--ft-line); border-radius: var(--ft-r-md); background: var(--ft-surface-2); padding: 12px 13px; }
 .fore-tour .ft-metric small { display: block; font-size: 11px; color: var(--ft-muted); font-weight: 700; }
-.fore-tour .ft-metric strong { display: block; font-family: Manrope, sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -.3px; margin-top: 3px; color: var(--ft-ink); }
+.fore-tour .ft-metric strong { display: block; font-family: var(--font-manrope), sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -.3px; margin-top: 3px; color: var(--ft-ink); }
 .fore-tour .ft-metric span { font-size: 11px; color: var(--ft-muted-2); }
 .fore-tour .ft-metric span.ft-up { color: var(--ft-lime-deep); font-weight: 700; }
 
