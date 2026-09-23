@@ -137,7 +137,7 @@ function Footer() {
       <div className="container footer-grid">
         <div>
           <Logo />
-          <p>The connective layer for golf in India. Starting in Delhi NCR.</p>
+          <p>The connective layer for golf in India.</p>
         </div>
 
         <div>
@@ -162,7 +162,7 @@ function Footer() {
 
       <div className="container footer-bottom">
         <span>© 2026 ForeSports Private Limited</span>
-        <span>Delhi NCR, India · hello@foresports.in</span>
+        <span>hello@foresports.in</span>
       </div>
     </footer>
   );
