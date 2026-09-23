@@ -764,7 +764,7 @@ function About() {
       <section className="section" style={{ background: '#fff' }}>
         <div className="container about-split">
           <div>
-            <h2 className="about-split-h2">India <span>→ the world.</span></h2>
+            <h2 className="about-split-h2"><span>From India to the world.</span></h2>
           </div>
           <div className="about-split-copy">
             <p>FORE is being built in India.</p>
