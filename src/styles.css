@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,450;0,9..144,560;0,9..144,650;1,9..144,450&family=Inter:wght@400;500;600;700;800&display=swap');
-
 /* ─── Tokens ─────────────────────────────────────────────────────
    Single source of truth. Use these everywhere — no raw hex
    for text colors except where a specific surface demands it.
@@ -27,14 +25,14 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm-sans), sans-serif;
   font-size: 18px;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
 
 button, input, select, textarea {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--font-dm-sans), sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6,
@@ -95,7 +93,7 @@ a { color: inherit; }
 .floating-waitlist-copy { display: flex; flex-direction: column; min-width: 0; }
 .floating-waitlist-copy strong {
   color: var(--ink);
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 19px;
   line-height: 1.2;
 }
@@ -154,7 +152,7 @@ a { color: inherit; }
 .early-member-modal h2, .early-member-success h2 {
   margin: 0;
   color: var(--ink);
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(30px, 5vw, 46px);
   line-height: 1.05;
   letter-spacing: -.04em;
@@ -237,7 +235,7 @@ a { color: inherit; }
   box-shadow: 0 28px 80px rgba(17,19,15,.24);
   text-align: center;
 }
-.form-confirmation h2 { margin: 0; color: var(--ink); font-family: Manrope; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; letter-spacing: -.04em; }
+.form-confirmation h2 { margin: 0; color: var(--ink); font-family: var(--font-manrope), sans-serif; font-size: clamp(30px, 5vw, 46px); line-height: 1.05; letter-spacing: -.04em; }
 .form-confirmation p { margin: 16px auto 26px; color: var(--muted); font-size: 17px; line-height: 1.6; }
 .form-confirmation .button { justify-content: center; }
 
@@ -259,7 +257,7 @@ a { color: inherit; }
 .nav { height: 100%; display: flex; align-items: center; justify-content: space-between; }
 
 .logo {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 18px;
   font-weight: 800;
   line-height: 1;
@@ -395,7 +393,7 @@ a { color: inherit; }
 
 /* H1 — used on hero and page-hero */
 .hero h1, .page-hero h1 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(60px, 7.5vw, 112px);
   font-weight: 600;
   line-height: 1.05;
@@ -477,7 +475,7 @@ a { color: inherit; }
 .hero-brand {
   position: absolute; top: 28px; left: 28px;
   color: #fff;
-  font-family: Manrope; font-size: 12px; font-weight: 800; letter-spacing: .06em;
+  font-family: var(--font-manrope), sans-serif; font-size: 12px; font-weight: 800; letter-spacing: .06em;
 }
 .hero-brand i {
   display: inline-block;
@@ -513,7 +511,7 @@ a { color: inherit; }
 .availability { width: 310px; right: 28px; bottom: 44px; padding: 22px; }
 .availability > strong {
   display: block;
-  font-family: Manrope; font-size: 26px; font-weight: 600; letter-spacing: -.04em;
+  font-family: var(--font-manrope), sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -.04em;
   margin: 8px 0 16px;
 }
 .slot {
@@ -565,7 +563,7 @@ a { color: inherit; }
 .section-intro h2,
 .final-cta h2,
 .network-section h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(44px, 5.5vw, 76px);
   font-weight: 600;
   line-height: 1.08;
@@ -608,7 +606,7 @@ a { color: inherit; }
 }
 
 .ecosystem-card h3 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(26px, 2.6vw, 36px);
   font-weight: 600;
   line-height: 1.1;
@@ -682,7 +680,7 @@ a { color: inherit; }
   color: #2d5038;
   border: 0;
 }
-.net-core strong { font-family: Manrope; font-size: 26px; font-weight: 800; letter-spacing: -.04em; }
+.net-core strong { font-family: var(--font-manrope), sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -.04em; }
 .net-core span   { font-size: 9px; color: rgba(45,80,56,.55); margin-top: 5px; }
 .net-line {
   height: 1px;
@@ -701,7 +699,7 @@ a { color: inherit; }
 }
 .product-teaser-intro .section-label { justify-content: center; }
 .product-teaser-intro h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(44px, 5.5vw, 76px);
   font-weight: 600;
   line-height: .97;
@@ -728,7 +726,7 @@ a { color: inherit; }
   align-items: start;
 }
 .faq-intro h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(40px, 4.5vw, 64px);
   font-weight: 600;
   line-height: 1.05;
@@ -757,7 +755,7 @@ a { color: inherit; }
   color: var(--ink);
   text-align: left;
   font: inherit;
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 19px;
   font-weight: 700;
   line-height: 1.35;
@@ -798,7 +796,7 @@ a { color: inherit; }
 /* ─── Final CTA ──────────────────────────────────────────────── */
 .final-cta { background: #fff; text-align: center; padding: 160px 0; }
 .final-cta h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(52px, 7.5vw, 104px);
   font-weight: 600;
   line-height: 1.05;
@@ -839,14 +837,14 @@ a { color: inherit; }
   display: flex; flex-direction: column; align-items: flex-start;
 }
 .feature-card small { font-size: 9px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--label); }
-.feature-card h3 { font-family: Manrope; font-size: 26px; font-weight: 600; letter-spacing: -.04em; margin-top: auto; }
+.feature-card h3 { font-family: var(--font-manrope), sans-serif; font-size: 26px; font-weight: 600; letter-spacing: -.04em; margin-top: auto; }
 .feature-card p { font-size: 16px; color: var(--muted); line-height: 1.65; max-width: 30ch; }
 .feature-card > svg { margin-top: 18px; color: var(--muted); }
 
 /* ─── Forms ──────────────────────────────────────────────────── */
 .form-section { padding: 96px 0 160px; }
 .form-layout { display: grid; grid-template-columns: .75fr 1.25fr; gap: 80px; }
-.form-layout h2 { font-family: Manrope; font-size: clamp(36px, 4vw, 54px); font-weight: 600; line-height: 1.1; letter-spacing: -.04em; }
+.form-layout h2 { font-family: var(--font-manrope), sans-serif; font-size: clamp(36px, 4vw, 54px); font-weight: 600; line-height: 1.1; letter-spacing: -.04em; }
 .form-layout > div > p { font-size: 18px; color: var(--muted); line-height: 1.65; margin-top: 16px; }
 .form-card { background: #fff; border: 1px solid var(--line); border-radius: 24px; padding: 32px; }
 .form-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
@@ -901,14 +899,14 @@ a { color: inherit; }
   right: -140px; top: -80px;
   box-shadow: 0 0 0 80px #2d503807;
 }
-.story-image span { font-family: Manrope; font-size: 80px; font-weight: 800; letter-spacing: -.04em; position: relative; }
-.split-story h2 { font-family: Manrope; font-size: clamp(36px, 4vw, 54px); font-weight: 600; line-height: 1.1; letter-spacing: -.04em; }
+.story-image span { font-family: var(--font-manrope), sans-serif; font-size: 80px; font-weight: 800; letter-spacing: -.04em; position: relative; }
+.split-story h2 { font-family: var(--font-manrope), sans-serif; font-size: clamp(36px, 4vw, 54px); font-weight: 600; line-height: 1.1; letter-spacing: -.04em; }
 .split-story h2 span { color: var(--forest); }
 .split-story p { font-size: 18px; color: var(--muted); line-height: 1.7; }
 
 /* ─── Legal ──────────────────────────────────────────────────── */
 .legal { max-width: 820px; }
-.legal h2 { font-family: Manrope; font-size: 30px; font-weight: 600; letter-spacing: -.04em; margin-top: 52px; }
+.legal h2 { font-family: var(--font-manrope), sans-serif; font-size: 30px; font-weight: 600; letter-spacing: -.04em; margin-top: 52px; }
 .legal p { font-size: 18px; color: var(--muted); line-height: 1.8; }
 
 /* ─── Footer ─────────────────────────────────────────────────── */
@@ -941,7 +939,7 @@ a { color: inherit; }
   gap: 12px;
 }
 .footer-grid > div:not(:first-child) > span {
-  font-family: Manrope, sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 10px;
   font-weight: 800;
   text-transform: uppercase;
@@ -979,7 +977,7 @@ a { color: inherit; }
   align-items: center;
 }
 .aud-hero-copy h1 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(58px, 7vw, 104px);
   font-weight: 600;
   line-height: 1.05;
@@ -1049,7 +1047,7 @@ a { color: inherit; }
   margin-bottom: 72px;
 }
 .aud-section-intro h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(44px, 5.5vw, 76px);
   font-weight: 600;
   line-height: 1.08;
@@ -1090,7 +1088,7 @@ a { color: inherit; }
   margin-bottom: 36px;
 }
 .val-card h3 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -.04em;
@@ -1150,7 +1148,7 @@ a { color: inherit; }
 }
 .offer-row:first-child { border-top: 0; padding-top: 0; }
 .offer-name { color: var(--muted); }
-.offer-price { font-family: Manrope; font-weight: 700; color: var(--forest); font-size: 18px; }
+.offer-price { font-family: var(--font-manrope), sans-serif; font-weight: 700; color: var(--forest); font-size: 18px; }
 
 
 /* ─── Audience CTA band ──────────────────────────────────────── */
@@ -1166,7 +1164,7 @@ a { color: inherit; }
 }
 .aud-cta-band-text { flex: 1; }
 .aud-cta-band h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(42px, 5vw, 66px);
   font-weight: 600;
   line-height: 1.08;
@@ -1235,7 +1233,7 @@ a { color: inherit; }
 }
 .perf-card-copy .val-num { margin-bottom: 24px; }
 .perf-card-copy h3 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -.04em;
@@ -1271,7 +1269,7 @@ a { color: inherit; }
 }
 .perf-stat-name { font-size: 14px; color: var(--muted); }
 .perf-stat-val {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 22px;
   font-weight: 700;
   letter-spacing: -.04em;
@@ -1284,7 +1282,7 @@ a { color: inherit; }
   padding-bottom: 96px;
 }
 .about-hero h1 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(58px, 7vw, 108px);
   font-weight: 600;
   line-height: 1.05;
@@ -1320,7 +1318,7 @@ a { color: inherit; }
 }
 .about-card .val-num { margin-bottom: 0; }
 .about-card h3 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -.04em;
@@ -1376,7 +1374,7 @@ a { color: inherit; }
   transform: scale(1.08);
 }
 .founder-story h3 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 28px;
   font-weight: 600;
   letter-spacing: -.04em;
@@ -1396,7 +1394,7 @@ a { color: inherit; }
   align-items: start;
 }
 .about-split-h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(44px, 5.5vw, 76px);
   font-weight: 600;
   line-height: 1.08;
@@ -1407,7 +1405,7 @@ a { color: inherit; }
 .about-split-h2 em { font-style: normal; color: var(--forest); }
 .about-split-h2 span { color: var(--forest); }
 .about-split-sub {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 22px;
   font-weight: 600;
   color: var(--forest);
@@ -1422,7 +1420,7 @@ a { color: inherit; }
   justify-content: flex-end;
 }
 .about-invite h3 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 26px;
   font-weight: 600;
   letter-spacing: -.04em;
@@ -1433,7 +1431,7 @@ a { color: inherit; }
 /* About end / manifesto */
 .about-end { text-align: center; padding: 160px 0; }
 .about-end h2 {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(44px, 6vw, 92px);
   font-weight: 600;
   line-height: 1.1;
@@ -1446,7 +1444,7 @@ a { color: inherit; }
 .about-end-lines { max-width: 580px; margin: 0 auto; text-align: left; }
 .about-end-lines p { font-size: 19px; line-height: 1.75; color: var(--muted); margin: 0 0 10px; }
 .about-end-final {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 28px;
   font-weight: 600;
   letter-spacing: -.04em;
@@ -1456,7 +1454,7 @@ a { color: inherit; }
 .about-end-close { max-width: 580px; margin: 0 auto; }
 .about-end-close p { font-size: 19px; line-height: 1.75; color: var(--muted); margin: 0 0 12px; }
 .about-sign {
-  font-family: Manrope;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: var(--forest);
