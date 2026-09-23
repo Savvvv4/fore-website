@@ -1,5 +1,20 @@
 import type { Metadata } from 'next';
+import { DM_Sans, Manrope } from 'next/font/google';
 import '../src/styles.css';
+
+const dmSans = DM_Sans({
+  variable: '--font-dm-sans',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
+
+const manrope = Manrope({
+  variable: '--font-manrope',
+  subsets: ['latin'],
+  display: 'swap',
+  weight: ['500', '600', '700', '800'],
+});
 
 const siteUrl = new URL('https://foresports.in');
 
@@ -94,7 +109,7 @@ export default function RootLayout({
 
   return (
     <html lang="en-IN">
-      <body>
+      <body className={`${dmSans.variable} ${manrope.variable}`}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
