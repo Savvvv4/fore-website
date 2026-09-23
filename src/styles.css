@@ -32,6 +32,20 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
 }
+
+button, input, select, textarea {
+  font-family: 'DM Sans', sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6,
+.hero h1, .page-hero h1, .section-intro h2,
+.final-cta h2, .network-section h2,
+.ecosystem-card h3, .aud-section-intro h2,
+.val-card h3, .about-hero h1, .about-split-h2,
+.about-end h2, .about-card h3, .founder-story h3,
+.aud-cta-band h2 {
+  font-family: 'Manrope', sans-serif;
+}
 a { color: inherit; }
 .skip-link { position: fixed; z-index: 100; top: 12px; left: 12px; padding: 10px 14px; border-radius: 8px; background: var(--acid); color: var(--ink); font-weight: 700; transform: translateY(-160%); transition: transform .15s ease; }
 .skip-link:focus { transform: translateY(0); }
