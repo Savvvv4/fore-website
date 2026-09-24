@@ -1441,8 +1441,11 @@ a { color: inherit; }
   color: var(--ink);
 }
 .about-end h2 span { color: var(--forest); }
-.about-end-lines { max-width: 580px; margin: 0 auto; text-align: left; }
-.about-end-lines p { font-size: 19px; line-height: 1.75; color: var(--muted); margin: 0 0 10px; }
+.about-end-lines { max-width: 760px; margin: 0 auto; text-align: center; }
+.about-end-lines p { font-size: 19px; line-height: 1.75; color: var(--muted); margin: 0 0 16px; }
+.about-end-lines .about-end-final { text-align: center; }
+.about-end-close { text-align: center; }
+.about-end-close p { text-align: center; }
 .about-end-final {
   font-family: var(--font-manrope), sans-serif;
   font-size: 28px;
