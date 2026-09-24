@@ -258,7 +258,7 @@ a { color: inherit; }
 
 .logo {
   font-family: var(--font-manrope), sans-serif;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1;
   text-decoration: none;
@@ -1548,7 +1548,7 @@ a { color: inherit; }
   .header.is-open { border-radius: 16px 16px 0 0; }
   .header.is-hidden { transform: translateY(calc(-100% - 28px)); }
   .nav-links.open { top: 56px; }
-  .logo { font-size: 16px; gap: 3px; }
+  .logo { font-size: 18px; gap: 3px; }
   .mobile-menu {
     width: 44px;
     height: 44px;
