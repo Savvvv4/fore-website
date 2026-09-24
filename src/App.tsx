@@ -1218,17 +1218,17 @@ function GolfersPage() {
           </div>
           <div className="val-grid">
             <div className="val-card">
-              <div className="val-num">01 · DISCOVER</div>
+              <div className="val-num">ONE · DISCOVER</div>
               <h3>See more of golf.</h3>
               <p>Find courses, ranges and coaches beyond your usual network — with prices, availability, reviews and details in one place.</p>
             </div>
             <div className="val-card">
-              <div className="val-num">02 · BOOK</div>
+              <div className="val-num">TWO · BOOK</div>
               <h3>Book without the back-and-forth.</h3>
               <p>Book tee times, lessons, caddies, carts and rental clubs with clear availability before you commit.</p>
             </div>
             <div className="val-card">
-              <div className="val-num">03 · IMPROVE</div>
+              <div className="val-num">THREE · IMPROVE</div>
               <h3>Keep your progress.</h3>
               <p>Rounds, practice, swing analysis and lessons stay connected over time — so your development does not disappear after a session.</p>
             </div>
@@ -1337,17 +1337,17 @@ function CoachesPage() {
           </div>
           <div className="val-grid">
             <div className="val-card">
-              <div className="val-num">01 · GET FOUND</div>
+              <div className="val-num">ONE · GET FOUND</div>
               <h3>Be easier to choose.</h3>
               <p>Show qualifications, specialties, experience, fees, packages, availability and reviews in one credible profile.</p>
             </div>
             <div className="val-card">
-              <div className="val-num">02 · RUN YOUR BUSINESS</div>
+              <div className="val-num">TWO · RUN YOUR BUSINESS</div>
               <h3>Keep the admin in one place.</h3>
               <p>Manage your calendar, sessions, students, lesson history, notes, payments and rescheduling without the WhatsApp back-and-forth.</p>
             </div>
             <div className="val-card">
-              <div className="val-num">03 · GROW</div>
+              <div className="val-num">THREE · GROW</div>
               <h3>Turn more golfers into students.</h3>
               <p>Offer trials and packages, receive warm leads from the Fore network, and build reputation through reviews and visible progress.</p>
             </div>
