@@ -1080,14 +1080,17 @@ a { color: inherit; }
   padding: 44px;
 }
 .val-num {
-  display: inline-block;
-  width: fit-content;
-  padding: 7px 12px;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 34px;
+  padding: 7px 14px;
   border-radius: 999px;
   font-size: 14px;
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
+  text-align: center;
   color: var(--forest);
   background: var(--acid);
   margin-bottom: 36px;
