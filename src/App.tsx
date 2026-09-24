@@ -782,7 +782,8 @@ function About() {
           <div className="about-end-lines">
             <p>You might be picking up a club for the first time.</p>
             <p>You might have been playing for fifty years.</p>
-            <p>You might be a golfer, a parent, a coach, a facility or simply someone who loves the game.</p>
+            <p>You might be a golfer, a parent, a coach or a facility.</p>
+            <p>You might simply be someone who loves the game.</p>
             <p>Wherever you are in golf, there is a place for you here.</p>
           </div>
           <div className="about-sign">
