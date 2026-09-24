@@ -1080,11 +1080,11 @@ a { color: inherit; }
   padding: 44px;
 }
 .val-num {
-  font-size: 10px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--forest);
+  color: var(--acid);
   margin-bottom: 36px;
 }
 .val-card h3 {
