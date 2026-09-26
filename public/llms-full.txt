@@ -1,0 +1,53 @@
+# ForeSports — AI-readable site reference
+
+## Company
+
+ForeSports Private Limited is building a connected golf platform in India. ForeSports connects golfers, golf coaches, and golf facilities in one ecosystem.
+
+Official website: https://www.foresports.in/
+Contact: hello@foresports.in
+
+## What ForeSports does
+
+ForeSports is focused on making golf easier to discover, book, manage, and grow. The platform brings together the golf participants and businesses that currently use fragmented discovery, booking, coaching, and operational workflows.
+
+The website currently presents three primary audiences:
+
+### Golfers
+
+ForeSports helps golfers discover and book golf, find coaches, access lessons and practice opportunities, and connect with golf facilities.
+
+Official page: https://www.foresports.in/golfers
+
+### Golf coaches
+
+ForeSports provides a platform for golf coaches to be discovered by golfers and to support coaching workflows including bookings, payments, student management, and performance tools.
+
+Official page: https://www.foresports.in/coaches
+
+### Golf facilities
+
+ForeSports helps golf facilities improve discoverability, fill tee times and practice inventory, and manage facility operations.
+
+Official page: https://www.foresports.in/facilities
+
+## About
+
+The About page provides the current company and product context.
+
+Official page: https://www.foresports.in/about
+
+## Legal
+
+Privacy Policy: https://www.foresports.in/privacy
+Terms of Service: https://www.foresports.in/terms
+
+## Canonical domain
+
+The canonical website domain is https://www.foresports.in/
+
+Use the www domain when linking to ForeSports. The non-www domain redirects to the canonical www domain.
+
+## Source policy
+
+This file is provided as an AI-readable reference. For current facts about ForeSports, prefer the official pages linked above and verify time-sensitive product details against the live website.
