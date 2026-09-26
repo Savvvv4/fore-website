@@ -1073,24 +1073,24 @@ function GolfersMock() {
           <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
               <span style={{ fontFamily: 'Manrope', fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>Delhi Golf Club</span>
-              <span style={{ background: '#e8f1d8', color: '#2d5038', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>7.4 km</span>
+              <span style={{ background: '#CFF1D2', color: '#0F3B27', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>7.4 km</span>
             </div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>18 holes · New Delhi · 3 times available</div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 15, color: 'var(--ink)' }}>From ₹2,500</span>
-              <span style={{ fontSize: 12, fontWeight: 700, color: '#2d5038' }}>View times →</span>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#0F3B27' }}>View times →</span>
             </div>
           </div>
         </div>
         <div>
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: 'var(--label)', marginBottom: 10 }}>Coaches you may like</div>
           <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--acid)', color: '#2d5038', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Manrope', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>AM</div>
+            <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--acid)', color: '#0F3B27', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Manrope', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>AM</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>Arjun Mehta</div>
               <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>Short game · 4.9 ★ · 94 reviews</div>
             </div>
-            <span style={{ background: '#e8f1d8', color: '#2d5038', borderRadius: 999, padding: '4px 10px', fontSize: 11, fontWeight: 700 }}>Available</span>
+            <span style={{ background: '#CFF1D2', color: '#0F3B27', borderRadius: 999, padding: '4px 10px', fontSize: 11, fontWeight: 700 }}>Available</span>
           </div>
         </div>
       </div>
@@ -1110,7 +1110,7 @@ function CoachesMock() {
       </div>
       <div className="mock-body">
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--acid)', color: '#2d5038', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Manrope', fontWeight: 800, fontSize: 18, flexShrink: 0 }}>AR</div>
+          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--acid)', color: '#0F3B27', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Manrope', fontWeight: 800, fontSize: 18, flexShrink: 0 }}>AR</div>
           <div>
             <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 17, color: 'var(--ink)' }}>Arjun Rao</div>
             <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>PGA Coach · 12 yrs · Delhi</div>
@@ -1119,7 +1119,7 @@ function CoachesMock() {
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
           {['Short game', 'Full swing', 'Juniors', 'TrackMan'].map((s) => (
-            <span key={s} style={{ background: '#e8f1d8', color: '#2d5038', borderRadius: 999, padding: '5px 12px', fontSize: 12, fontWeight: 600 }}>{s}</span>
+            <span key={s} style={{ background: '#CFF1D2', color: '#0F3B27', borderRadius: 999, padding: '5px 12px', fontSize: 12, fontWeight: 600 }}>{s}</span>
           ))}
         </div>
         <div>
@@ -1135,7 +1135,7 @@ function CoachesMock() {
             <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 18, color: 'var(--ink)' }}>₹3,000</div>
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>/ lesson</div>
           </div>
-          <span style={{ background: '#2d5038', color: '#fff', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
+          <span style={{ background: '#0F3B27', color: '#fff', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
         </div>
       </div>
     </div>
@@ -1158,18 +1158,18 @@ function FacilitiesMock() {
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: 'var(--label)', marginBottom: 8 }}>Today's utilisation</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
             <span style={{ fontFamily: 'Manrope', fontWeight: 800, fontSize: 44, letterSpacing: '-.04em', color: 'var(--ink)', lineHeight: 1 }}>72%</span>
-            <span style={{ background: '#e8f1d8', color: '#2d5038', borderRadius: 999, padding: '4px 10px', fontSize: 12, fontWeight: 700 }}>+14% vs last week</span>
+            <span style={{ background: '#CFF1D2', color: '#0F3B27', borderRadius: 999, padding: '4px 10px', fontSize: 12, fontWeight: 700 }}>+14% vs last week</span>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 72 }}>
           {barHeights.map((h, i) => (
-            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 4, background: i === 3 ? '#2d5038' : '#e8f1d8' }} />
+            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 4, background: i === 3 ? '#0F3B27' : '#CFF1D2' }} />
           ))}
         </div>
         <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
             <span style={{ fontFamily: 'Manrope', fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>11:00 · 8 open slots</span>
-            <span style={{ background: 'var(--acid)', color: '#2d5038', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>Fore price ₹1,500</span>
+            <span style={{ background: 'var(--acid)', color: '#0F3B27', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>Fore price ₹1,500</span>
           </div>
           <div style={{ fontSize: 13, color: 'var(--muted)' }}>Turn softer hours into bookable demand.</div>
         </div>
