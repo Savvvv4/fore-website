@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
 import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
+import logoDark from './imports/foresports-logo.png';
+import logoWhite from './imports/foresports-logo-white.png';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
@@ -42,19 +44,11 @@ const audiences = [
   },
 ];
 
-function Logo() {
+function Logo({ variant = 'dark' }: { variant?: 'dark' | 'white' }) {
+  const src = variant === 'white' ? logoWhite.src : logoDark.src;
   return (
     <Link to="/" className="logo" aria-label="ForeSports">
-      FORE
-      <svg className="logo-ball" width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-        <circle cx="5" cy="5" r="4.5" fill="white" stroke="rgba(0,0,0,0.1)" strokeWidth="0.5"/>
-        <circle cx="3.6" cy="3.8" r="0.7" fill="rgba(0,0,0,0.15)"/>
-        <circle cx="6.4" cy="3.8" r="0.7" fill="rgba(0,0,0,0.15)"/>
-        <circle cx="5" cy="5.8" r="0.7" fill="rgba(0,0,0,0.15)"/>
-        <circle cx="3.2" cy="6.4" r="0.7" fill="rgba(0,0,0,0.15)"/>
-        <circle cx="6.8" cy="6.4" r="0.7" fill="rgba(0,0,0,0.15)"/>
-      </svg>
-      SPORTS
+      <img src={src} alt="ForeSports" className="logo-img" />
     </Link>
   );
 }
@@ -136,7 +130,7 @@ function Footer() {
     <footer className="footer">
       <div className="container footer-grid">
         <div>
-          <Logo />
+          <Logo variant="white" />
           <p>The connective layer for golf in India.</p>
         </div>
 

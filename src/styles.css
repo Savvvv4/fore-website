@@ -261,30 +261,22 @@ a { color: inherit; }
 .nav { height: 100%; display: flex; align-items: center; justify-content: space-between; }
 
 .logo {
-  font-family: var(--font-manrope), sans-serif;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1;
-  text-decoration: none;
-  letter-spacing: -.04em;
-  color: #0F3B27;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-}
-@keyframes logo-ball-roll {
-  0%, 18%       { transform: rotate(0deg) translateY(0); }
-  20%           { transform: rotate(0deg) translateY(-2px); }
-  22%, 62%      { transform: rotate(720deg) translateY(0); }
-  66%, 100%     { transform: rotate(720deg) translateY(0); }
+  line-height: 0;
+  text-decoration: none;
 }
 
-.logo-ball {
+.logo-img {
   display: block;
-  flex: none;
-  filter: drop-shadow(0 1px 2px rgba(0,0,0,0.18));
-  animation: logo-ball-roll 5s cubic-bezier(.22,.9,.32,1) infinite;
-  transform-origin: center;
+  height: 28px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.footer .logo-img {
+  height: 32px;
 }
 
 .nav-links { display: flex; gap: 32px; }
