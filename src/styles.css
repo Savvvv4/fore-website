@@ -5,6 +5,7 @@
 :root {
   --bg:      #F7F9F7;
   --surface: #F7F9F7;
+  --soft-white: #F7F9F7;
   --ink:     #0F3B27;   /* primary text */
   --muted:   #557265;   /* secondary / body supporting text */
   --subtle:  #7B9689;   /* de-emphasis inside headings (em, span) */
@@ -12,6 +13,9 @@
   --line:    #D5E3DC;
   --forest:  #0F3B27;
   --acid:    #92FF5F;
+  --orange:  #FF7036;
+  --ice:     #BFF2F0;
+  --mint:    #CFF1D2;
   --sage:    #CFF1D2;
   --sand:    #BFF2F0;
   --white:   #fff;
