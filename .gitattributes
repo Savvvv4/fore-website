@@ -21,6 +21,8 @@
 	src/imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg -filter -diff -merge
 	src/imports/PFP.jpeg -filter -diff -merge
 	src/imports/itish-arora.jpg -filter -diff -merge
+	src/imports/foresports-logo.png -filter -diff -merge
+	src/imports/foresports-logo-white.png -filter -diff -merge
 # ---------------------------------------------------------------------------
 # Video
 # ---------------------------------------------------------------------------
