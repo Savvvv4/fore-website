@@ -16,7 +16,7 @@ const manrope = Manrope({
   weight: ['500', '600', '700', '800'],
 });
 
-const siteUrl = new URL('https://foresports.in');
+const siteUrl = new URL('https://www.foresports.in');
 
 export const metadata: Metadata = {
   metadataBase: siteUrl,
@@ -81,11 +81,11 @@ export default function RootLayout({
     '@graph': [
       {
         '@type': 'Organization',
-        '@id': 'https://foresports.in/#organization',
+        '@id': 'https://www.foresports.in/#organization',
         name: 'ForeSports',
         legalName: 'ForeSports Private Limited',
-        url: 'https://foresports.in',
-        logo: 'https://foresports.in/apple-touch-icon.svg',
+        url: 'https://www.foresports.in',
+        logo: 'https://www.foresports.in/apple-touch-icon.svg',
         email: 'hello@foresports.in',
         description:
           'ForeSports connects golfers, golf coaches, and golf facilities in India.',
@@ -96,12 +96,12 @@ export default function RootLayout({
       },
       {
         '@type': 'WebSite',
-        '@id': 'https://foresports.in/#website',
+        '@id': 'https://www.foresports.in/#website',
         name: 'ForeSports',
-        url: 'https://foresports.in',
+        url: 'https://www.foresports.in',
         inLanguage: 'en-IN',
         publisher: {
-          '@id': 'https://foresports.in/#organization',
+          '@id': 'https://www.foresports.in/#organization',
         },
       },
     ],
