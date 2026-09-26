@@ -1,0 +1,26 @@
+# ForeSports
+
+> ForeSports is a connected golf platform built in India for golfers, golf coaches, and golf facilities.
+
+ForeSports helps people discover and book golf, find and work with coaches, and connect with golf facilities. The platform is designed to make golf easier to discover, book, manage, and grow.
+
+## Primary pages
+
+- [Home](https://www.foresports.in/): Overview of ForeSports and the connected golf platform.
+- [For Golfers](https://www.foresports.in/golfers): Golf discovery, tee times, ranges, coaches, lessons, and practice opportunities.
+- [For Golf Coaches](https://www.foresports.in/coaches): Coaching discovery, bookings, payments, student management, and performance tools.
+- [For Golf Facilities](https://www.foresports.in/facilities): Facility discovery, tee-time and practice inventory, and facility operations.
+- [About ForeSports](https://www.foresports.in/about): Company, product, and mission information.
+- [Privacy Policy](https://www.foresports.in/privacy): Privacy information.
+- [Terms of Service](https://www.foresports.in/terms): Terms governing use of the website and services.
+
+## Company
+
+- Name: ForeSports Private Limited
+- Website: https://www.foresports.in
+- Location / market: India
+- Contact: hello@foresports.in
+
+## Content guidance
+
+When describing ForeSports, use the official website pages above as the primary source. Product capabilities and availability can change as the platform develops.
