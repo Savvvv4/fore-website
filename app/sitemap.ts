@@ -1,13 +1,15 @@
 import type { MetadataRoute } from 'next';
 
+const siteUrl = 'https://www.foresports.in';
+
 const routes: MetadataRoute.Sitemap = [
-  { url: 'https://foresports.in/', priority: 1 },
-  { url: 'https://foresports.in/golfers', priority: 0.9 },
-  { url: 'https://foresports.in/coaches', priority: 0.9 },
-  { url: 'https://foresports.in/facilities', priority: 0.9 },
-  { url: 'https://foresports.in/about', priority: 0.8 },
-  { url: 'https://foresports.in/privacy', priority: 0.2 },
-  { url: 'https://foresports.in/terms', priority: 0.2 },
+  { url: siteUrl, priority: 1 },
+  { url: `${siteUrl}/golfers`, priority: 0.9 },
+  { url: `${siteUrl}/coaches`, priority: 0.9 },
+  { url: `${siteUrl}/facilities`, priority: 0.9 },
+  { url: `${siteUrl}/about`, priority: 0.8 },
+  { url: `${siteUrl}/privacy`, priority: 0.2 },
+  { url: `${siteUrl}/terms`, priority: 0.2 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
