@@ -38,7 +38,7 @@ function WavingFlag({ x, y }: { x: number; y: number }) {
     <g>
       <line x1={x} y1={y + 1} x2={x} y2={y - 26} stroke="#0a1f14" strokeWidth="1.6" strokeLinecap="round" />
       <motion.path
-        fill="#d9f36b"
+        fill="#92FF5F"
         animate={{
           d: [
             `M ${x} ${y - 26} L ${x + 17} ${y - 20} L ${x} ${y - 14} Z`,
@@ -115,7 +115,7 @@ function Person({
       <text
         x={x} y={y - 20}
         textAnchor="middle" dominantBaseline="middle"
-        fill="#0e2218" fontSize={5.5} fontWeight="800"
+        fill="#0F3B27" fontSize={5.5} fontWeight="800"
         letterSpacing="0.8" fontFamily="Manrope, sans-serif"
       >
         {role}
@@ -169,7 +169,7 @@ export default function HeroEcosystem() {
       >
         <defs>
           <radialGradient id="eco-bg" cx="45%" cy="55%" r="70%">
-            <stop offset="0%" stopColor="#f5f4ef" />
+            <stop offset="0%" stopColor="#F7F9F7" />
             <stop offset="100%" stopColor="#eceae3" />
           </radialGradient>
           <radialGradient id="eco-fairway" cx="50%" cy="40%" r="70%">
@@ -242,7 +242,7 @@ export default function HeroEcosystem() {
           <text key={n} x={315 + i * 52} y="440" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="7" fontWeight="700" fontFamily="Manrope, sans-serif">BAY {n}</text>
         ))}
         {[320, 372, 424, 476, 528].map((tx, i) => (
-          <circle key={i} cx={tx + 5} cy="456" r="2.5" fill="#d9f36b" opacity={0.5} />
+          <circle key={i} cx={tx + 5} cy="456" r="2.5" fill="#92FF5F" opacity={0.5} />
         ))}
 
         {/* ── Golf course (left/center) ──────────────────────── */}
@@ -299,8 +299,8 @@ export default function HeroEcosystem() {
         {/* ── Tee box ────────────────────────────────────────── */}
         <rect x="120" y="548" width="36" height="22" rx="5" fill="#6aae56" />
         <rect x="122" y="550" width="32" height="18" rx="4" fill="#7fc46a" />
-        <circle cx="131" cy="559" r="2.5" fill="#d9f36b" opacity={0.9} />
-        <circle cx="149" cy="559" r="2.5" fill="#d9f36b" opacity={0.9} />
+        <circle cx="131" cy="559" r="2.5" fill="#92FF5F" opacity={0.9} />
+        <circle cx="149" cy="559" r="2.5" fill="#92FF5F" opacity={0.9} />
 
         {/* ── Trees ──────────────────────────────────────────── */}
         <TreeCluster x={62} y={100} count={4} scale={1.2} />
@@ -324,7 +324,7 @@ export default function HeroEcosystem() {
           <rect x="510" y="548" width="20" height="42" rx="3" fill="#8a7a68" />
           <circle cx="518" cy="569" r="1.8" fill="rgba(255,255,255,0.5)" />
           <line x1="515" y1="495" x2="515" y2="476" stroke="#8a7a68" strokeWidth="1.4" />
-          <path d="M 515 476 L 526 480 L 515 484 Z" fill="#d9f36b" />
+          <path d="M 515 476 L 526 480 L 515 484 Z" fill="#92FF5F" />
         </g>
 
         {/* ── Golf ball arcs ─────────────────────────────────── */}
