@@ -1,7 +1,7 @@
 {
   "description": "A premium corporate website showcasing ForeSports' golf partnerships and investment opportunities with a refined, editorial design for industry professionals.",
   "robots": {
-    "index": false
+    "index": true
   },
   "accessibility": {
     "addBypassLinks": false,
