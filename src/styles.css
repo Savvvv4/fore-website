@@ -12,7 +12,7 @@
   --label:   #5F7C6D;   /* micro-labels, eyebrows, section labels */
   --line:    #D5E3DC;
   --forest:  #0F3B27;
-  --acid:    #70F250;
+  --acid:    #92FF5F;
   --orange:  #FF7036;
   --ice:     #BFF2F0;
   --mint:    #CFF1D2;
@@ -465,8 +465,8 @@ a { color: inherit; }
   width: 820px; height: 650px;
   right: -230px; bottom: -180px;
   border-radius: 50%;
-  border: 1px solid #70F25035;
-  box-shadow: 0 0 0 70px #70F25008, 0 0 0 140px #70F25005, 0 0 0 210px #70F25003;
+  border: 1px solid #92FF5F35;
+  box-shadow: 0 0 0 70px #92FF5F08, 0 0 0 140px #92FF5F05, 0 0 0 210px #92FF5F03;
 }
 .hero-brand {
   position: absolute; top: 28px; left: 28px;
@@ -651,7 +651,7 @@ a { color: inherit; }
   border-radius: 32px;
   margin-top: 64px;
   position: relative; overflow: hidden;
-  background: radial-gradient(circle at 50% 50%, #70F25013, transparent 23%), #0F3B27;
+  background: radial-gradient(circle at 50% 50%, #92FF5F13, transparent 23%), #0F3B27;
 }
 .net-node, .net-core {
   position: absolute;
@@ -680,7 +680,7 @@ a { color: inherit; }
 .net-core span   { font-size: 9px; color: rgba(45,80,56,.55); margin-top: 5px; }
 .net-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #70F25066, transparent);
+  background: linear-gradient(90deg, transparent, #92FF5F66, transparent);
   position: absolute; transform-origin: left center;
 }
 .l1 { width: 390px; left: 25%; top: 37%; transform: rotate(9deg); }
@@ -858,7 +858,7 @@ a { color: inherit; }
   padding: 12px 14px;
   outline: 0; color: var(--ink);
 }
-.form-fields input:focus { border-color: #7C9A88; box-shadow: 0 0 0 4px #70F25044; }
+.form-fields input:focus { border-color: #7C9A88; box-shadow: 0 0 0 4px #92FF5F44; }
 .form-fields select,
 .form-fields textarea {
   font-family: inherit; font-size: 15px;
@@ -871,7 +871,7 @@ a { color: inherit; }
 }
 .form-fields select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9d94' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; cursor: pointer; }
 .form-fields select:focus,
-.form-fields textarea:focus { border-color: #7C9A88; box-shadow: 0 0 0 4px #70F25044; }
+.form-fields textarea:focus { border-color: #7C9A88; box-shadow: 0 0 0 4px #92FF5F44; }
 .form-fields textarea { resize: vertical; min-height: 90px; }
 .form-fields .full-width { grid-column: 1 / -1; }
 .form-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
