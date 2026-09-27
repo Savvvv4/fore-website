@@ -688,7 +688,7 @@ a { color: inherit; }
 .l3 { width: 270px; left: 29%; top: 65%; transform: rotate(-20deg); }
 
 /* ─── Product teaser ─────────────────────────────────────────── */
-.product-teaser-section { background: #241A14; }
+.product-teaser-section { background: var(--peach); }
 .product-teaser-intro {
   text-align: center;
   margin: 0 0 60px;
@@ -703,12 +703,12 @@ a { color: inherit; }
   margin: 0;
   white-space: nowrap;
 }
-.product-teaser-intro h2 { color: #FFFFFF; }
+.product-teaser-intro h2 { color: var(--ink); }
 .product-teaser-intro h2 span { color: var(--orange); }
 .product-teaser-intro p {
   font-size: 20px;
   line-height: 1.65;
-  color: rgba(36,26,20,.62);
+  color: var(--muted);
   margin: 20px auto 0;
   white-space: nowrap;
 }
@@ -776,7 +776,7 @@ a { color: inherit; }
   top: 10px;
   height: 2px;
   border-radius: 2px;
-  background: var(--muted);
+  background: var(--orange-text);
 }
 .faq-plus::after { transform: rotate(90deg); }
 .faq-item.is-open .faq-plus { transform: rotate(45deg); }
