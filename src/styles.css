@@ -7,9 +7,9 @@
   --surface: #F8F8E0;
   --soft-white: #F8F8E0;
   --ink:     #1D4A2D;   /* primary text */
-  --muted:   #1D4A2DA6;   /* secondary / body supporting text */
-  --subtle:  #1D4A2D80;   /* de-emphasis inside headings (em, span) */
-  --label:   #1D4A2D99;   /* micro-labels, eyebrows, section labels */
+  --muted:   #1D4A2DB8;   /* secondary / body supporting text */
+  --subtle:  #1D4A2D99;   /* de-emphasis inside headings (em, span) */
+  --label:   #1D4A2DCC;   /* micro-labels, eyebrows, section labels */
   --line:    #DAF7FD;
   --forest:  #1D4A2D;
   --acid:    #DA7734;
@@ -18,7 +18,7 @@
   --mint:    #F8F8E0;
   --sage:    #F8F8E0;
   --sand:    #DAF7FD;
-  --white:   #fff;
+  --white:   #F8F8E0;
   --max:     1240px;
 }
 
@@ -284,7 +284,7 @@ a { color: inherit; }
   font-size: 20px;
   font-weight: 600;
   text-decoration: none;
-  color: rgba(29,74,45,.60);
+  color: rgba(29,74,45,.90);
   letter-spacing: .005em;
   transition: color .18s;
 }
@@ -614,7 +614,7 @@ a { color: inherit; }
 .ecosystem-card p {
   font-size: 18px;
   line-height: 1.68;
-  color: rgba(255,255,255,.58);
+  color: var(--ice);
   flex: 1;
   margin: 0 0 36px;
 }
@@ -643,8 +643,8 @@ a { color: inherit; }
 
 /* ─── Network section ────────────────────────────────────────── */
 .network-section { background: var(--forest); color: #fff; padding: 160px 0; }
-.network-section .section-label { color: rgba(255,255,255,.4); }
-.network-section h2 em { font-style: normal; color: rgba(255,255,255,.4); }
+.network-section .section-label { color: var(--ice); }
+.network-section h2 em { font-style: normal; color: var(--ice); }
 
 .network-map {
   height: 550px;
@@ -790,7 +790,7 @@ a { color: inherit; }
 }
 
 /* ─── Final CTA ──────────────────────────────────────────────── */
-.final-cta { background: #fff; text-align: center; padding: 160px 0; }
+.final-cta { background: var(--bg); text-align: center; padding: 160px 0; }
 .final-cta h2 {
   font-family: var(--font-manrope), sans-serif;
   font-size: clamp(52px, 7.5vw, 104px);
@@ -1659,4 +1659,41 @@ a { color: inherit; }
   .founder-story h3 { font-size: 25px; }
   .founder-text { margin-top: 22px; }
   .founder-text p { font-size: 16px; line-height: 1.68; }
+}
+
+/* ─── Contrast corrections for the golf palette ───────────────── */
+/* Light surfaces use Golf Green for text; dark surfaces use Caddy Canvas / Retro Sky. */
+.section-intro > p,
+.hero-note,
+.floating-waitlist-copy span,
+.early-member-success p,
+.form-confirmation p {
+  color: var(--ink);
+}
+
+.ecosystem-card p,
+.network-section .section-label,
+.network-section h2 em,
+.footer-grid a:not(.logo),
+.footer-grid p,
+.footer-grid h4,
+.footer-bottom {
+  color: var(--ice);
+}
+
+.footer-grid a:not(.logo):hover,
+.footer-bottom a:hover {
+  color: var(--bg);
+}
+
+/* Do not introduce a fifth surface color: white UI surfaces become Caddy Canvas. */
+.floating-waitlist-cta,
+.floating-waitlist-restore,
+.early-member-form input,
+.early-member-form select,
+.early-member-role-option span,
+.form-confirmation,
+.button.light,
+.floating-card {
+  background: var(--bg);
 }
