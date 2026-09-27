@@ -698,7 +698,7 @@ function About() {
         </div>
       </section>
 
-      <section className="section" style={{ background: '#fff' }}>
+      <section className="section" style={{ background: 'var(--bg)' }}>
         <div className="container">
           <div className="aud-section-intro">
             <div><h2 style={{ whiteSpace: 'nowrap' }}>Two perspectives. <span>One idea.</span></h2></div>
@@ -1064,7 +1064,7 @@ function GolfersMock() {
         </div>
         <div>
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: 'var(--label)', marginBottom: 10 }}>Tee times for you</div>
-          <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
+          <div style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
               <span style={{ fontFamily: 'Manrope', fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>Delhi Golf Club</span>
               <span style={{ background: '#F8F8E0', color: '#1D4A2D', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>7.4 km</span>
@@ -1129,7 +1129,7 @@ function CoachesMock() {
             <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 18, color: 'var(--ink)' }}>₹3,000</div>
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>/ lesson</div>
           </div>
-          <span style={{ background: '#1D4A2D', color: '#fff', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
+          <span style={{ background: '#1D4A2D', color: 'var(--bg)', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
         </div>
       </div>
     </div>
