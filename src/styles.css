@@ -587,8 +587,8 @@ a { color: inherit; }
 .ecosystem-cards    { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
 
 .ecosystem-card {
-  background: #1C2230;
-  color: #FFFFFF;
+  background: var(--sky);
+  color: var(--ink);
   border-radius: 28px;
   padding: 52px 44px;
   display: flex;
@@ -612,7 +612,7 @@ a { color: inherit; }
   line-height: 1.1;
   letter-spacing: -.04em;
   margin: 0 0 18px;
-  color: #FFFFFF;
+  color: var(--ink);
 }
 
 .ecosystem-card p {
@@ -911,8 +911,8 @@ a { color: inherit; }
 
 /* ─── Footer ─────────────────────────────────────────────────── */
 .footer {
-  background: #1C2230;
-  color: #FFFFFF;
+  background: var(--soft-white);
+  color: var(--ink);
   padding: 80px 0 32px;
 }
 .footer-grid {
@@ -922,12 +922,12 @@ a { color: inherit; }
   align-items: start;
 }
 .footer .logo {
-  color: #FFFFFF;
+  color: var(--ink);
   margin-bottom: 16px;
   display: inline-flex;
 }
 .footer-grid > div:first-child p {
-  color: rgba(255,255,255,.45);
+  color: var(--muted);
   max-width: 260px;
   font-size: 15px;
   line-height: 1.6;
@@ -944,13 +944,13 @@ a { color: inherit; }
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .16em;
-  color: rgba(255,255,255,.35);
+  color: var(--label);
   margin-bottom: 4px;
 }
 .footer-grid a:not(.logo) {
   font-size: 15px;
   font-weight: 500;
-  color: rgba(255,255,255,.55);
+  color: var(--muted);
   text-decoration: none;
   transition: color .18s;
   width: fit-content;
