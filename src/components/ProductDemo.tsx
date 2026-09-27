@@ -1259,7 +1259,7 @@ const TOUR_CSS = `
 .fore-tour {
   --ft-paper: #F8F8E0;
   --ft-surface: #ffffff;
-  --ft-surface-2: #FFFFFF;
+  --ft-surface-2: #F8F8E0;
   --ft-ink: #1D4A2D;
   --ft-ink-soft: #1D4A2DB3;
   --ft-muted: #1D4A2D80;
@@ -1898,7 +1898,7 @@ export default function ProductDemo() {
             style={{
               flex: 1, border: 0,
               background: role === r ? '#1D4A2D' : 'transparent',
-              color: role === r ? '#fff' : '#1D4A2D80',
+              color: role === r ? '#F8F8E0' : '#1D4A2D80',
               borderRadius: 22, padding: '13px 18px',
               fontSize: 13, fontWeight: 800, cursor: 'pointer',
               transition: 'background .15s, color .15s',
