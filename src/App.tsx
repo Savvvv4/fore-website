@@ -130,7 +130,7 @@ function Footer() {
     <footer className="footer">
       <div className="container footer-grid">
         <div>
-          <Logo variant="white" />
+          <Logo variant="dark" />
           <p>The connective layer for golf in India.</p>
         </div>
 
@@ -1129,7 +1129,7 @@ function CoachesMock() {
             <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 18, color: 'var(--ink)' }}>₹3,000</div>
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>/ lesson</div>
           </div>
-          <span style={{ background: '#241A14', color: 'var(--bg)', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
+          <span style={{ background: 'var(--orange)', color: 'var(--ink)', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
         </div>
       </div>
     </div>
@@ -1157,7 +1157,7 @@ function FacilitiesMock() {
         </div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 5, height: 72 }}>
           {barHeights.map((h, i) => (
-            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 4, background: i === 3 ? '#241A14' : '#FFFFFF' }} />
+            <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 4, background: i === 3 ? 'var(--orange-text)' : 'var(--line)' }} />
           ))}
         </div>
         <div style={{ background: '#FFFFFF', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
