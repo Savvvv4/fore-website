@@ -317,7 +317,7 @@ export default function HeroEcosystem() {
         <g filter="url(#eco-bldg-sh)">
           <rect x="460" y="510" width="110" height="80" rx="6" fill="#F8F8E0" />
           <path d="M 456 514 L 515 495 L 574 514 Z" fill="#DAF7FD" />
-          <rect x="460" y="514" width="110" height="76" rx="4" fill="#FFFFFF" />
+          <rect x="460" y="514" width="110" height="76" rx="4" fill="#F8F8E0" />
           <rect x="470" y="524" width="16" height="14" rx="3" fill="#DAF7FD" opacity={0.8} />
           <rect x="492" y="524" width="16" height="14" rx="3" fill="#DAF7FD" opacity={0.8} />
           <rect x="542" y="524" width="16" height="14" rx="3" fill="#DAF7FD" opacity={0.8} />
