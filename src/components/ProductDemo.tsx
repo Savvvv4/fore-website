@@ -1257,22 +1257,22 @@ const TOTAL_STEPS: Record<Role, number> = { golfer: 9, coach: 7, facility: 8 };
 
 const TOUR_CSS = `
 .fore-tour {
-  --ft-paper: #E6E8E6;
+  --ft-paper: #F8F8E0;
   --ft-surface: #ffffff;
   --ft-surface-2: #FFFFFF;
-  --ft-ink: #191919;
-  --ft-ink-soft: #191919B3;
-  --ft-muted: #19191980;
-  --ft-muted-2: #19191966;
-  --ft-line: #CED0CE;
-  --ft-line-soft: #CED0CE;
-  --ft-lime: #F15025;
-  --ft-lime-deep: #F15025;
-  --ft-lime-ink: #191919;
-  --ft-forest-2: #E6E8E6;
-  --ft-forest-ink: #191919;
-  --ft-amber-2: #E6E8E6;
-  --ft-amber-deep: #191919;
+  --ft-ink: #1D4A2D;
+  --ft-ink-soft: #1D4A2DB3;
+  --ft-muted: #1D4A2D80;
+  --ft-muted-2: #1D4A2D66;
+  --ft-line: #DAF7FD;
+  --ft-line-soft: #DAF7FD;
+  --ft-lime: #DA7734;
+  --ft-lime-deep: #DA7734;
+  --ft-lime-ink: #1D4A2D;
+  --ft-forest-2: #F8F8E0;
+  --ft-forest-ink: #1D4A2D;
+  --ft-amber-2: #F8F8E0;
+  --ft-amber-deep: #1D4A2D;
   --ft-r-md: 14px;
   --ft-sh-md: 0 10px 30px -10px rgba(23,26,18,.18);
   --ft-sh-btn: 0 1px 2px rgba(23,26,18,.06), 0 8px 18px -10px rgba(23,26,18,.22);
@@ -1456,12 +1456,12 @@ const TOUR_CSS = `
   cursor: pointer;
   font-family: inherit;
 }
-.fore-tour .ft-btn:hover:not(:disabled) { border-color: #CED0CE; box-shadow: var(--ft-sh-btn); transform: translateY(-1px); }
+.fore-tour .ft-btn:hover:not(:disabled) { border-color: #DAF7FD; box-shadow: var(--ft-sh-btn); transform: translateY(-1px); }
 .fore-tour .ft-btn:active:not(:disabled) { transform: scale(.97); }
 .fore-tour .ft-btn.ft-primary { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); box-shadow: var(--ft-sh-btn); }
-.fore-tour .ft-btn.ft-primary:hover:not(:disabled) { background: #F15025; border-color: #F15025; }
+.fore-tour .ft-btn.ft-primary:hover:not(:disabled) { background: #DA7734; border-color: #DA7734; }
 .fore-tour .ft-btn.ft-accent { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); }
-.fore-tour .ft-btn.ft-accent:hover:not(:disabled) { background: #F15025; border-color: #F15025; }
+.fore-tour .ft-btn.ft-accent:hover:not(:disabled) { background: #DA7734; border-color: #DA7734; }
 .fore-tour .ft-btn.ft-lg { padding: 14px 24px; font-size: 14.5px; border-radius: 13px; }
 .fore-tour .ft-btn.ft-sm { padding: 8px 13px; font-size: 12.5px; border-radius: 9px; }
 .fore-tour .ft-btn.ft-block { width: 100%; }
@@ -1578,7 +1578,7 @@ const TOUR_CSS = `
   cursor: pointer;
   font-family: inherit;
 }
-.fore-tour .ft-chip:hover { border-color: #CED0CE; }
+.fore-tour .ft-chip:hover { border-color: #DAF7FD; }
 .fore-tour .ft-chip.ft-selected { background: var(--ft-ink); border-color: var(--ft-ink); color: var(--ft-paper); }
 
 /* search */
@@ -1612,17 +1612,17 @@ const TOUR_CSS = `
   cursor: pointer;
   font-family: inherit;
 }
-.fore-tour .ft-course:hover { border-color: #CED0CE; }
+.fore-tour .ft-course:hover { border-color: #DAF7FD; }
 .fore-tour .ft-course.ft-selected { border-color: var(--ft-lime-deep); box-shadow: 0 0 0 3px rgba(143,174,28,.16); }
 .fore-tour .ft-course-img {
   width: 54px; flex: none; position: relative; align-self: stretch;
   padding: 0;
-  background: linear-gradient(135deg,#E6E8E6,#E6E8E6);
+  background: linear-gradient(135deg,#F8F8E0,#F8F8E0);
   border-radius: 10px 0 0 10px;
 }
-.fore-tour .ft-course-img.b { background: linear-gradient(135deg,#CED0CE,#E6E8E6); }
-.fore-tour .ft-course-img.c { background: linear-gradient(135deg,#CED0CE,#E6E8E6); }
-.fore-tour .ft-course-img.d { background: linear-gradient(135deg,#CED0CE,#E6E8E6); }
+.fore-tour .ft-course-img.b { background: linear-gradient(135deg,#DAF7FD,#F8F8E0); }
+.fore-tour .ft-course-img.c { background: linear-gradient(135deg,#DAF7FD,#F8F8E0); }
+.fore-tour .ft-course-img.d { background: linear-gradient(135deg,#DAF7FD,#F8F8E0); }
 .fore-tour .ft-course-check {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center;
@@ -1660,7 +1660,7 @@ const TOUR_CSS = `
 .fore-tour .ft-callout {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 10px 13px; margin: 0 0 12px;
-  border: 1px solid #CED0CE; border-radius: 11px;
+  border: 1px solid #DAF7FD; border-radius: 11px;
   background: var(--ft-forest-2); font-size: 13px; font-weight: 600; color: var(--ft-forest-ink);
 }
 .fore-tour .ft-callout b { color: var(--ft-lime-deep); }
@@ -1700,7 +1700,7 @@ const TOUR_CSS = `
   padding: 11px 13px; background: var(--ft-surface); text-align: left; width: 100%;
   transition: border-color .15s, background .15s; cursor: pointer; font-family: inherit;
 }
-.fore-tour .ft-option:hover { border-color: #CED0CE; }
+.fore-tour .ft-option:hover { border-color: #DAF7FD; }
 .fore-tour .ft-option.ft-active { border-color: var(--ft-lime-deep); background: var(--ft-forest-2); }
 .fore-tour .ft-option.ft-locked { cursor: default; }
 .fore-tour .ft-option b { display: block; font-size: 13.5px; font-weight: 700; color: var(--ft-ink); }
@@ -1743,7 +1743,7 @@ const TOUR_CSS = `
   transition: border-color .15s, background .15s;
   cursor: pointer; border: 1.5px solid var(--ft-line); font-family: inherit;
 }
-.fore-tour button.ft-slotRow:hover:not(:disabled) { border-color: #CED0CE; }
+.fore-tour button.ft-slotRow:hover:not(:disabled) { border-color: #DAF7FD; }
 .fore-tour .ft-slotRow.ft-on { border-color: var(--ft-lime-deep); background: var(--ft-forest-2); }
 .fore-tour .ft-slotRow.ft-lesson { background: var(--ft-surface); cursor: default; }
 .fore-tour .ft-slotRow.ft-dim { opacity: .5; }
@@ -1784,7 +1784,7 @@ const TOUR_CSS = `
   background: var(--ft-surface); transition: border-color .18s, box-shadow .18s;
   cursor: pointer; font-family: inherit;
 }
-.fore-tour .ft-mcard:hover { border-color: #CED0CE; }
+.fore-tour .ft-mcard:hover { border-color: #DAF7FD; }
 .fore-tour .ft-mcard.ft-open { border-color: var(--ft-lime-deep); }
 .fore-tour .ft-mico { width: 36px; height: 36px; border-radius: 10px; background: var(--ft-forest-2); color: var(--ft-forest-ink); display: grid; place-items: center; }
 .fore-tour .ft-mcard b { display: block; font-size: 14.5px; font-weight: 700; color: var(--ft-ink); }
@@ -1817,7 +1817,7 @@ const TOUR_CSS = `
   background: var(--ft-surface-2); text-align: left;
   transition: border-color .15s, background .15s; cursor: pointer; font-family: inherit;
 }
-.fore-tour .ft-equipmentItem:hover { border-color: #CED0CE; }
+.fore-tour .ft-equipmentItem:hover { border-color: #DAF7FD; }
 .fore-tour .ft-equipmentItem.ft-active { border-color: var(--ft-lime-deep); background: var(--ft-forest-2); }
 .fore-tour .ft-equipmentItem span { font-size: 13px; font-weight: 700; color: var(--ft-ink); }
 .fore-tour .ft-equipmentItem strong { font-size: 12.5px; color: var(--ft-muted); font-weight: 600; }
@@ -1890,15 +1890,15 @@ export default function ProductDemo() {
   return (
     <div className="product-demo">
       {/* Existing role switcher – kept exactly as before */}
-      <div style={{ display: 'flex', gap: 4, padding: 5, background: '#E6E8E6', borderRadius: 28, width: '100%', marginBottom: 13 }}>
+      <div style={{ display: 'flex', gap: 4, padding: 5, background: '#F8F8E0', borderRadius: 28, width: '100%', marginBottom: 13 }}>
         {(['golfer', 'coach', 'facility'] as Role[]).map((r) => (
           <button
             key={r}
             onClick={() => switchRole(r)}
             style={{
               flex: 1, border: 0,
-              background: role === r ? '#191919' : 'transparent',
-              color: role === r ? '#fff' : '#19191980',
+              background: role === r ? '#1D4A2D' : 'transparent',
+              color: role === r ? '#fff' : '#1D4A2D80',
               borderRadius: 22, padding: '13px 18px',
               fontSize: 13, fontWeight: 800, cursor: 'pointer',
               transition: 'background .15s, color .15s',
