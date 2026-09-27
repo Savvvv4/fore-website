@@ -755,7 +755,7 @@ function About() {
         </div>
       </section>
 
-      <section className="section" style={{ background: '#fff' }}>
+      <section className="section" style={{ background: '#F8F8E0' }}>
         <div className="container about-split">
           <div>
             <h2 className="about-split-h2"><span>From India to the world.</span></h2>
@@ -1078,7 +1078,7 @@ function GolfersMock() {
         </div>
         <div>
           <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: 'var(--label)', marginBottom: 10 }}>Coaches you may like</div>
-          <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ background: '#F8F8E0', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
             <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--acid)', color: '#1D4A2D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Manrope', fontWeight: 800, fontSize: 13, flexShrink: 0 }}>AM</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--ink)' }}>Arjun Mehta</div>
@@ -1160,7 +1160,7 @@ function FacilitiesMock() {
             <div key={i} style={{ flex: 1, height: `${h}%`, borderRadius: 4, background: i === 3 ? '#1D4A2D' : '#F8F8E0' }} />
           ))}
         </div>
-        <div style={{ background: '#fff', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
+        <div style={{ background: '#F8F8E0', border: '1px solid var(--line)', borderRadius: 14, padding: '14px 16px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 6 }}>
             <span style={{ fontFamily: 'Manrope', fontWeight: 600, fontSize: 15, color: 'var(--ink)' }}>11:00 · 8 open slots</span>
             <span style={{ background: 'var(--acid)', color: '#1D4A2D', borderRadius: 999, padding: '3px 8px', fontSize: 11, fontWeight: 700 }}>Fore price ₹1,500</span>
