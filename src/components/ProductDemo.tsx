@@ -1258,7 +1258,7 @@ const TOTAL_STEPS: Record<Role, number> = { golfer: 9, coach: 7, facility: 8 };
 const TOUR_CSS = `
 .fore-tour {
   --ft-paper: #FFFFFF;
-  --ft-surface: #FFFFFFfff;
+  --ft-surface: #FFFFFF;
   --ft-surface-2: #FFFFFF;
   --ft-ink: #241A14;
   --ft-ink-soft: #241A14B3;
@@ -1266,16 +1266,16 @@ const TOUR_CSS = `
   --ft-muted-2: #241A1466;
   --ft-line: #FFE8DC;
   --ft-line-soft: #FFE8DC;
-  --ft-lime: #B84418;
-  --ft-lime-deep: #F0611F;
-  --ft-lime-ink: #FF7036;
-  --ft-forest-2: #FFFFFF;
-  --ft-forest-ink: #FF7036;
+  --ft-lime: #FF7036;
+  --ft-lime-deep: #B84418;
+  --ft-lime-ink: #241A14;
+  --ft-forest-2: #FFE8DC;
+  --ft-forest-ink: #B84418;
   --ft-amber-2: #FFFFFF;
   --ft-amber-deep: #241A14;
   --ft-r-md: 14px;
-  --ft-sh-md: 0 10px 30px -10px rgba(23,26,18,.18);
-  --ft-sh-btn: 0 1px 2px rgba(23,26,18,.06), 0 8px 18px -10px rgba(23,26,18,.22);
+  --ft-sh-md: 0 10px 30px -10px rgba(36,26,20,.18);
+  --ft-sh-btn: 0 1px 2px rgba(36,26,20,.06), 0 8px 18px -10px rgba(36,26,20,.22);
   --ft-ease: cubic-bezier(.22,.9,.32,1);
   --ft-stage-h: 620px;
   font-family: 'DM Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
@@ -1292,7 +1292,7 @@ const TOUR_CSS = `
   border: 1px solid rgba(255,255,255,.22);
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 28px 80px rgba(13,31,20,.18);
+  box-shadow: 0 28px 80px rgba(36,26,20,.18);
 }
 .fore-tour .ft-top {
   position: relative;
@@ -1613,7 +1613,7 @@ const TOUR_CSS = `
   font-family: inherit;
 }
 .fore-tour .ft-course:hover { border-color: #FFE8DC; }
-.fore-tour .ft-course.ft-selected { border-color: var(--ft-lime-deep); box-shadow: 0 0 0 3px rgba(143,174,28,.16); }
+.fore-tour .ft-course.ft-selected { border-color: var(--ft-lime-deep); box-shadow: 0 0 0 3px rgba(184,68,24,.16); }
 .fore-tour .ft-course-img {
   width: 54px; flex: none; position: relative; align-self: stretch;
   padding: 0;
@@ -1626,7 +1626,7 @@ const TOUR_CSS = `
 .fore-tour .ft-course-check {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center;
-  color: var(--ft-lime-ink); background: rgba(216,242,76,.85);
+  color: var(--ft-lime-ink); background: rgba(255,232,220,.85);
 }
 .fore-tour .ft-course.ft-selected .ft-course-check { display: flex; }
 .fore-tour .ft-course-body { flex: 1; padding: 6px 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
