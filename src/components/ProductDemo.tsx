@@ -1258,21 +1258,21 @@ const TOTAL_STEPS: Record<Role, number> = { golfer: 9, coach: 7, facility: 8 };
 const TOUR_CSS = `
 .fore-tour {
   --ft-paper: #FFFFFF;
-  --ft-surface: #ffffff;
+  --ft-surface: #FFFFFFfff;
   --ft-surface-2: #FFFFFF;
-  --ft-ink: #1C2230;
-  --ft-ink-soft: #1C2230B3;
-  --ft-muted: #1C223080;
-  --ft-muted-2: #1C223066;
-  --ft-line: #EAF1FF;
-  --ft-line-soft: #EAF1FF;
-  --ft-lime: #2277FF;
-  --ft-lime-deep: #0F52B8;
-  --ft-lime-ink: #1668E3;
+  --ft-ink: #241A14;
+  --ft-ink-soft: #241A14B3;
+  --ft-muted: #241A1480;
+  --ft-muted-2: #241A1466;
+  --ft-line: #FFE8DC;
+  --ft-line-soft: #FFE8DC;
+  --ft-lime: #B84418;
+  --ft-lime-deep: #F0611F;
+  --ft-lime-ink: #FF7036;
   --ft-forest-2: #FFFFFF;
-  --ft-forest-ink: #1668E3;
+  --ft-forest-ink: #FF7036;
   --ft-amber-2: #FFFFFF;
-  --ft-amber-deep: #1C2230;
+  --ft-amber-deep: #241A14;
   --ft-r-md: 14px;
   --ft-sh-md: 0 10px 30px -10px rgba(23,26,18,.18);
   --ft-sh-btn: 0 1px 2px rgba(23,26,18,.06), 0 8px 18px -10px rgba(23,26,18,.22);
@@ -1456,12 +1456,12 @@ const TOUR_CSS = `
   cursor: pointer;
   font-family: inherit;
 }
-.fore-tour .ft-btn:hover:not(:disabled) { border-color: #EAF1FF; box-shadow: var(--ft-sh-btn); transform: translateY(-1px); }
+.fore-tour .ft-btn:hover:not(:disabled) { border-color: #FFE8DC; box-shadow: var(--ft-sh-btn); transform: translateY(-1px); }
 .fore-tour .ft-btn:active:not(:disabled) { transform: scale(.97); }
 .fore-tour .ft-btn.ft-primary { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); box-shadow: var(--ft-sh-btn); }
-.fore-tour .ft-btn.ft-primary:hover:not(:disabled) { background: #1668E3; border-color: #1668E3; }
+.fore-tour .ft-btn.ft-primary:hover:not(:disabled) { background: #FF7036; border-color: #FF7036; }
 .fore-tour .ft-btn.ft-accent { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); }
-.fore-tour .ft-btn.ft-accent:hover:not(:disabled) { background: #1668E3; border-color: #1668E3; }
+.fore-tour .ft-btn.ft-accent:hover:not(:disabled) { background: #FF7036; border-color: #FF7036; }
 .fore-tour .ft-btn.ft-lg { padding: 14px 24px; font-size: 14.5px; border-radius: 13px; }
 .fore-tour .ft-btn.ft-sm { padding: 8px 13px; font-size: 12.5px; border-radius: 9px; }
 .fore-tour .ft-btn.ft-block { width: 100%; }
@@ -1578,7 +1578,7 @@ const TOUR_CSS = `
   cursor: pointer;
   font-family: inherit;
 }
-.fore-tour .ft-chip:hover { border-color: #EAF1FF; }
+.fore-tour .ft-chip:hover { border-color: #FFE8DC; }
 .fore-tour .ft-chip.ft-selected { background: var(--ft-ink); border-color: var(--ft-ink); color: var(--ft-paper); }
 
 /* search */
@@ -1612,7 +1612,7 @@ const TOUR_CSS = `
   cursor: pointer;
   font-family: inherit;
 }
-.fore-tour .ft-course:hover { border-color: #EAF1FF; }
+.fore-tour .ft-course:hover { border-color: #FFE8DC; }
 .fore-tour .ft-course.ft-selected { border-color: var(--ft-lime-deep); box-shadow: 0 0 0 3px rgba(143,174,28,.16); }
 .fore-tour .ft-course-img {
   width: 54px; flex: none; position: relative; align-self: stretch;
@@ -1620,9 +1620,9 @@ const TOUR_CSS = `
   background: linear-gradient(135deg,#FFFFFF,#FFFFFF);
   border-radius: 10px 0 0 10px;
 }
-.fore-tour .ft-course-img.b { background: linear-gradient(135deg,#EAF1FF,#FFFFFF); }
-.fore-tour .ft-course-img.c { background: linear-gradient(135deg,#EAF1FF,#FFFFFF); }
-.fore-tour .ft-course-img.d { background: linear-gradient(135deg,#EAF1FF,#FFFFFF); }
+.fore-tour .ft-course-img.b { background: linear-gradient(135deg,#FFE8DC,#FFFFFF); }
+.fore-tour .ft-course-img.c { background: linear-gradient(135deg,#FFE8DC,#FFFFFF); }
+.fore-tour .ft-course-img.d { background: linear-gradient(135deg,#FFE8DC,#FFFFFF); }
 .fore-tour .ft-course-check {
   position: absolute; inset: 0; display: none;
   align-items: center; justify-content: center;
@@ -1660,7 +1660,7 @@ const TOUR_CSS = `
 .fore-tour .ft-callout {
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
   padding: 10px 13px; margin: 0 0 12px;
-  border: 1px solid #EAF1FF; border-radius: 11px;
+  border: 1px solid #FFE8DC; border-radius: 11px;
   background: var(--ft-forest-2); font-size: 13px; font-weight: 600; color: var(--ft-forest-ink);
 }
 .fore-tour .ft-callout b { color: var(--ft-lime-deep); }
@@ -1700,7 +1700,7 @@ const TOUR_CSS = `
   padding: 11px 13px; background: var(--ft-surface); text-align: left; width: 100%;
   transition: border-color .15s, background .15s; cursor: pointer; font-family: inherit;
 }
-.fore-tour .ft-option:hover { border-color: #EAF1FF; }
+.fore-tour .ft-option:hover { border-color: #FFE8DC; }
 .fore-tour .ft-option.ft-active { border-color: var(--ft-lime-deep); background: var(--ft-forest-2); }
 .fore-tour .ft-option.ft-locked { cursor: default; }
 .fore-tour .ft-option b { display: block; font-size: 13.5px; font-weight: 700; color: var(--ft-ink); }
@@ -1743,7 +1743,7 @@ const TOUR_CSS = `
   transition: border-color .15s, background .15s;
   cursor: pointer; border: 1.5px solid var(--ft-line); font-family: inherit;
 }
-.fore-tour button.ft-slotRow:hover:not(:disabled) { border-color: #EAF1FF; }
+.fore-tour button.ft-slotRow:hover:not(:disabled) { border-color: #FFE8DC; }
 .fore-tour .ft-slotRow.ft-on { border-color: var(--ft-lime-deep); background: var(--ft-forest-2); }
 .fore-tour .ft-slotRow.ft-lesson { background: var(--ft-surface); cursor: default; }
 .fore-tour .ft-slotRow.ft-dim { opacity: .5; }
@@ -1784,7 +1784,7 @@ const TOUR_CSS = `
   background: var(--ft-surface); transition: border-color .18s, box-shadow .18s;
   cursor: pointer; font-family: inherit;
 }
-.fore-tour .ft-mcard:hover { border-color: #EAF1FF; }
+.fore-tour .ft-mcard:hover { border-color: #FFE8DC; }
 .fore-tour .ft-mcard.ft-open { border-color: var(--ft-lime-deep); }
 .fore-tour .ft-mico { width: 36px; height: 36px; border-radius: 10px; background: var(--ft-forest-2); color: var(--ft-forest-ink); display: grid; place-items: center; }
 .fore-tour .ft-mcard b { display: block; font-size: 14.5px; font-weight: 700; color: var(--ft-ink); }
@@ -1817,7 +1817,7 @@ const TOUR_CSS = `
   background: var(--ft-surface-2); text-align: left;
   transition: border-color .15s, background .15s; cursor: pointer; font-family: inherit;
 }
-.fore-tour .ft-equipmentItem:hover { border-color: #EAF1FF; }
+.fore-tour .ft-equipmentItem:hover { border-color: #FFE8DC; }
 .fore-tour .ft-equipmentItem.ft-active { border-color: var(--ft-lime-deep); background: var(--ft-forest-2); }
 .fore-tour .ft-equipmentItem span { font-size: 13px; font-weight: 700; color: var(--ft-ink); }
 .fore-tour .ft-equipmentItem strong { font-size: 12.5px; color: var(--ft-muted); font-weight: 600; }
@@ -1897,8 +1897,8 @@ export default function ProductDemo() {
             onClick={() => switchRole(r)}
             style={{
               flex: 1, border: 0,
-              background: role === r ? '#1C2230' : 'transparent',
-              color: role === r ? '#FFFFFF' : '#1C223080',
+              background: role === r ? '#241A14' : 'transparent',
+              color: role === r ? '#FFFFFF' : '#241A1480',
               borderRadius: 22, padding: '13px 18px',
               fontSize: 13, fontWeight: 800, cursor: 'pointer',
               transition: 'background .15s, color .15s',
