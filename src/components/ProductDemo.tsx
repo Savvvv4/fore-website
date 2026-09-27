@@ -1897,8 +1897,8 @@ export default function ProductDemo() {
             onClick={() => switchRole(r)}
             style={{
               flex: 1, border: 0,
-              background: role === r ? '#241A14' : 'transparent',
-              color: role === r ? '#FFFFFF' : '#241A1480',
+              background: role === r ? '#FFE8DC' : 'transparent',
+              color: role === r ? '#B84418' : '#6B5B52',
               borderRadius: 22, padding: '13px 18px',
               fontSize: 13, fontWeight: 800, cursor: 'pointer',
               transition: 'background .15s, color .15s',
