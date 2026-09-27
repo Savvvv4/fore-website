@@ -1579,7 +1579,7 @@ const TOUR_CSS = `
   font-family: inherit;
 }
 .fore-tour .ft-chip:hover { border-color: #FFE8DC; }
-.fore-tour .ft-chip.ft-selected { background: var(--ft-ink); border-color: var(--ft-ink); color: var(--ft-paper); }
+.fore-tour .ft-chip.ft-selected { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); }
 
 /* search */
 .fore-tour .ft-search {
@@ -1767,7 +1767,7 @@ const TOUR_CSS = `
   padding: 7px 13px; font-size: 12px; font-weight: 700; color: var(--ft-ink-soft);
   cursor: pointer; font-family: inherit; transition: background .15s, color .15s;
 }
-.fore-tour .ft-miniChip.ft-on { background: var(--ft-ink); color: var(--ft-paper); border-color: var(--ft-ink); }
+.fore-tour .ft-miniChip.ft-on { background: var(--ft-lime); color: var(--ft-lime-ink); border-color: var(--ft-lime); }
 .fore-tour .ft-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
 .fore-tour .ft-metric { border: 1px solid var(--ft-line); border-radius: var(--ft-r-md); background: var(--ft-surface-2); padding: 12px 13px; }
 .fore-tour .ft-metric small { display: block; font-size: 11px; color: var(--ft-muted); font-weight: 700; }
@@ -1797,7 +1797,7 @@ const TOUR_CSS = `
 }
 .fore-tour .ft-mplus:before, .fore-tour .ft-mplus:after {
   content: ""; position: absolute; left: 6px; right: 6px; top: 10px;
-  height: 2px; border-radius: 2px; background: var(--ft-muted);
+  height: 2px; border-radius: 2px; background: var(--ft-lime-deep);
 }
 .fore-tour .ft-mplus:after { transform: rotate(90deg); }
 .fore-tour .ft-mcard.ft-open .ft-mplus { transform: rotate(45deg); }
