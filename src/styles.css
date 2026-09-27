@@ -202,7 +202,7 @@ a { color: inherit; }
   font-weight: 700;
   text-align: center;
 }
-.early-member-role-option input:checked + span { border-color: var(--orange); background: var(--peach); color: var(--orange); }
+.early-member-role-option input:checked + span { border-color: var(--orange); background: var(--peach); color: var(--orange-text); }
 .early-member-role-option input:focus-visible + span { outline: 2px solid var(--orange); outline-offset: 2px; }
 .early-member-form .button { margin-top: 8px; justify-content: center; }
 .early-member-form .button:disabled { opacity: .65; cursor: wait; }
@@ -1331,7 +1331,7 @@ a { color: inherit; }
 }
 .about-card p { font-size: 18px; color: var(--muted); line-height: 1.68; margin: 0; }
 .about-card--dark { background: var(--peach); border-color: var(--line); }
-.about-card--dark .val-num { color: var(--orange); }
+.about-card--dark .val-num { color: var(--ink); }
 .about-card--dark h3 { color: var(--ink); }
 .about-card--dark p { color: var(--muted); }
 .about-card--sage { background: var(--soft-white); border-color: var(--line); }
