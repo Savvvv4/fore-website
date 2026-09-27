@@ -36,7 +36,7 @@ function GolfBallArc({
 function WavingFlag({ x, y }: { x: number; y: number }) {
   return (
     <g>
-      <line x1={x} y1={y + 1} x2={x} y2={y - 26} stroke="#241A14" strokeWidth="1.6" strokeLinecap="round" />
+      <line x1={x} y1={y + 1} x2={x} y2={y - 26} stroke="#B84418" strokeWidth="1.6" strokeLinecap="round" />
       <motion.path
         fill="#FF7036"
         animate={{
@@ -139,7 +139,7 @@ function TreeCluster({ x, y, count = 3, scale = 1 }: { x: number; y: number; cou
       ))}
       {offsets.map((o, i) => (
         <circle key={i} cx={x + o.dx} cy={y + o.dy} r={o.r}
-          fill={i % 2 === 0 ? '#241A14' : '#241A14'}
+          fill={i % 2 === 0 ? '#FF7036' : '#B84418'}
         />
       ))}
       {offsets.slice(0, 1).map((o, i) => (
@@ -189,10 +189,10 @@ export default function HeroEcosystem() {
             <stop offset="100%" stopColor="#FFE8DC" />
           </radialGradient>
           <filter id="eco-sh" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="#241A14" floodOpacity="0.28" />
+            <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="#FF7036" floodOpacity="0.28" />
           </filter>
           <filter id="eco-bldg-sh" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#241A14" floodOpacity="0.35" />
+            <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#FF7036" floodOpacity="0.35" />
           </filter>
         </defs>
 
@@ -323,7 +323,7 @@ export default function HeroEcosystem() {
           <rect x="542" y="524" width="16" height="14" rx="3" fill="#FFE8DC" opacity={0.8} />
           <rect x="510" y="548" width="20" height="42" rx="3" fill="#FFE8DC" />
           <circle cx="518" cy="569" r="1.8" fill="rgba(255,255,255,0.5)" />
-          <line x1="515" y1="495" x2="515" y2="476" stroke="#241A14" strokeWidth="1.4" />
+          <line x1="515" y1="495" x2="515" y2="476" stroke="#B84418" strokeWidth="1.4" />
           <path d="M 515 476 L 526 480 L 515 484 Z" fill="#FF7036" />
         </g>
 
