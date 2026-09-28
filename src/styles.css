@@ -14,7 +14,7 @@
   --label:       #8A8A8A;
   --line:        #E5E5E5;
 
-  --orange:      #FF7951;
+  --orange:      #FF6E00;
   --orange-hover:#F5663D;
   --orange-text: #E85D38;
   --peach:       #FFF0EB;
@@ -442,7 +442,7 @@ a { color: inherit; }
 .hero-audience-ctas { display: flex; gap: 10px; }
 
 .hero-note { font-size: 11px; color: var(--label); margin-top: 14px; }
-.pulse { width: 6px; height: 6px; background: #FF7951; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.pulse { width: 6px; height: 6px; background: #FF6E00; border-radius: 50%; display: inline-block; margin-right: 6px; }
 
 /* ─── Hero visual card ───────────────────────────────────────── */
 .hero-visual {
@@ -682,7 +682,7 @@ a { color: inherit; }
 .net-core span   { font-size: 9px; color: var(--muted); margin-top: 5px; }
 .net-line {
   height: 1px;
-  background: linear-gradient(90deg, transparent, #FF795166, transparent);
+  background: linear-gradient(90deg, transparent, #FF6E0066, transparent);
   position: absolute; transform-origin: left center;
 }
 .l1 { width: 390px; left: 25%; top: 37%; transform: rotate(9deg); }
@@ -860,7 +860,7 @@ a { color: inherit; }
   padding: 12px 14px;
   outline: 0; color: var(--ink);
 }
-.form-fields input:focus { border-color: #8A8A8A; box-shadow: 0 0 0 4px #FF795144; }
+.form-fields input:focus { border-color: #8A8A8A; box-shadow: 0 0 0 4px #FF6E0044; }
 .form-fields select,
 .form-fields textarea {
   font-family: inherit; font-size: 15px;
@@ -873,7 +873,7 @@ a { color: inherit; }
 }
 .form-fields select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239a9d94' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; cursor: pointer; }
 .form-fields select:focus,
-.form-fields textarea:focus { border-color: #8A8A8A; box-shadow: 0 0 0 4px #FF795144; }
+.form-fields textarea:focus { border-color: #8A8A8A; box-shadow: 0 0 0 4px #FF6E0044; }
 .form-fields textarea { resize: vertical; min-height: 90px; }
 .form-fields .full-width { grid-column: 1 / -1; }
 .form-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
@@ -1670,7 +1670,7 @@ a { color: inherit; }
 :root {
   --bg:#FFFFFF; --surface:#FFFFFF; --surface-soft:#F7F7F7; --white:#FFFFFF;
   --ink:#111111; --muted:#5F5F5F; --subtle:#8A8A8A; --label:#6F6F6F; --line:#E5E5E5;
-  --orange:#FF7951; --orange-hover:#F5663D; --orange-text:#E85D38; --peach:#FFF0EB;
+  --orange:#FF6E00; --orange-hover:#F5663D; --orange-text:#E85D38; --peach:#FFF0EB;
 }
 body { background:var(--bg); color:var(--ink); font-size:16px; line-height:1.5; }
 .container { width:min(1240px,calc(100% - 48px)); }

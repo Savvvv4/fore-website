@@ -38,7 +38,7 @@ function WavingFlag({ x, y }: { x: number; y: number }) {
     <g>
       <line x1={x} y1={y + 1} x2={x} y2={y - 26} stroke="#E85D38" strokeWidth="1.6" strokeLinecap="round" />
       <motion.path
-        fill="#FF7951"
+        fill="#FF6E00"
         animate={{
           d: [
             `M ${x} ${y - 26} L ${x + 17} ${y - 20} L ${x} ${y - 14} Z`,
@@ -139,7 +139,7 @@ function TreeCluster({ x, y, count = 3, scale = 1 }: { x: number; y: number; cou
       ))}
       {offsets.map((o, i) => (
         <circle key={i} cx={x + o.dx} cy={y + o.dy} r={o.r}
-          fill={i % 2 === 0 ? '#FF7951' : '#E85D38'}
+          fill={i % 2 === 0 ? '#FF6E00' : '#E85D38'}
         />
       ))}
       {offsets.slice(0, 1).map((o, i) => (
@@ -173,26 +173,26 @@ export default function HeroEcosystem() {
             <stop offset="100%" stopColor="#FFF0EB" />
           </radialGradient>
           <radialGradient id="eco-fairway" cx="50%" cy="40%" r="70%">
-            <stop offset="0%" stopColor="#FF7951" />
-            <stop offset="100%" stopColor="#FF7951" />
+            <stop offset="0%" stopColor="#FF6E00" />
+            <stop offset="100%" stopColor="#FF6E00" />
           </radialGradient>
           <radialGradient id="eco-green" cx="40%" cy="35%" r="70%">
-            <stop offset="0%" stopColor="#FF7951" />
+            <stop offset="0%" stopColor="#FF6E00" />
             <stop offset="100%" stopColor="#FFF0EB" />
           </radialGradient>
           <radialGradient id="eco-range" cx="50%" cy="50%" r="70%">
             <stop offset="0%" stopColor="#FFF0EB" />
-            <stop offset="100%" stopColor="#FF7951" />
+            <stop offset="100%" stopColor="#FF6E00" />
           </radialGradient>
           <radialGradient id="eco-pond" cx="40%" cy="35%" r="70%">
             <stop offset="0%" stopColor="#FFFFFF" />
             <stop offset="100%" stopColor="#FFF0EB" />
           </radialGradient>
           <filter id="eco-sh" x="-30%" y="-30%" width="160%" height="160%">
-            <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="#FF7951" floodOpacity="0.28" />
+            <feDropShadow dx="0" dy="6" stdDeviation="12" floodColor="#FF6E00" floodOpacity="0.28" />
           </filter>
           <filter id="eco-bldg-sh" x="-20%" y="-20%" width="140%" height="140%">
-            <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#FF7951" floodOpacity="0.35" />
+            <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#FF6E00" floodOpacity="0.35" />
           </filter>
         </defs>
 
@@ -242,7 +242,7 @@ export default function HeroEcosystem() {
           <text key={n} x={315 + i * 52} y="440" textAnchor="middle" fill="rgba(255,255,255,0.3)" fontSize="7" fontWeight="700" fontFamily="Manrope, sans-serif">BAY {n}</text>
         ))}
         {[320, 372, 424, 476, 528].map((tx, i) => (
-          <circle key={i} cx={tx + 5} cy="456" r="2.5" fill="#FF7951" opacity={0.5} />
+          <circle key={i} cx={tx + 5} cy="456" r="2.5" fill="#FF6E00" opacity={0.5} />
         ))}
 
         {/* ── Golf course (left/center) ──────────────────────── */}
@@ -297,10 +297,10 @@ export default function HeroEcosystem() {
           letterSpacing="0.8" fontFamily="Manrope, sans-serif">HAZARD</text>
 
         {/* ── Tee box ────────────────────────────────────────── */}
-        <rect x="120" y="548" width="36" height="22" rx="5" fill="#FF7951" />
-        <rect x="122" y="550" width="32" height="18" rx="4" fill="#FF7951" />
-        <circle cx="131" cy="559" r="2.5" fill="#FF7951" opacity={0.9} />
-        <circle cx="149" cy="559" r="2.5" fill="#FF7951" opacity={0.9} />
+        <rect x="120" y="548" width="36" height="22" rx="5" fill="#FF6E00" />
+        <rect x="122" y="550" width="32" height="18" rx="4" fill="#FF6E00" />
+        <circle cx="131" cy="559" r="2.5" fill="#FF6E00" opacity={0.9} />
+        <circle cx="149" cy="559" r="2.5" fill="#FF6E00" opacity={0.9} />
 
         {/* ── Trees ──────────────────────────────────────────── */}
         <TreeCluster x={62} y={100} count={4} scale={1.2} />
@@ -324,7 +324,7 @@ export default function HeroEcosystem() {
           <rect x="510" y="548" width="20" height="42" rx="3" fill="#FFF0EB" />
           <circle cx="518" cy="569" r="1.8" fill="rgba(255,255,255,0.5)" />
           <line x1="515" y1="495" x2="515" y2="476" stroke="#E85D38" strokeWidth="1.4" />
-          <path d="M 515 476 L 526 480 L 515 484 Z" fill="#FF7951" />
+          <path d="M 515 476 L 526 480 L 515 484 Z" fill="#FF6E00" />
         </g>
 
         {/* ── Golf ball arcs ─────────────────────────────────── */}
@@ -353,7 +353,7 @@ export default function HeroEcosystem() {
         {/* Coach teaching at range bay 3 */}
         <Person
           x={410} y={455}
-          shirtColor="#FF7951"
+          shirtColor="#FF6E00"
           headColor="#d8986a"
           label="Meera Shah"
           role="COACH"

@@ -1266,7 +1266,7 @@ const TOUR_CSS = `
   --ft-muted-2: #11111166;
   --ft-line: #FFF0EB;
   --ft-line-soft: #FFF0EB;
-  --ft-lime: #FF7951;
+  --ft-lime: #FF6E00;
   --ft-lime-deep: #E85D38;
   --ft-lime-ink: #FFFFFF;
   --ft-forest-2: #FFF0EB;
@@ -1459,9 +1459,9 @@ const TOUR_CSS = `
 .fore-tour .ft-btn:hover:not(:disabled) { border-color: #FFF0EB; box-shadow: var(--ft-sh-btn); transform: translateY(-1px); }
 .fore-tour .ft-btn:active:not(:disabled) { transform: scale(.97); }
 .fore-tour .ft-btn.ft-primary { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); box-shadow: var(--ft-sh-btn); }
-.fore-tour .ft-btn.ft-primary:hover:not(:disabled) { background: #FF7951; border-color: #FF7951; }
+.fore-tour .ft-btn.ft-primary:hover:not(:disabled) { background: #FF6E00; border-color: #FF6E00; }
 .fore-tour .ft-btn.ft-accent { background: var(--ft-lime); border-color: var(--ft-lime); color: var(--ft-lime-ink); }
-.fore-tour .ft-btn.ft-accent:hover:not(:disabled) { background: #FF7951; border-color: #FF7951; }
+.fore-tour .ft-btn.ft-accent:hover:not(:disabled) { background: #FF6E00; border-color: #FF6E00; }
 .fore-tour .ft-btn.ft-lg { padding: 14px 24px; font-size: 14.5px; border-radius: 13px; }
 .fore-tour .ft-btn.ft-sm { padding: 8px 13px; font-size: 12.5px; border-radius: 9px; }
 .fore-tour .ft-btn.ft-block { width: 100%; }
