@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
-import logoDark from './impots/FORESPORTS-ORANGE.png';
-import logoWhite from './impots/FORESPORTS-WHITE.png';
+import logoDark from './imports/foresports-logo.png';
+import logoWhite from './imports/foresports-logo-white.png';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';

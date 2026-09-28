@@ -1815,3 +1815,31 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
     padding-bottom: 64px;
   }
 }
+
+
+/* Final brand overrides */
+.header {
+  background: var(--peach) !important;
+  border-bottom-color: rgba(36,26,20,.08) !important;
+}
+.button.dark,
+.button.acid,
+.final-cta .button.acid,
+.fore-tour .ft-btn.ft-primary,
+.fore-tour .ft-btn.ft-accent {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #FFFFFF;
+}
+.button.dark:hover,
+.button.acid:hover,
+.final-cta .button.acid:hover,
+.fore-tour .ft-btn.ft-primary:hover:not(:disabled),
+.fore-tour .ft-btn.ft-accent:hover:not(:disabled) {
+  background: var(--orange-hover);
+  border-color: var(--orange-hover);
+  color: #FFFFFF;
+}
+.hero-background-image {
+  display: none !important;
+}
