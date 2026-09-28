@@ -1843,3 +1843,26 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
 .hero-background-image {
   display: none !important;
 }
+
+.aud-hero-copy .button-row {
+  position: relative;
+  z-index: 3;
+  opacity: 1;
+  visibility: visible;
+}
+
+.aud-hero-copy .button {
+  opacity: 1;
+  visibility: visible;
+}
+.aud-hero-copy .button-row {
+  position: relative;
+  z-index: 3;
+  opacity: 1;
+  visibility: visible;
+}
+
+.aud-hero-copy .button {
+  opacity: 1;
+  visibility: visible;
+}

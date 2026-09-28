@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
-import logoOrange from './imports/FORESPORTS ORANGE.png';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
@@ -43,7 +42,7 @@ const audiences = [
 ];
 
 function Logo() {
-  const src = logoOrange.src;
+  const src = '/FORESPORTS ORANGE.png';
   return (
     <Link to="/" className="logo" aria-label="ForeSports">
       <img src={src} alt="ForeSports" className="logo-img" />
@@ -1174,7 +1173,7 @@ function GolfersPage() {
         <div className="container aud-hero">
           <motion.div
             className="aud-hero-copy"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
           >
@@ -1293,7 +1292,7 @@ function CoachesPage() {
         <div className="container aud-hero">
           <motion.div
             className="aud-hero-copy"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
           >
@@ -1466,7 +1465,7 @@ function FacilitiesPage() {
         <div className="container aud-hero">
           <motion.div
             className="aud-hero-copy"
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
           >
