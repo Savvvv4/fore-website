@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
-import logoDark from './imports/foresports-logo.png';
-import logoWhite from './imports/foresports-logo-white.png';
+import logoOrange from './imports/FORESPORTS ORANGE.png';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
@@ -43,8 +42,8 @@ const audiences = [
   },
 ];
 
-function Logo({ variant = 'dark' }: { variant?: 'dark' | 'white' }) {
-  const src = variant === 'white' ? logoWhite.src : logoDark.src;
+function Logo() {
+  const src = logoOrange.src;
   return (
     <Link to="/" className="logo" aria-label="ForeSports">
       <img src={src} alt="ForeSports" className="logo-img" />
@@ -129,7 +128,7 @@ function Footer() {
     <footer className="footer">
       <div className="container footer-grid">
         <div>
-          <Logo variant="dark" />
+          <Logo />
           <p>The connective layer for golf in India.</p>
         </div>
 
