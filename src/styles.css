@@ -1868,3 +1868,8 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
   opacity: 1;
   visibility: visible;
 }
+
+
+/* Orange-filled CTA text contrast */
+.ecosystem-cta { color: #FFFFFF; }
+.ecosystem-cta:hover { color: #FFFFFF; }

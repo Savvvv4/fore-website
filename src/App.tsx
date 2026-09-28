@@ -1119,7 +1119,7 @@ function CoachesMock() {
             <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 18, color: 'var(--ink)' }}>₹3,000</div>
             <div style={{ fontSize: 12, color: 'var(--muted)' }}>/ lesson</div>
           </div>
-          <span style={{ background: 'var(--orange)', color: 'var(--ink)', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
+          <span style={{ background: 'var(--orange)', color: '#FFFFFF', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
         </div>
       </div>
     </div>
