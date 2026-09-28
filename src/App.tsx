@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
-import heroImg from './imports/welcome-23Iyt5HSJ-c-unsplash-1.jpg';
-import logoDark from './imports/foresports-logo.png';
-import logoWhite from './imports/foresports-logo-white.png';
+import logoDark from './impots/FORESPORTS-ORANGE.png';
+import logoWhite from './impots/FORESPORTS-WHITE.png';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
@@ -402,13 +401,6 @@ function Home() {
   return (
     <>
       <section className="hero-bg">
-        <img
-          className="hero-background-image"
-          src={heroImg.src}
-          alt=""
-          aria-hidden="true"
-        />
-
         <div className="hero container">
           <div className="hero-copy">
             <h1>

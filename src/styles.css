@@ -1760,3 +1760,58 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
   .ecosystem-cards { grid-template-columns:1fr; }
   .ecosystem-card { min-height:300px; padding:28px; }
 }
+
+
+/* ─── Final brand pass: supplied logos + light-orange header ───── */
+.header {
+  background: var(--peach);
+  border-bottom-color: rgba(17,17,17,.08);
+}
+.logo-img {
+  height: 30px;
+}
+.footer .logo-img {
+  height: 34px;
+}
+.button.dark,
+.button.acid,
+.final-cta .button.acid {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #FFFFFF;
+}
+.button.dark:hover,
+.button.acid:hover,
+.final-cta .button.acid:hover {
+  background: var(--orange-hover);
+  border-color: var(--orange-hover);
+  color: #FFFFFF;
+}
+.hero-bg {
+  background: #FFFFFF;
+}
+.hero {
+  grid-template-columns: minmax(0, 1fr);
+  max-width: 1080px;
+  padding-top: 118px;
+  padding-bottom: 96px;
+}
+.hero-copy {
+  width: 100%;
+  max-width: 980px;
+}
+.hero-background-image {
+  display: none !important;
+}
+@media (min-width:900px) {
+  .hero {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+  }
+}
+@media (max-width:899px) {
+  .hero {
+    padding-top: 72px;
+    padding-bottom: 64px;
+  }
+}

@@ -1268,7 +1268,7 @@ const TOUR_CSS = `
   --ft-line-soft: #FFF0EB;
   --ft-lime: #FF7951;
   --ft-lime-deep: #E85D38;
-  --ft-lime-ink: #111111;
+  --ft-lime-ink: #FFFFFF;
   --ft-forest-2: #FFF0EB;
   --ft-forest-ink: #E85D38;
   --ft-amber-2: #FFFFFF;
