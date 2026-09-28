@@ -417,12 +417,14 @@ a { color: inherit; }
 
 /* Ghost button — used on dark photo hero */
 .button.hero-ghost {
-  background: rgba(255,255,255,.10);
-  border-color: rgba(255,255,255,.30);
-  color: #FFFFFF;
+  background: #FFFFFF;
+  border-color: #111111;
+  color: #111111;
 }
 .button.hero-ghost:hover {
-  background: rgba(255,255,255,.18);
+  background: #111111;
+  border-color: #111111;
+  color: #FFFFFF;
 }
 
 /* Hero body copy */
