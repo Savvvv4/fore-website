@@ -784,27 +784,150 @@ function About() {
 }
 
 function Privacy() {
-  return <><PageHero label="Legal" title="Privacy Policy" desc="How ForeSports handles information collected through this website." /><section className="section container legal">
-    <p><strong>Last updated: September 21, 2026.</strong> This policy applies to the ForeSports website and waitlist forms.</p>
-    <h2>Information we collect</h2><p>When you submit a form, we collect the details you provide, such as your name, email address, phone number, city, role, and facility name where applicable. We may also receive basic technical information automatically provided by your browser, such as IP address, device, and request logs.</p>
-    <h2>How we use information</h2><p>We use submitted information to respond to enquiries, manage the Fore waitlist, communicate about the planned product, and operate and protect this website. We do not use the website for advertising or sell personal information.</p>
-    <h2>Sharing and storage</h2><p>Information is stored using service providers that support the website and form submissions. We share information only when needed to operate those services, comply with law, or protect our rights and users. We retain it only for as long as reasonably needed for these purposes, unless a longer period is required by law.</p>
-    <h2>Cookies</h2><p>This website does not currently use analytics, advertising, or tracking cookies. Essential browser storage or cookies may be used by services supporting form delivery or security. If this changes, this policy will be updated.</p>
-    <h2>Your choices</h2><p>You may request access, correction, deletion, or to stop receiving marketing communications by contacting us. Some requests may be limited by applicable law or operational requirements.</p>
-    <h2>Children and changes</h2><p>The website is not directed to children. We may update this policy as the website and product develop; the updated version will be posted here with a revised date.</p>
-    <h2>Contact</h2><p>For privacy questions, contact <a href="mailto:hello@foresports.in">hello@foresports.in</a>.</p>
-  </section></>;
+  return <>
+    <PageHero label="Legal" title="Privacy Policy" desc="How ForeSports handles information collected through this website." />
+    <section className="section container legal">
+      <p><strong>Last updated: October 11, 2026.</strong></p>
+      <p>This Privacy Policy explains how <strong>FORESPORTS PRIVATE LIMITED</strong> (“ForeSports”, “we”, “us” or “our”) collects, uses, stores and shares personal information when you visit <a href="https://www.foresports.in">foresports.in</a>, use website demos, contact us, or submit a waitlist or partnership form. It applies to this website and its current pre-launch and enquiry features, not to any separate product or app terms or privacy notice that we may publish later.</p>
+
+      <h2>1. Who is responsible for your information?</h2>
+      <p>FORESPORTS PRIVATE LIMITED is responsible for personal information described in this policy. For privacy questions or requests, email <a href="mailto:hello@foresports.in">hello@foresports.in</a> with the subject “Privacy Request”. Please do not include passwords, identity documents or other sensitive information unless we specifically request it through a secure channel.</p>
+
+      <h2>2. Information we collect</h2>
+      <p>Depending on how you interact with the website, we may collect:</p>
+      <ul>
+        <li><strong>Contact and waitlist details:</strong> name, email address, phone number, city, your role (for example, golfer, coach or facility representative), and facility name where you provide it.</li>
+        <li><strong>Messages and enquiries:</strong> the contents of information you send us and the records needed to respond to you.</li>
+        <li><strong>Technical and usage information:</strong> information made available by your browser or service providers, which may include IP address, device and browser type, requested pages, timestamps, referring page, error reports and security logs.</li>
+        <li><strong>Preferences and demo interactions:</strong> information needed to make website features or demonstrations work. A demo may use temporary browser-side state; do not enter real customer, payment, health or other confidential information into a demonstration.</li>
+      </ul>
+      <p>Please provide only information that is accurate and necessary for your enquiry. We do not ask you to submit payment card details through the current website waitlist forms.</p>
+
+      <h2>3. How we collect information</h2>
+      <p>We collect information directly when you submit a form, contact us or otherwise choose to provide it. Some technical information may be generated automatically when your browser requests website pages or when our hosting, database and security services operate. We do not intentionally collect personal information that is unrelated to the purposes described in this policy.</p>
+
+      <h2>4. Why we use information</h2>
+      <p>We use personal information for specific, reasonable purposes, including to:</p>
+      <ul>
+        <li>record and manage waitlist, early-access, coaching and facility partnership enquiries;</li>
+        <li>contact you about the enquiry you made, answer questions and share relevant product availability or launch information;</li>
+        <li>operate, maintain, troubleshoot and secure the website and its forms;</li>
+        <li>prevent abuse, fraud, unauthorised access and other harmful activity;</li>
+        <li>meet legal obligations, establish or defend legal claims, and protect our rights.</li>
+      </ul>
+      <p>We do not sell personal information. We do not use waitlist details for unrelated third-party advertising. If we want to use your information for a materially different purpose, we will provide any notice or obtain any consent required by applicable law.</p>
+
+      <h2>5. Legal basis, notice and choice</h2>
+      <p>We handle information in accordance with applicable law. Depending on the circumstances and the law in force, processing may be based on your request or consent, steps taken at your request, our legitimate operational needs where legally permitted, or a legal obligation. Where consent is required, you may withdraw it by contacting us; withdrawal does not affect processing that lawfully occurred before withdrawal.</p>
+
+      <h2>6. Service providers and sharing</h2>
+      <p>We may share the minimum information reasonably necessary with service providers that help us host the website, store form submissions, deliver communications, maintain security or provide technical support. The website currently uses a hosted database service for waitlist submissions. These providers may process information on our behalf under their own service terms and applicable safeguards.</p>
+      <p>We may also disclose information where required by law or valid legal process, to protect people or the security of the service, or in connection with a proposed or completed corporate transaction, subject to appropriate confidentiality and legal protections. We do not otherwise disclose your contact details to third parties for their independent marketing.</p>
+
+      <h2>7. International processing</h2>
+      <p>Some service providers may operate infrastructure in more than one country. Where personal information is processed or accessed across borders, we will apply the safeguards and restrictions required by applicable law. Contact us if you need more information about the service providers relevant to a particular submission.</p>
+
+      <h2>8. Retention</h2>
+      <p>We keep personal information only for as long as reasonably necessary for the purpose for which it was collected, including responding to enquiries, managing the waitlist, maintaining security records and meeting legal requirements. When information is no longer needed, we will take reasonable steps to delete it or remove identifying details, unless retention is required or permitted by law. Backup copies and security logs may remain for a limited period under normal system processes.</p>
+
+      <h2>9. Security</h2>
+      <p>We use reasonable technical and organisational measures intended to protect information against unauthorised access, loss, misuse or alteration. No website or electronic transmission can be guaranteed completely secure. Please contact us promptly if you believe information you submitted to ForeSports has been misused or exposed.</p>
+
+      <h2>10. Cookies and similar technologies</h2>
+      <p>Our website and its infrastructure may use essential technologies for basic functionality, security, preferences or form delivery. We do not intentionally use personal information submitted through waitlist forms for behavioural advertising. The technologies used may change as the website evolves; where consent or additional notice is required for a non-essential cookie or similar technology, we will provide it as required by law. You can also manage cookies through your browser settings, although disabling them may affect website functionality.</p>
+
+      <h2>11. Your choices and privacy requests</h2>
+      <p>You may contact us to request access to, correction of, or deletion of information you submitted, to withdraw consent where applicable, or to stop receiving non-essential product or launch communications. We may need to verify your identity before acting on a request and may retain information where required by law or necessary to resolve a dispute. We will respond within the period required by applicable law.</p>
+      <p>To make a request, email <a href="mailto:hello@foresports.in">hello@foresports.in</a> with the subject “Privacy Request” and describe the request and the email address or phone number you used. You may also raise a concern with the competent authority or grievance mechanism available under applicable law.</p>
+
+      <h2>12. Children</h2>
+      <p>This website is intended for a general audience and is not designed to collect personal information directly from children. Please do not submit a child’s personal information through the website unless you are authorised to do so and all legally required conditions are met. If you believe a child’s information was submitted improperly, contact us so we can assess and address it.</p>
+
+      <h2>13. Third-party websites</h2>
+      <p>The website may link to third-party websites or services. Their privacy practices are governed by their own policies, and we are not responsible for their content or practices. Review those policies before sharing information with them.</p>
+
+      <h2>14. Changes to this policy</h2>
+      <p>We may update this policy as our website, products or legal obligations change. The current version will be posted on this page with its updated date. If a change materially affects how we use information already collected, we will provide additional notice or seek consent where required by law.</p>
+
+      <h2>15. Contact</h2>
+      <p>For privacy questions or requests, contact <strong>FORESPORTS PRIVATE LIMITED</strong> at <a href="mailto:hello@foresports.in">hello@foresports.in</a>.</p>
+    </section>
+  </>;
 }
 function Terms() {
-  return <><PageHero label="Legal" title="Terms of Service" desc="Terms governing your use of the ForeSports website." /><section className="section container legal">
-    <p><strong>Last updated: September 21, 2026.</strong> These terms govern use of the ForeSports website.</p>
-    <h2>Acceptance and use</h2><p>By using this website, you agree to these terms. You may use it for lawful, personal, and business-information purposes. Do not misuse the site, interfere with its operation, submit false information, or attempt to access systems or data without permission.</p>
-    <h2>Website and product information</h2><p>The website describes ForeSports and a planned product. Features, availability, and product previews are directional and may change. Submitting a waitlist or enquiry form does not create a contract, account, partnership, or guarantee product access.</p>
-    <h2>Intellectual property</h2><p>The ForeSports name, branding, website content, and design are owned by or licensed to ForeSports Private Limited. You may not copy, modify, distribute, or use them without prior written permission, except as permitted by law.</p>
-    <h2>Third-party services and links</h2><p>Where the website uses third-party services to operate, their terms and policies may also apply. ForeSports is not responsible for third-party content or services outside its control.</p>
-    <h2>Disclaimers and liability</h2><p>The website is provided on an “as is” and “as available” basis. To the extent permitted by applicable law, ForeSports disclaims warranties and is not liable for indirect, incidental, special, consequential, or punitive damages arising from use of the website.</p>
-    <h2>Changes and contact</h2><p>We may update these terms by posting a revised version here. Questions can be sent to <a href="mailto:hello@foresports.in">hello@foresports.in</a>. These terms are governed by the laws of the National Capital Territory of Delhi, India, and disputes will be subject to its applicable courts.</p>
-  </section></>;
+  return <>
+    <PageHero label="Legal" title="Terms of Service" desc="Terms governing your use of the ForeSports website." />
+    <section className="section container legal">
+      <p><strong>Last updated: October 11, 2026.</strong></p>
+      <p>These Terms of Service (“Terms”) govern your access to and use of <a href="https://www.foresports.in">foresports.in</a> and the content, forms and demonstrations made available through it (the “Website”). The Website is operated by <strong>FORESPORTS PRIVATE LIMITED</strong> (“ForeSports”, “we”, “us” or “our”). By accessing or using the Website, you agree to these Terms. If you do not agree, do not use the Website.</p>
+
+      <h2>1. About this website</h2>
+      <p>The Website provides information about ForeSports and its golf-related platform concept, including features intended for golfers, coaches and golf facilities. Product descriptions, mock-ups, demonstrations, roadmaps, pricing references and launch information are for general information only. They may be illustrative, incomplete, under development or subject to change and do not constitute a promise that a feature or service is available.</p>
+      <p>Unless we expressly agree otherwise in a separate written agreement, the Website is not itself a booking, payment, coaching, golf-facility or marketplace transaction service. A waitlist submission or enquiry does not create an account, reservation, employment relationship, agency, partnership, commercial contract or guarantee of access to any product or service.</p>
+
+      <h2>2. Eligibility and authority</h2>
+      <p>You must be legally capable of accepting these Terms under applicable law. If you use the Website on behalf of a company or other organisation, you represent that you are authorised to accept these Terms on its behalf. If you are not legally able to accept them, you may use the Website only with the involvement and permission of a parent, guardian or authorised representative where permitted by law.</p>
+
+      <h2>3. Acceptable use</h2>
+      <p>You agree to use the Website lawfully and responsibly. You must not:</p>
+      <ul>
+        <li>violate applicable law or another person’s rights;</li>
+        <li>submit information that you know is false, misleading, unlawful or unauthorised;</li>
+        <li>attempt to access accounts, systems, data or infrastructure without permission;</li>
+        <li>interfere with the Website, bypass security controls, introduce malicious code, or conduct unauthorised vulnerability testing;</li>
+        <li>scrape, harvest or collect personal information through the Website without lawful authority;</li>
+        <li>copy, reverse engineer, republish or commercially exploit Website materials except as permitted by law or with our written permission;</li>
+        <li>use the Website to send spam, impersonate another person, or distribute unlawful, defamatory or infringing material.</li>
+      </ul>
+      <p>We may investigate suspected misuse and take reasonable steps to protect the Website, users and our rights, including restricting access where appropriate and lawful.</p>
+
+      <h2>4. Enquiries and waitlist submissions</h2>
+      <p>If you submit a form, you agree to provide information that is accurate and that you are entitled to share. You authorise us to use the information to respond to your request, manage the relevant waitlist or partnership enquiry, and communicate about that request in accordance with our <a href="/privacy">Privacy Policy</a>. Submitting a form does not guarantee acceptance, launch timing, product access, a commercial relationship or a response by a particular date.</p>
+
+      <h2>5. Intellectual property</h2>
+      <p>Unless otherwise stated, the Website and its text, graphics, logos, branding, designs, software, layouts and other materials are owned by FORESPORTS PRIVATE LIMITED or licensed to it and are protected by applicable intellectual-property laws. These Terms give you a limited, revocable, non-exclusive right to access and use the Website for lawful informational purposes. They do not transfer ownership or grant any licence beyond that limited use.</p>
+      <p>You may link to publicly accessible pages in a fair and lawful manner that does not imply endorsement or misrepresent your relationship with us. You must not use our name, logo or other brand assets in a way that suggests affiliation, sponsorship or approval without our prior written permission.</p>
+
+      <h2>6. Feedback and submissions</h2>
+      <p>If you voluntarily send suggestions, comments or feedback about ForeSports, you permit us to use that feedback to evaluate and improve our website or products without payment or restriction, to the extent permitted by law. This does not give us ownership of your personal information or override the Privacy Policy. Do not send confidential, proprietary or third-party information unless you have authority to do so and we have agreed to receive it.</p>
+
+      <h2>7. Third-party services and links</h2>
+      <p>The Website may link to third-party websites or use third-party infrastructure. We do not control and are not responsible for third-party content, availability, security, terms or privacy practices. Your use of a third-party service may be subject to its separate terms and policies. A link does not imply endorsement by ForeSports.</p>
+
+      <h2>8. Availability and changes</h2>
+      <p>We may update, suspend, restrict or discontinue any part of the Website at any time, including for maintenance, security, operational or business reasons. We do not guarantee that the Website will always be available, uninterrupted, error-free, compatible with every device, or free from harmful components, although we take reasonable steps to operate it responsibly.</p>
+
+      <h2>9. No professional or transactional advice</h2>
+      <p>Website content is general information and is not legal, financial, medical, professional coaching or other tailored advice. Any golf-related descriptions or demonstrations are not a substitute for advice or services from a suitably qualified professional. You are responsible for independently evaluating information before relying on it.</p>
+
+      <h2>10. Disclaimers</h2>
+      <p>To the maximum extent permitted by applicable law, the Website is provided on an “as is” and “as available” basis. We make no warranties that are not expressly stated in these Terms, including implied warranties of uninterrupted availability, accuracy, fitness for a particular purpose or non-infringement. We take reasonable care with published information but do not guarantee that every item is complete, current or error-free.</p>
+
+      <h2>11. Limitation of liability</h2>
+      <p>To the maximum extent permitted by applicable law, ForeSports will not be liable for indirect, incidental, special, exemplary or consequential losses, or for loss of profits, revenue, business opportunity, goodwill, data or anticipated savings arising out of or related to use of, or inability to use, the Website. Nothing in these Terms excludes or limits liability that cannot lawfully be excluded or limited, including any mandatory consumer rights or liability for fraud or wilful misconduct where such exclusion is prohibited. Where liability cannot be excluded, it is limited only to the extent the law permits.</p>
+
+      <h2>12. Indemnity</h2>
+      <p>To the extent permitted by applicable law, you are responsible for losses and reasonable costs arising from your unlawful use of the Website, your material breach of these Terms, or your infringement of another person’s rights. This section does not apply to the extent a loss was caused by our own unlawful conduct, and it does not limit any non-waivable rights you may have under law.</p>
+
+      <h2>13. Privacy</h2>
+      <p>Our <a href="/privacy">Privacy Policy</a> explains how we collect and use personal information through the Website and forms part of the information governing your use of the Website. Please read it before submitting personal information.</p>
+
+      <h2>14. Suspension and termination</h2>
+      <p>We may restrict or terminate access to the Website where reasonably necessary for security, legal compliance, protection of users or our rights, or to address a breach of these Terms. You may stop using the Website at any time. Provisions that by their nature should continue after use ends, including intellectual property, disclaimers, liability and dispute provisions, will continue to apply.</p>
+
+      <h2>15. Governing law and disputes</h2>
+      <p>These Terms are governed by the laws of India. Subject to any mandatory jurisdiction or consumer rights under applicable law, the courts with competent jurisdiction in Delhi, India will have jurisdiction over disputes arising from these Terms or the Website.</p>
+
+      <h2>16. Changes to these Terms</h2>
+      <p>We may revise these Terms by posting an updated version on this page and changing the “Last updated” date. The revised Terms apply from the date they are posted, except where applicable law requires otherwise. Your continued use of the Website after the revised Terms are posted indicates acceptance of the changes to the extent permitted by law.</p>
+
+      <h2>17. General</h2>
+      <p>If any provision of these Terms is found unenforceable, the remaining provisions will continue to apply to the extent permitted by law. A failure to enforce a provision is not a waiver of our right to enforce it later. These Terms and the Privacy Policy govern your use of the Website and do not replace any separate written agreement that expressly applies to a particular product or service.</p>
+
+      <h2>18. Contact</h2>
+      <p>For questions about these Terms, contact <strong>FORESPORTS PRIVATE LIMITED</strong> at <a href="mailto:hello@foresports.in">hello@foresports.in</a>.</p>
+    </section>
+  </>;
 }
 function NotFound() { return <><PageHero label="404" title="Page not found." desc="The page you were looking for does not exist or may have moved." /><section className="section container legal"><Link className="button acid" to="/">Return to ForeSports <ArrowUpRight /></Link></section></>; }
 
