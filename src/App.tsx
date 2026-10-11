@@ -153,6 +153,7 @@ function Footer() {
 
       <div className="container footer-bottom">
         <span>© 2026 ForeSports Private Limited</span>
+        <span>Website operated by FORESPORTS PRIVATE LIMITED</span>
         <span>hello@foresports.in</span>
       </div>
     </footer>
