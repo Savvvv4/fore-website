@@ -9,7 +9,22 @@ const weekdays = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 const formats = ["In-person","Online video analysis","On-course playing lesson"];
 const key = "foresports-coach-profile-draft-v1";
 const defaults = { first:"",last:"",city:"",venue:"",experience:"",bio:"",photo:"",specialties:[],certifications:[],packages:[{name:"Trial lesson",price:"",detail:"A first session to understand your game"},{name:"Lesson pack",price:"",detail:"A block of coaching sessions"},{name:"Monthly programme",price:"",detail:"Ongoing coaching and progress"}],days:["Mon","Tue","Wed","Thu","Fri","Sat"],start:"06:00",end:"19:00",formats:["In-person"] };
-type Profile = typeof defaults;
+type Profile = {
+  first: string;
+  last: string;
+  city: string;
+  venue: string;
+  experience: string;
+  bio: string;
+  photo: string;
+  specialties: string[];
+  certifications: string[];
+  packages: { name: string; price: string; detail: string }[];
+  days: string[];
+  start: string;
+  end: string;
+  formats: string[];
+};
 
 export default function CoachProfileBuilder() {
   const [p,setP] = useState<Profile>(defaults);
