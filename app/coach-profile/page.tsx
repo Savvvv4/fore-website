@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, Eye, Loader2, Send } from "lucide-react";
-import { supabase } from "../../src/lib/supabase";
+import { getSupabase } from "../../src/lib/supabase";
 import CoachProfileView from "../../src/coach/CoachProfileView";
 import { SiteShell } from "../../src/App";
 import {
@@ -257,7 +257,10 @@ export default function CoachSignup() {
       setDone(true);
       return;
     }
+    setSubmitting(true);
+    const supabase = await getSupabase();
     if (!supabase) {
+      setSubmitting(false);
       setSubmitError("Sign-ups aren't connected yet. Email hello@foresports.in and we'll set up your profile for you.");
       return;
     }

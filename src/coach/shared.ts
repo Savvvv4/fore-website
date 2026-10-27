@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabaseUrl } from '../lib/supabase';
 
 export const SPECIALTIES = [
   'Driver & long game',
@@ -78,8 +78,9 @@ export const PUBLIC_COLUMNS =
   'id,slug,verified,founding_coach,first_name,last_name,city,venue,years_coaching,playing_level,bio,photo_path,specialties,certifications,packages,formats,days,start_time,end_time,approved_at';
 
 export function photoUrl(path: string | null | undefined): string {
-  if (!path || !supabase) return '';
-  return supabase.storage.from(PHOTO_BUCKET).getPublicUrl(path).data.publicUrl;
+  if (!path || !supabaseUrl) return '';
+  const encoded = path.split('/').map(encodeURIComponent).join('/');
+  return `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/${PHOTO_BUCKET}/${encoded}`;
 }
 
 function toPackages(value: unknown): CoachPackage[] {

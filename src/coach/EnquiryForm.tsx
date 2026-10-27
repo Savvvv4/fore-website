@@ -2,7 +2,7 @@
 
 import { useRef, useState, type FormEvent } from 'react';
 import { Check, Loader2, Send } from 'lucide-react';
-import { supabase } from '../lib/supabase';
+import { getSupabase } from '../lib/supabase';
 
 export default function EnquiryForm({ coachId, coachFirstName }: { coachId: string; coachFirstName: string }) {
   const [sending, setSending] = useState(false);
@@ -24,10 +24,11 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
       return;
     }
     if (honeypot.current?.value) { setSent(true); return; }
-    if (!supabase) { setError('Enquiries are not connected yet. Email hello@foresports.in instead.'); return; }
-
     setSending(true);
     setError('');
+    const supabase = await getSupabase();
+    if (!supabase) { setSending(false); setError('Enquiries are not connected yet. Email hello@foresports.in instead.'); return; }
+
     const { error: dbError } = await supabase.from('coach_enquiries').insert({
       coach_id: coachId,
       name: name.slice(0, 100),

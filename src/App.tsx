@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } fr
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
-import { supabase } from './lib/supabase';
+import { getSupabase } from './lib/supabase';
 import NextLink from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
@@ -243,9 +243,6 @@ function FloatingWaitlistCTA() {
     const data = new FormData(form);
 
     try {
-      if (!supabase) {
-        throw new Error('Supabase is not configured');
-      }
       await submitWaitlist({
         name: String(data.get('name') ?? ''),
         phone: String(data.get('phone') ?? ''),
@@ -379,6 +376,7 @@ type WaitlistSubmission = {
 };
 
 async function submitWaitlist(submission: WaitlistSubmission) {
+  const supabase = await getSupabase();
   if (!supabase) {
     throw new Error('Supabase is not configured');
   }
