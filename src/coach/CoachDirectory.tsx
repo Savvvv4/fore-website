@@ -37,9 +37,9 @@ export default function CoachDirectory({ coaches, ok }: Props) {
     <div className="cb-scope cb-dir">
       <section className="cb-dir-hero">
         <div className="cb-dir-wrap">
-          <small>COACH DIRECTORY</small>
+          <div className="section-label"><span />Coach directory</div>
           <h1>Find a golf coach who fits <em>your game.</em></h1>
-          <p>Browse ForeSports founding coaches by city, speciality and how they teach. Every profile is reviewed by our team before it goes live.</p>
+          <p>Browse Fore founding coaches by city, speciality and how they teach. The Fore team reviews every profile before it goes live.</p>
         </div>
       </section>
 
@@ -98,7 +98,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
         ) : (
           <div className="cb-dir-empty">
             <h2>{ok ? 'Our first coaches are being onboarded.' : 'The coach directory is warming up.'}</h2>
-            <p>We're reviewing founding coach profiles now. Check back soon, or create your own profile if you coach.</p>
+            <p>The Fore team is reviewing founding coach profiles now. Check back soon, or create your own profile if you coach.</p>
             <div className="cb-done-actions">
               <NextLink className="cb-button cb-primary" href="/coach-profile">Create your coach profile <ArrowUpRight size={15} /></NextLink>
               <NextLink className="cb-button cb-outline" href="/golfers">Join as a golfer</NextLink>
@@ -109,7 +109,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
         <aside className="cb-dir-cta">
           <div>
             <strong>Are you a golf coach?</strong>
-            <p>Join as a founding coach and get listed here before launch.</p>
+            <p>Get on Fore early. Create your founding coach profile and get listed here before launch.</p>
           </div>
           <NextLink className="cb-button cb-primary" href="/coach-profile">Create your profile <ArrowUpRight size={15} /></NextLink>
         </aside>

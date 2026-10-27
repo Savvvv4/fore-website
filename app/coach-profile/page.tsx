@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode 
 import { ArrowLeft, ArrowRight, Check, Eye, Loader2, Send } from "lucide-react";
 import { supabase } from "../../src/lib/supabase";
 import CoachProfileView from "../../src/coach/CoachProfileView";
+import { SiteShell } from "../../src/App";
 import {
   CERTIFICATIONS,
   FORMATS,
@@ -11,6 +12,9 @@ import {
   PLAYING_LEVELS,
   SPECIALTIES,
   WEEKDAYS,
+  formatINR,
+  initials,
+  lowestPrice,
   type CoachView,
 } from "../../src/coach/shared";
 import "../../src/coach/coach.css";
@@ -310,73 +314,117 @@ export default function CoachSignup() {
     }
   }
 
-  if (!ready) return <main className="coach-builder cb-scope"><p className="cb-loading">Loading coach sign-up…</p></main>;
+  if (!ready) {
+    return (
+      <SiteShell>
+        <div className="cb-scope cb-page"><p className="cb-loading">Loading coach sign-up…</p></div>
+      </SiteShell>
+    );
+  }
 
-  const nav = (
-    <header className="cb-nav">
-      <a className="cb-logo" href="/">FORESPORTS</a>
-      <span>COACH SIGN-UP</span>
-      {!done && (
-        <button type="button" className="cb-button cb-outline" onClick={() => setPreview(!preview)}>
-          <Eye size={16} />
-          {preview ? "Edit profile" : "Preview profile"}
-        </button>
-      )}
-    </header>
-  );
-
-  const footer = (
-    <footer className="cb-site-footer">
-      <span>© {new Date().getFullYear()} ForeSports Private Limited</span>
-      <a href="/coaches/directory">Browse coaches</a>
-      <a href="/privacy">Privacy Policy</a>
-      <a href="/coaches">Back to ForeSports</a>
-    </footer>
+  const fromPrice = lowestPrice(view.packages);
+  const liveCard = (
+    <div className="aud-mock cb-live-card" aria-label="Live preview of your profile card">
+      <div className="mock-bar">
+        <span className="mock-dot" />
+        <span className="mock-dot" />
+        <span className="mock-dot" />
+        <span className="mock-bar-label">FORE · YOUR COACH PROFILE</span>
+        <span className="mock-preview-badge">Live preview</span>
+      </div>
+      <div className="mock-body">
+        <div className="cb-live-head">
+          <div className="cb-live-avatar">{photoPreview ? <img src={photoPreview} alt="" /> : initials(view.firstName, view.lastName)}</div>
+          <div>
+            <strong>{[view.firstName, view.lastName].filter(Boolean).join(" ") || "Your name"}</strong>
+            <span>{["Golf coach", view.yearsCoaching != null ? `${view.yearsCoaching} yrs` : "", view.city].filter(Boolean).join(" · ")}</span>
+          </div>
+        </div>
+        <div className="cb-live-chips">
+          {(view.specialties.length ? view.specialties.slice(0, 4) : ["Your specialities"]).map((x) => (
+            <span key={x} className={view.specialties.length ? "" : "is-empty"}>{x}</span>
+          ))}
+        </div>
+        <div className="cb-live-label">Coaching days</div>
+        <div className="cb-live-days">
+          {WEEKDAYS.map((d) => <span key={d} className={f.days.includes(d) ? "on" : ""}>{d[0]}</span>)}
+        </div>
+        <div className="cb-live-foot">
+          <div>
+            <strong>{fromPrice ? formatINR(fromPrice) : "₹ —"}</strong>
+            <span>{fromPrice ? "lessons from" : "add your prices"}</span>
+          </div>
+          <span className="cb-live-cta">Enquire</span>
+        </div>
+      </div>
+    </div>
   );
 
   if (done) {
     return (
-      <main className="coach-builder cb-scope">
-        {nav}
-        <section className="cb-done">
-          <div className="cb-done-ring"><Check size={30} /></div>
-          <small>FOUNDING COACH</small>
-          <h1>Thanks, {view.firstName || "coach"}. Your profile is with our team.</h1>
-          <p>We'll review your details and email {f.email.trim() || "you"} once your profile is live on ForeSports.</p>
-          <ol className="cb-next">
-            <li><span>1</span><div><strong>We review your profile</strong>Our team checks your details and credentials, usually within a few days.</div></li>
-            <li><span>2</span><div><strong>Your profile goes live</strong>Golfers can find you in the ForeSports coach directory and send enquiries.</div></li>
-            <li><span>3</span><div><strong>Early access to the app</strong>You'll be first in when bookings, payments and student tools open.</div></li>
-          </ol>
-          <div className="cb-done-actions">
-            <a className="cb-button cb-primary" href="/coaches/directory">Browse the coach directory <ArrowRight size={15} /></a>
-            <a className="cb-button cb-outline" href="/coaches">Back to ForeSports</a>
-          </div>
-          <p className="cb-help">Need to change something? Email <strong>hello@foresports.in</strong>.</p>
-        </section>
-        {footer}
-      </main>
+      <SiteShell>
+        <div className="cb-scope cb-page">
+          <section className="container cb-done">
+            <div className="cb-done-ring"><Check size={30} /></div>
+            <div className="section-label"><span />Profile received</div>
+            <h1>Thanks, {view.firstName || "coach"}. <em>You're on Fore early.</em></h1>
+            <p>We'll review your profile and email {f.email.trim() || "you"} as soon as it's live in the Fore coach directory.</p>
+            <ol className="cb-next">
+              <li><span>1</span><div><strong>We review your profile</strong>The Fore team checks your details and credentials, usually within a few days.</div></li>
+              <li><span>2</span><div><strong>Golfers find you</strong>Your profile goes live in the coach directory with a founding coach badge, and golfers can send you enquiries.</div></li>
+              <li><span>3</span><div><strong>First into the app</strong>You'll get early access when bookings, payments and student tools open.</div></li>
+            </ol>
+            <div className="button-row center">
+              <a className="button acid" href="/coaches/directory">Browse the coach directory <ArrowRight size={16} /></a>
+              <a className="button light" href="/coaches">Back to Fore for coaches</a>
+            </div>
+            <p className="cb-help">Need to change something? Email <strong>hello@foresports.in</strong>.</p>
+          </section>
+        </div>
+      </SiteShell>
     );
   }
 
   return (
-    <main className="coach-builder cb-scope">
-      {nav}
-      <section className="cb-intro">
-        <small>FOUNDING COACH PROGRAMME</small>
-        <h1>{preview ? "Your profile preview." : "Get your coaching profile ready for launch."}</h1>
-        <p>
-          {preview
-            ? "This is how your profile will appear to golfers once it's approved."
-            : "Tell golfers who you are, what you coach and when you're available. Approved profiles appear in the ForeSports coach directory."}
-        </p>
-        {!preview && <span className="cb-note">Takes about 5 minutes · Your progress saves in this browser</span>}
+    <SiteShell>
+    <div className="cb-scope cb-page">
+      <section className={`aud-hero-section cb-hero${preview ? " is-preview" : ""}`}>
+        <div className="container aud-hero">
+          <div className="aud-hero-copy">
+            <div className="section-label"><span />{preview ? "Profile preview" : "Founding coaches"}</div>
+            <h1>{preview ? <>Your profile, <em>as golfers see it.</em></> : <>Get found by golfers <em>before launch.</em></>}</h1>
+            <p>
+              {preview
+                ? "Nothing is submitted yet. Once our team approves your profile, this is what golfers see in the Fore coach directory."
+                : "Create your Fore coach profile in about five minutes. We review every profile, and approved coaches are listed in the Fore coach directory from day one."}
+            </p>
+            <div className="button-row">
+              {preview ? (
+                <button type="button" className="button acid" onClick={() => setPreview(false)}><ArrowLeft size={16} /> Back to editing</button>
+              ) : (
+                <>
+                  <a className="button acid" href="#sign-up">Start your profile <ArrowRight size={16} /></a>
+                  <button type="button" className="button light" onClick={() => setPreview(true)}><Eye size={16} /> Preview your profile</button>
+                </>
+              )}
+            </div>
+            {!preview && (
+              <ul className="cb-hero-facts">
+                <li>About 5 minutes</li>
+                <li>Reviewed by the Fore team</li>
+                <li>No upfront cost</li>
+              </ul>
+            )}
+          </div>
+          {!preview && liveCard}
+        </div>
       </section>
 
+      <div id="sign-up" className="cb-anchor" />
       {!preview ? (
         <div className="cb-layout">
           <aside className="cb-steps">
-            <strong>YOUR SIGN-UP</strong>
+            <div className="section-label"><span />Your profile</div>
             {STEPS.map((label, i) => (
               <button
                 type="button"
@@ -389,16 +437,17 @@ export default function CoachSignup() {
                 {label}
               </button>
             ))}
-            <p>Accurate details help golfers choose you. Your email and phone are never shown on your profile.</p>
+            <p>Your progress saves in this browser. Your email and phone number are never shown on your profile.</p>
           </aside>
 
           <section className="cb-form" ref={formTop}>
-            <small>STEP {String(step + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}</small>
+            <div className="section-label"><span />Step {step + 1} of {STEPS.length}</div>
+            <div className="cb-progress" aria-hidden="true"><span style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} /></div>
 
             {step === 0 && (
               <>
                 <h2>Your details</h2>
-                <p>How golfers will see your name, and how we'll reach you about your profile.</p>
+                <p>The name golfers will see, and how the Fore team can reach you.</p>
                 <div className="cb-grid">
                   <Field label="First name *" error={errors.first}><input autoComplete="given-name" value={f.first} onChange={(e) => update({ first: e.target.value })} placeholder="e.g. Raj" /></Field>
                   <Field label="Last name *" error={errors.last}><input autoComplete="family-name" value={f.last} onChange={(e) => update({ last: e.target.value })} placeholder="e.g. Mehta" /></Field>
@@ -415,7 +464,7 @@ export default function CoachSignup() {
             {step === 1 && (
               <>
                 <h2>Your coaching</h2>
-                <p>Your experience, where you teach and a short introduction.</p>
+                <p>Your experience, where you teach, and a few lines about how you coach.</p>
                 <div className="cb-grid">
                   <Field label="Years coaching *" error={errors.experience}><input type="number" min="0" max="60" inputMode="numeric" value={f.experience} onChange={(e) => update({ experience: e.target.value })} placeholder="e.g. 12" /></Field>
                   <Field label="Your playing level">
@@ -445,7 +494,7 @@ export default function CoachSignup() {
             {step === 2 && (
               <>
                 <h2>Specialities & credentials</h2>
-                <p>Golfers search and filter coaches by these.</p>
+                <p>Golfers filter the coach directory by these, so pick what you're best at.</p>
                 <h3>Coaching specialities *</h3>
                 <div className="cb-chips">
                   {SPECIALTIES.map((x) => (
@@ -456,7 +505,7 @@ export default function CoachSignup() {
                 </div>
                 {errors.specialties && <p className="cb-error" role="alert">{errors.specialties}</p>}
                 <h3>Certifications & memberships</h3>
-                <p className="cb-help">Select only qualifications you currently hold. Our team verifies them before they're marked as verified.</p>
+                <p className="cb-help">Select only qualifications you hold now. The Fore team checks them before your profile shows them as verified.</p>
                 <div className="cb-options">
                   {CERTIFICATIONS.map((x) => (
                     <button type="button" key={x} aria-pressed={f.certifications.includes(x)} className={f.certifications.includes(x) ? "chosen" : ""} onClick={() => toggle("certifications", x)}>
@@ -475,7 +524,7 @@ export default function CoachSignup() {
             {step === 3 && (
               <>
                 <h2>Packages & format</h2>
-                <p>Set indicative prices in rupees. You can refine your offer before bookings open.</p>
+                <p>Indicative prices in rupees. You can change them before bookings open on Fore.</p>
                 {f.packages.map((item, i) => (
                   <div className="cb-package" key={item.name}>
                     <h3>{item.name}</h3>
@@ -507,7 +556,7 @@ export default function CoachSignup() {
             {step === 4 && (
               <>
                 <h2>Availability & submit</h2>
-                <p>Give golfers a broad idea of when you coach, then send your profile to our team.</p>
+                <p>Give golfers a broad idea of when you coach, then send your profile to the Fore team.</p>
                 <h3>Coaching days</h3>
                 <div className="cb-days">
                   {WEEKDAYS.map((x) => (
@@ -517,7 +566,7 @@ export default function CoachSignup() {
                 <div className="cb-grid">
                   <Field label="Sessions start from"><input type="time" value={f.start} onChange={(e) => update({ start: e.target.value })} /></Field>
                   <Field label="Sessions finish by" error={errors.end}><input type="time" value={f.end} onChange={(e) => update({ end: e.target.value })} /></Field>
-                  <Field label="How did you hear about ForeSports?" wide>
+                  <Field label="How did you hear about Fore?" wide>
                     <select value={f.heard} onChange={(e) => update({ heard: e.target.value })}>
                       <option value="">Select…</option>
                       {HEARD_FROM.map((x) => <option key={x}>{x}</option>)}
@@ -556,18 +605,14 @@ export default function CoachSignup() {
         </div>
       ) : (
         <section className="cb-preview">
-          <div className="cb-preview-banner">
-            <div><strong>Preview mode</strong><p>Your profile isn't submitted yet. Approved profiles appear in the coach directory.</p></div>
-            <button type="button" className="cb-button cb-outline" onClick={() => setPreview(false)}>Back to editor</button>
-          </div>
           <CoachProfileView
             coach={view}
-            badge="DRAFT PREVIEW"
+            badge="PREVIEW"
             draft
             aside={
               <section className="cb-card">
                 <h3>Enquiries</h3>
-                <p>Golfers send enquiries through ForeSports. We pass them on to you, so your phone and email stay private.</p>
+                <p>Golfers send enquiries through Fore. We pass them on to you, so your phone number and email stay private.</p>
               </section>
             }
           />
@@ -581,8 +626,8 @@ export default function CoachSignup() {
           </div>
         </section>
       )}
-      {footer}
-    </main>
+    </div>
+    </SiteShell>
   );
 }
 

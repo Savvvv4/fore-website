@@ -73,7 +73,7 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
         <button className="cb-button cb-primary" type="submit" disabled={sending}>
           {sending ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : <><Send size={15} /> Send enquiry</>}
         </button>
-        <p className="cb-enquiry-note">ForeSports passes your message to the coach. Your details aren't shown publicly.</p>
+        <p className="cb-enquiry-note">Fore passes your message to the coach. Your details aren't shown publicly.</p>
       </form>
     </section>
   );
