@@ -11,6 +11,8 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
 
+If Vercel won't save the anon key with `NEXT_PUBLIC_` (it may insist the key is a secret), use `SUPABASE_URL` and `SUPABASE_ANON_KEY` (or `SUPABASE_PUBLISHABLE_KEY`) instead. The key can then use secret visibility; `next.config.ts` passes it to the site at build time. Never use the `service_role` or secret key here. Redeploy after changing either.
+
 ## Database setup
 
 Run each file once in Supabase → SQL Editor:
