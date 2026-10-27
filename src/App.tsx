@@ -135,6 +135,7 @@ function Footer() {
           <span>Explore</span>
           <Link to="/golfers">Golfers</Link>
           <Link to="/coaches">Coaches</Link>
+          <Link to="/coaches/directory">Find a coach</Link>
           <Link to="/facilities">Facilities</Link>
         </div>
 
@@ -339,6 +340,21 @@ function FloatingWaitlistCTA() {
           </section>
         </div>
       )}
+    </>
+  );
+}
+
+/** Site header and footer around content rendered outside App (e.g. the coach directory). */
+export function SiteShell({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <Header />
+      <main id="main-content" tabIndex={-1}>
+        {children}
+      </main>
+      <Footer />
+      <Toaster position="bottom-center" />
     </>
   );
 }
@@ -797,6 +813,8 @@ function Privacy() {
       <p>Depending on how you interact with the website, we may collect:</p>
       <ul>
         <li><strong>Contact and waitlist details:</strong> name, email address, phone number, city, your role (for example, golfer, coach or facility representative), and facility name where you provide it.</li>
+        <li><strong>Coach profile details:</strong> if you sign up as a coach, your coaching experience, playing level, home course, introduction, specialities, qualifications, indicative prices, availability, coaching formats and an optional profile photo.</li>
+        <li><strong>Coach enquiries:</strong> if you contact a coach through the coach directory, your name, email address, optional phone number and message.</li>
         <li><strong>Messages and enquiries:</strong> the contents of information you send us and the records needed to respond to you.</li>
         <li><strong>Technical and usage information:</strong> information made available by your browser or service providers, which may include IP address, device and browser type, requested pages, timestamps, referring page, error reports and security logs.</li>
         <li><strong>Preferences and demo interactions:</strong> information needed to make website features or demonstrations work. A demo may use temporary browser-side state; do not enter real customer, payment, health or other confidential information into a demonstration.</li>
@@ -810,6 +828,8 @@ function Privacy() {
       <p>We use personal information for specific, reasonable purposes, including to:</p>
       <ul>
         <li>record and manage waitlist, early-access, coaching and facility partnership enquiries;</li>
+        <li>review coach sign-ups and, once approved, show a coach&apos;s profile publicly in the coach directory (a coach&apos;s email address and phone number are never shown);</li>
+        <li>pass golfers&apos; enquiries on to the coach they are about;</li>
         <li>contact you about the enquiry you made, answer questions and share relevant product availability or launch information;</li>
         <li>operate, maintain, troubleshoot and secure the website and its forms;</li>
         <li>prevent abuse, fraud, unauthorised access and other harmful activity;</li>
@@ -1056,52 +1076,31 @@ function GolferJoinForm() {
 }
 
 function CoachJoinForm() {
-  const [confirmed, setConfirmed] = useState(false);
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await submitWaitlist({
-        name: String(data.get('name') ?? ''),
-        email: String(data.get('email') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-        city: String(data.get('city') ?? ''),
-        role: 'coach',
-        source: 'coach_join',
-      });
-      setConfirmed(true);
-      form.reset();
-    } catch (error) {
-      console.error('Coach waitlist submission failed', error);
-      toast.error('We could not save your details. Please try again.');
-    }
-  };
   return (
-    <>
     <section id="join" className="form-section">
       <div className="container form-layout">
         <div>
           <SectionLabel>Join as a coach</SectionLabel>
           <h2>Get on Fore early.</h2>
-          <p>Be part of a global community shaping the future of golf coaching. Join FORE to connect with more golfers, strengthen your coaching business and help more players progress.</p>
+          <p>Be part of a global community shaping the future of golf coaching. Create your founding coach profile now and be listed in the ForeSports coach directory before launch.</p>
         </div>
-        <form className="form-card" onSubmit={submit}>
-          <div className="form-fields">
-            <label>Name<input required name="name" placeholder="Your name" /></label>
-            <label>Email<input required type="email" name="email" placeholder="you@email.com" /></label>
-            <label>Phone<input name="phone" placeholder="+91" /></label>
-            <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
+        <div className="form-card coach-join-card">
+          <ol className="coach-join-steps">
+            <li><span>1</span><div><strong>Build your profile</strong>Your experience, specialities, packages and availability. About 5 minutes.</div></li>
+            <li><span>2</span><div><strong>We review it</strong>Our team checks your details and credentials.</div></li>
+            <li><span>3</span><div><strong>Golfers find you</strong>Approved profiles go live in the coach directory with a founding coach badge.</div></li>
+          </ol>
+          <div className="coach-join-actions">
+            <Link className="button acid" to="/coach-profile">
+              Create your coach profile <ArrowUpRight size={16} />
+            </Link>
+            <Link className="button light" to="/coaches/directory">
+              See the directory
+            </Link>
           </div>
-          <button className="button acid" type="submit">
-            Reserve coach profile <ArrowUpRight size={16} />
-          </button>
-        </form>
+        </div>
       </div>
     </section>
-    {confirmed && <SubmissionConfirmation role="coach" onClose={() => setConfirmed(false)} />}
-    </>
   );
 }
 
@@ -1408,8 +1407,6 @@ function GolfersPage() {
 }
 
 function CoachesPage() {
-  const [signupOpen, setSignupOpen] = useState(false);
-
   return (
     <>
       <section className="aud-hero-section">
@@ -1423,12 +1420,12 @@ function CoachesPage() {
             <h1>Coach beyond <em>your network.</em></h1>
             <p>Get discovered by more golfers, fill your calendar, and run your coaching business from one place.</p>
             <div className="button-row">
-              <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
-                Join as a coach <ArrowUpRight size={18} />
-              </button>
-              <a className="button light" href="#business">
-                See how it works <ArrowUpRight size={18} />
-              </a>
+              <Link className="button acid" to="/coach-profile">
+                Create your coach profile <ArrowUpRight size={18} />
+              </Link>
+              <Link className="button light" to="/coaches/directory">
+                Browse coaches <ArrowUpRight size={18} />
+              </Link>
             </div>
           </motion.div>
           <CoachesMock />
@@ -1570,7 +1567,6 @@ function CoachesPage() {
       </section>
 
       <CoachJoinForm />
-      {signupOpen && <AudienceSignupModal role="coach" onClose={() => setSignupOpen(false)} />}
     </>
   );
 }

@@ -1873,3 +1873,12 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
 /* Orange-filled CTA text contrast */
 .ecosystem-cta { color: #FFFFFF; }
 .ecosystem-cta:hover { color: #FFFFFF; }
+
+/* ─── Coach join card (Coaches page) ─────────────────────────── */
+.coach-join-card { display: grid; gap: 24px; }
+.coach-join-steps { display: grid; gap: 14px; margin: 0; padding: 0; list-style: none; }
+.coach-join-steps li { display: flex; gap: 14px; color: var(--muted); font-size: 15px; line-height: 1.55; }
+.coach-join-steps li > span { width: 30px; height: 30px; flex: 0 0 30px; display: grid; place-items: center; border-radius: 50%; background: var(--peach); color: var(--orange-text); font-size: 13px; font-weight: 800; }
+.coach-join-steps strong { display: block; color: var(--ink); font-size: 16px; }
+.coach-join-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 560px) { .coach-join-actions .button { flex: 1 1 100%; } }

@@ -1,57 +1,593 @@
 "use client";
-import { useEffect, useState } from "react";
-import { ArrowLeft, ArrowRight, Check, Eye, Save } from "lucide-react";
-import "./coach-profile.css";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
+import { ArrowLeft, ArrowRight, Check, Eye, Loader2, Send } from "lucide-react";
+import { supabase } from "../../src/lib/supabase";
+import CoachProfileView from "../../src/coach/CoachProfileView";
+import {
+  CERTIFICATIONS,
+  FORMATS,
+  HEARD_FROM,
+  PHOTO_BUCKET,
+  PLAYING_LEVELS,
+  SPECIALTIES,
+  WEEKDAYS,
+  type CoachView,
+} from "../../src/coach/shared";
+import "../../src/coach/coach.css";
 
-const specialties = ["Driver & long game","Iron play","Short game","Putting","Course management","Mental game","Beginners","Junior golf","Ladies golf","Competition prep"];
-const certifications = ["PGA of India","PGTI","TPI certified","TRACKMAN certified","USGTF","PGA UK","Other qualification"];
-const weekdays = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-const formats = ["In-person","Online video analysis","On-course playing lesson"];
-const key = "foresports-coach-profile-draft-v1";
-const defaults = { first:"",last:"",city:"",venue:"",experience:"",bio:"",photo:"",specialties:[],certifications:[],packages:[{name:"Trial lesson",price:"",detail:"A first session to understand your game"},{name:"Lesson pack",price:"",detail:"A block of coaching sessions"},{name:"Monthly programme",price:"",detail:"Ongoing coaching and progress"}],days:["Mon","Tue","Wed","Thu","Fri","Sat"],start:"06:00",end:"19:00",formats:["In-person"] };
-type Profile = {
+const DRAFT_KEY = "foresports-coach-signup-draft-v2";
+const STEPS = ["Your details", "Your coaching", "Specialities & credentials", "Packages & format", "Availability & submit"];
+
+type Pkg = { name: string; price: string; detail: string };
+type Form = {
   first: string;
   last: string;
+  email: string;
+  phone: string;
   city: string;
-  venue: string;
   experience: string;
+  level: string;
+  venue: string;
   bio: string;
-  photo: string;
   specialties: string[];
   certifications: string[];
-  packages: { name: string; price: string; detail: string }[];
+  otherCert: string;
+  packages: Pkg[];
+  formats: string[];
   days: string[];
   start: string;
   end: string;
-  formats: string[];
+  heard: string;
+  consent: boolean;
+};
+type ListField = "specialties" | "certifications" | "days" | "formats";
+type Errors = Partial<Record<keyof Form | "photo", string>>;
+
+const defaults: Form = {
+  first: "",
+  last: "",
+  email: "",
+  phone: "",
+  city: "",
+  experience: "",
+  level: "",
+  venue: "",
+  bio: "",
+  specialties: [],
+  certifications: [],
+  otherCert: "",
+  packages: [
+    { name: "Trial lesson", price: "", detail: "A first session to understand your game" },
+    { name: "Lesson pack", price: "", detail: "A block of 4 coaching sessions" },
+    { name: "Monthly programme", price: "", detail: "Ongoing coaching and progress tracking" },
+  ],
+  formats: ["In-person"],
+  days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  start: "06:00",
+  end: "19:00",
+  heard: "",
+  consent: false,
 };
 
-export default function CoachProfileBuilder() {
-  const [p,setP] = useState<Profile>(defaults);
-  const [step,setStep] = useState(0);
-  const [preview,setPreview] = useState(false);
-  const [saved,setSaved] = useState(false);
-  const [ready,setReady] = useState(false);
-  const [error,setError] = useState("");
-  useEffect(()=>{try{const value=localStorage.getItem(key);if(value)setP({...defaults,...JSON.parse(value)});}catch{}setReady(true);},[]);
-  function update(patch: Partial<Profile>){setP(old=>({...old,...patch}));setSaved(false);}
-  function toggle(field:"specialties"|"certifications"|"days"|"formats",value:string){const current=p[field] as string[];update({[field]:current.includes(value)?current.filter(x=>x!==value):[...current,value]} as Partial<Profile>);}
-  function save(){try{const copy={...p,photo:""};localStorage.setItem(key,JSON.stringify(copy));setSaved(true);}catch{setError("Could not save this draft in the current browser.");}}
-  function photo(event:React.ChangeEvent<HTMLInputElement>){const file=event.target.files?.[0];if(!file)return;if(!file.type.startsWith("image/")||file.size>5*1024*1024){setError("Choose an image file smaller than 5 MB.");return;}setError("");const reader=new FileReader();reader.onload=()=>update({photo:String(reader.result||"")});reader.readAsDataURL(file);}
-  const name=[p.first,p.last].filter(Boolean).join(" ");
-  if(!ready)return <main className="coach-builder">Loading profile builder…</main>;
-  return <main className="coach-builder">
-    <header className="cb-nav"><a className="cb-logo" href="/">FORESPORTS</a><span>COACH PROFILE BUILDER</span><button className="cb-button cb-outline" onClick={()=>setPreview(!preview)}><Eye size={16}/>{preview?"Edit profile":"Preview profile"}</button></header>
-    <section className="cb-intro"><small>YOUR COACHING PROFILE</small><h1>{preview?"Your profile preview.":"Make your coaching stand out."}</h1><p>{preview?"See how your profile could appear to golfers on ForeSports.":"Create your profile, show golfers what makes you different, and preview it before sharing it with the ForeSports team."}</p><button className="cb-button cb-outline" onClick={()=>{if(navigator.clipboard)navigator.clipboard.writeText(window.location.origin+"/coach-profile");}}>Copy builder link</button><span className="cb-note">Drafts are saved in this browser only.</span></section>
-    {!preview?<div className="cb-layout"><aside className="cb-steps"><strong>BUILD YOUR PROFILE</strong>{["About you","Your photo","Specialities & credentials","Coaching packages","Availability"].map((label,i)=><button key={label} className={step===i?"current":""} onClick={()=>setStep(i)}><span>{i+1}</span>{label}</button>)}<p>Accurate details help golfers understand your experience and coaching offer.</p></aside>
-    <section className="cb-form">
-      {step===0&&<><small>STEP 01 / 05</small><h2>About you</h2><p>Start with the details golfers need to find and understand you.</p><div className="cb-grid"><label>First name *<input value={p.first} onChange={e=>update({first:e.target.value})} placeholder="e.g. Raj"/></label><label>Last name *<input value={p.last} onChange={e=>update({last:e.target.value})} placeholder="e.g. Mehta"/></label><label>City *<input value={p.city} onChange={e=>update({city:e.target.value})} placeholder="e.g. Gurugram"/></label><label>Years coaching *<input type="number" min="0" max="60" value={p.experience} onChange={e=>update({experience:e.target.value})} placeholder="e.g. 12"/></label><label className="wide">Home course or venue<input value={p.venue} onChange={e=>update({venue:e.target.value})} placeholder="e.g. DLF Golf & Country Club"/></label><label className="wide">About you *<textarea maxLength={800} rows={6} value={p.bio} onChange={e=>update({bio:e.target.value})} placeholder="Describe your coaching background, playing experience, approach, and the golfers you work best with."/><small>{p.bio.length}/800 characters</small></label></div></>}
-      {step===1&&<><small>STEP 02 / 05</small><h2>Your photo</h2><p>A clear, recent headshot helps golfers put a face to your name.</p><label className="cb-photo">{p.photo?<img src={p.photo} alt="Coach photo preview"/>:<span className="cb-photo-icon">＋</span>}<strong>{p.photo?"Change photo":"Upload a profile photo"}</strong><span>JPG, PNG or WebP · up to 5 MB</span><input type="file" accept="image/*" onChange={photo}/></label><p className="cb-help">The photo is only held in this browser preview and is not uploaded to ForeSports.</p></>}
-      {step===2&&<><small>STEP 03 / 05</small><h2>Specialities & credentials</h2><p>Select the areas you coach and qualifications you hold.</p><h3>Coaching specialities</h3><div className="cb-chips">{specialties.map(x=><button key={x} className={p.specialties.includes(x)?"chosen":""} onClick={()=>toggle("specialties",x)}>{p.specialties.includes(x)?"✓ ":""}{x}</button>)}</div><h3>Certifications & memberships</h3><p className="cb-help">Select only qualifications you currently hold. Verification is not automatic.</p><div className="cb-options">{certifications.map(x=><button key={x} className={p.certifications.includes(x)?"chosen":""} onClick={()=>toggle("certifications",x)}>{p.certifications.includes(x)?"✓":"＋"} {x}</button>)}</div></>}
-      {step===3&&<><small>STEP 04 / 05</small><h2>Coaching packages</h2><p>Set indicative prices. You can refine your offer before your profile goes live.</p>{p.packages.map((item,i)=><div className="cb-package" key={item.name}><h3>{item.name}</h3><label>Price (INR)<input value={item.price} onChange={e=>update({packages:p.packages.map((x,j)=>i===j?{...x,price:e.target.value}:x)})} placeholder={i===0?"e.g. 1,200 per session":i===1?"e.g. 8,000 for 4 sessions":"e.g. 12,000 per month"}/></label><label>What's included<input value={item.detail} onChange={e=>update({packages:p.packages.map((x,j)=>i===j?{...x,detail:e.target.value}:x)})}/></label></div>)}<p className="cb-help">Bookings and payments are not enabled in this version.</p></>}
-      {step===4&&<><small>STEP 05 / 05</small><h2>Availability & format</h2><p>Give golfers a broad idea of when and how you coach.</p><h3>Coaching days</h3><div className="cb-days">{weekdays.map(x=><button key={x} className={p.days.includes(x)?"chosen":""} onClick={()=>toggle("days",x)}>{x}</button>)}</div><div className="cb-grid"><label>Start time<input type="time" value={p.start} onChange={e=>update({start:e.target.value})}/></label><label>End time<input type="time" value={p.end} onChange={e=>update({end:e.target.value})}/></label></div><h3>Session formats</h3><div className="cb-chips">{formats.map(x=><button key={x} className={p.formats.includes(x)?"chosen":""} onClick={()=>toggle("formats",x)}>{p.formats.includes(x)?"✓ ":""}{x}</button>)}</div></>}
-      {error&&<p className="cb-error" role="alert">{error}</p>}<div className="cb-footer"><button className="cb-button cb-outline" disabled={step===0} onClick={()=>setStep(s=>s-1)}><ArrowLeft size={15}/> Back</button><div><button className="cb-button cb-outline" onClick={save}><Save size={15}/>{saved?"Draft saved":"Save draft"}</button>{step<4?<button className="cb-button cb-primary" onClick={()=>setStep(s=>s+1)}>Continue <ArrowRight size={15}/></button>:<button className="cb-button cb-primary" onClick={()=>setPreview(true)}><Eye size={15}/> Preview profile</button>}</div></div>
-    </section></div>:<section className="cb-preview"><div className="cb-preview-banner"><div><strong>Preview mode</strong><p>This is a draft, not a published profile.</p></div><button className="cb-button cb-outline" onClick={()=>setPreview(false)}>Back to editor</button></div><article className="cb-profile"><div className="cb-cover"/><header className="cb-profile-head"><div className="cb-avatar">{p.photo?<img src={p.photo} alt=""/>:((p.first[0]||"F")+(p.last[0]||"S")).toUpperCase()}</div><div><h2>{name||"Your name"}</h2><p>Golf coach{p.experience?" · "+p.experience+" years coaching":""}</p><span>{p.city||"Your city"}{p.venue?" · "+p.venue:""}</span></div><small>DRAFT PREVIEW</small></header><div className="cb-stats"><div><strong>{p.experience||"—"}</strong><span>Years coaching</span></div><div><strong>{p.specialties.length}</strong><span>Specialities</span></div><div><strong>{p.certifications.length}</strong><span>Credentials listed</span></div><div><strong>{p.days.length}</strong><span>Days available</span></div></div><div className="cb-preview-grid"><div><section className="cb-card"><h3>About</h3><p>{p.bio||"Your introduction will appear here. Tell golfers about your coaching experience and approach."}</p></section><section className="cb-card"><h3>Specialities</h3><div className="cb-chips">{p.specialties.length?p.specialties.map(x=><span key={x}>{x}</span>):<em>Add your coaching specialities in the editor.</em>}</div></section><section className="cb-card"><h3>Certifications & memberships</h3>{p.certifications.length?p.certifications.map(x=><p className="cb-credential" key={x}><Check size={15}/>{x}<small>Listed by coach · Verification pending</small></p>):<em>No credentials added yet.</em>}</section><section className="cb-card"><h3>Coaching packages</h3><div className="cb-preview-packages">{p.packages.filter(x=>x.price.trim()).map(x=><div key={x.name}><span>{x.name}</span><strong>₹{x.price.replace(/^₹\s*/,"")}</strong><p>{x.detail}</p></div>)}{!p.packages.some(x=>x.price.trim())&&<em>Add package prices to show them here.</em>}</div></section></div><aside><section className="cb-card"><h3>Availability</h3><div className="cb-days">{weekdays.map(x=><span className={p.days.includes(x)?"chosen":""} key={x}>{x[0]}</span>)}</div><p>{p.days.length?p.days.join(", "):"Days not selected"}<br/>{p.start}–{p.end}</p><div className="cb-preview-formats">{p.formats.map(x=><span key={x}>{x}</span>)}</div></section><section className="cb-card"><h3>Next step</h3><p>This profile is a preview. ForeSports will review details and contact you about verification and onboarding.</p><a className="cb-button cb-primary" href="mailto:hello@foresports.in?subject=Coach%20profile%20onboarding">Contact ForeSports</a></section></aside></div></article><div className="cb-preview-actions"><button className="cb-button cb-outline" onClick={save}><Save size={15}/>{saved?"Draft saved":"Save draft"}</button><a className="cb-button cb-primary" href="mailto:hello@foresports.in?subject=Coach%20profile%20onboarding">Continue with ForeSports <ArrowRight size={15}/></a></div></section>}
-    <footer className="cb-site-footer"><span>© {new Date().getFullYear()} ForeSports Private Limited</span><a href="mailto:hello@foresports.in">hello@foresports.in</a><a href="/">Back to ForeSports</a></footer>
-  </main>;
+const digits = (s: string) => s.replace(/\D/g, "");
+const nationalPhone = (s: string) => digits(s).replace(/^(91|0)(?=\d{10}$)/, "");
+const priceNumber = (s: string) => {
+  const n = parseInt(digits(s), 10);
+  return Number.isFinite(n) && n > 0 ? n : null;
+};
+
+function validateStep(step: number, f: Form): Errors {
+  const e: Errors = {};
+  if (step === 0) {
+    if (!f.first.trim()) e.first = "Enter your first name.";
+    if (!f.last.trim()) e.last = "Enter your last name.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = "Enter a valid email address, like name@gmail.com.";
+    if (nationalPhone(f.phone).length !== 10) e.phone = "Enter a 10-digit mobile number.";
+    if (!f.city.trim()) e.city = "Enter the city you coach in.";
+  }
+  if (step === 1) {
+    const y = Number(f.experience);
+    if (f.experience === "" || !Number.isInteger(y) || y < 0 || y > 60) e.experience = "Enter your years of coaching, from 0 to 60.";
+  }
+  if (step === 2 && !f.specialties.length) e.specialties = "Pick at least one speciality.";
+  if (step === 3 && !f.formats.length) e.formats = "Pick at least one way you coach.";
+  if (step === 4) {
+    if (f.start && f.end && f.start >= f.end) e.end = "Choose an end time after the start time.";
+    if (!f.consent) e.consent = "Tick the box so we can contact you about your profile.";
+  }
+  return e;
+}
+
+/** Centre-crops and resizes to a 600px square JPEG so uploads stay small. */
+async function prepareImage(file: File): Promise<Blob> {
+  const url = URL.createObjectURL(file);
+  try {
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const el = new Image();
+      el.onload = () => resolve(el);
+      el.onerror = () => reject(new Error("unreadable"));
+      el.src = url;
+    });
+    const side = Math.min(img.naturalWidth, img.naturalHeight);
+    const canvas = document.createElement("canvas");
+    canvas.width = canvas.height = Math.min(600, side);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) throw new Error("canvas");
+    ctx.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, canvas.width, canvas.height);
+    return await new Promise<Blob>((resolve, reject) =>
+      canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("encode"))), "image/jpeg", 0.85),
+    );
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+function Field({ label, error, wide, hint, children }: { label: ReactNode; error?: string; wide?: boolean; hint?: string; children: ReactNode }) {
+  return (
+    <label className={`${wide ? "wide " : ""}${error ? "has-error" : ""}`}>
+      <span className="cb-label">
+        {label}
+        {hint && <em>{hint}</em>}
+      </span>
+      {children}
+      {error && <span className="cb-field-error">{error}</span>}
+    </label>
+  );
+}
+
+export default function CoachSignup() {
+  const [f, setF] = useState<Form>(defaults);
+  const [step, setStep] = useState(0);
+  const [reached, setReached] = useState(0);
+  const [preview, setPreview] = useState(false);
+  const [ready, setReady] = useState(false);
+  const [errors, setErrors] = useState<Errors>({});
+  const [photoFile, setPhotoFile] = useState<Blob | null>(null);
+  const [photoPreview, setPhotoPreview] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [done, setDone] = useState(false);
+  const honeypot = useRef<HTMLInputElement>(null);
+  const formTop = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(DRAFT_KEY);
+      if (saved) {
+        const d = JSON.parse(saved);
+        setF({ ...defaults, ...d.form, consent: false });
+        setReached(Math.min(Number(d.reached) || 0, STEPS.length - 1));
+      }
+    } catch {}
+    setReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!ready || done) return;
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ form: { ...f, consent: false }, reached }));
+    } catch {}
+  }, [f, reached, ready, done]);
+
+  useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview); }, [photoPreview]);
+
+  function update(patch: Partial<Form>) {
+    setF((old) => ({ ...old, ...patch }));
+    const keys = Object.keys(patch) as (keyof Form)[];
+    setErrors((old) => {
+      const next = { ...old };
+      keys.forEach((k) => delete next[k]);
+      return next;
+    });
+  }
+  function toggle(field: ListField, value: string) {
+    const current = f[field];
+    update({ [field]: current.includes(value) ? current.filter((x) => x !== value) : [...current, value] } as Partial<Form>);
+  }
+
+  async function onPhoto(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 10 * 1024 * 1024) {
+      setErrors((e) => ({ ...e, photo: "Choose a JPG, PNG or WebP image smaller than 10 MB." }));
+      return;
+    }
+    try {
+      const blob = await prepareImage(file);
+      setPhotoFile(blob);
+      setPhotoPreview(URL.createObjectURL(blob));
+      setErrors((e) => ({ ...e, photo: undefined }));
+    } catch {
+      setErrors((e) => ({ ...e, photo: "We couldn't read that image. Try a different JPG or PNG." }));
+    }
+  }
+
+  function go(next: number) {
+    setStep(next);
+    setSubmitError("");
+    formTop.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+  function next() {
+    const e = validateStep(step, f);
+    setErrors(e);
+    if (Object.keys(e).length) return;
+    const n = step + 1;
+    setReached((r) => Math.max(r, n));
+    go(n);
+  }
+
+  const view: CoachView = useMemo(
+    () => ({
+      firstName: f.first.trim(),
+      lastName: f.last.trim(),
+      city: f.city.trim(),
+      venue: f.venue.trim(),
+      yearsCoaching: f.experience === "" ? null : Number(f.experience),
+      playingLevel: f.level,
+      bio: f.bio.trim(),
+      photoUrl: photoPreview,
+      specialties: f.specialties,
+      certifications: certificationList(f),
+      packages: f.packages.map((p) => ({ name: p.name, price: priceNumber(p.price), detail: p.detail.trim() })),
+      formats: f.formats,
+      days: WEEKDAYS.filter((d) => f.days.includes(d)),
+      startTime: f.start,
+      endTime: f.end,
+      verified: false,
+    }),
+    [f, photoPreview],
+  );
+
+  async function submit() {
+    for (let s = 0; s < STEPS.length; s++) {
+      const e = validateStep(s, f);
+      if (Object.keys(e).length) {
+        setErrors(e);
+        setPreview(false);
+        go(s);
+        return;
+      }
+    }
+    if (honeypot.current?.value) {
+      setDone(true);
+      return;
+    }
+    if (!supabase) {
+      setSubmitError("Sign-ups aren't connected yet. Email hello@foresports.in and we'll set up your profile for you.");
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      let photo_path: string | null = null;
+      if (photoFile) {
+        const path = `signups/${crypto.randomUUID()}.jpg`;
+        const { error } = await supabase.storage.from(PHOTO_BUCKET).upload(path, photoFile, { contentType: "image/jpeg", upsert: false });
+        if (!error) photo_path = path;
+        else console.error("Coach photo upload failed", error);
+      }
+      const { error } = await supabase.from("coach_profiles").insert({
+        first_name: view.firstName,
+        last_name: view.lastName,
+        email: f.email.trim().toLowerCase(),
+        phone: "+91" + nationalPhone(f.phone),
+        city: view.city,
+        venue: view.venue || null,
+        years_coaching: view.yearsCoaching,
+        playing_level: f.level || null,
+        bio: view.bio || null,
+        photo_path,
+        specialties: view.specialties,
+        certifications: view.certifications,
+        packages: view.packages,
+        formats: view.formats,
+        days: view.days,
+        start_time: f.start || null,
+        end_time: f.end || null,
+        heard_from: f.heard || null,
+        consent: f.consent,
+        source: "coach_signup",
+      });
+      if (error) {
+        if (error.code === "23505") {
+          setSubmitError("A coach profile with this email already exists. To change it, email hello@foresports.in.");
+        } else {
+          console.error("Coach sign-up failed", error);
+          setSubmitError("We couldn't send your sign-up. Check your connection and try again. Your answers are still here.");
+        }
+        return;
+      }
+      try { localStorage.removeItem(DRAFT_KEY); } catch {}
+      setDone(true);
+      setPreview(false);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("Coach sign-up failed", err);
+      setSubmitError("We couldn't send your sign-up. Check your connection and try again. Your answers are still here.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (!ready) return <main className="coach-builder cb-scope"><p className="cb-loading">Loading coach sign-up…</p></main>;
+
+  const nav = (
+    <header className="cb-nav">
+      <a className="cb-logo" href="/">FORESPORTS</a>
+      <span>COACH SIGN-UP</span>
+      {!done && (
+        <button type="button" className="cb-button cb-outline" onClick={() => setPreview(!preview)}>
+          <Eye size={16} />
+          {preview ? "Edit profile" : "Preview profile"}
+        </button>
+      )}
+    </header>
+  );
+
+  const footer = (
+    <footer className="cb-site-footer">
+      <span>© {new Date().getFullYear()} ForeSports Private Limited</span>
+      <a href="/coaches/directory">Browse coaches</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/coaches">Back to ForeSports</a>
+    </footer>
+  );
+
+  if (done) {
+    return (
+      <main className="coach-builder cb-scope">
+        {nav}
+        <section className="cb-done">
+          <div className="cb-done-ring"><Check size={30} /></div>
+          <small>FOUNDING COACH</small>
+          <h1>Thanks, {view.firstName || "coach"}. Your profile is with our team.</h1>
+          <p>We'll review your details and email {f.email.trim() || "you"} once your profile is live on ForeSports.</p>
+          <ol className="cb-next">
+            <li><span>1</span><div><strong>We review your profile</strong>Our team checks your details and credentials, usually within a few days.</div></li>
+            <li><span>2</span><div><strong>Your profile goes live</strong>Golfers can find you in the ForeSports coach directory and send enquiries.</div></li>
+            <li><span>3</span><div><strong>Early access to the app</strong>You'll be first in when bookings, payments and student tools open.</div></li>
+          </ol>
+          <div className="cb-done-actions">
+            <a className="cb-button cb-primary" href="/coaches/directory">Browse the coach directory <ArrowRight size={15} /></a>
+            <a className="cb-button cb-outline" href="/coaches">Back to ForeSports</a>
+          </div>
+          <p className="cb-help">Need to change something? Email <strong>hello@foresports.in</strong>.</p>
+        </section>
+        {footer}
+      </main>
+    );
+  }
+
+  return (
+    <main className="coach-builder cb-scope">
+      {nav}
+      <section className="cb-intro">
+        <small>FOUNDING COACH PROGRAMME</small>
+        <h1>{preview ? "Your profile preview." : "Get your coaching profile ready for launch."}</h1>
+        <p>
+          {preview
+            ? "This is how your profile will appear to golfers once it's approved."
+            : "Tell golfers who you are, what you coach and when you're available. Approved profiles appear in the ForeSports coach directory."}
+        </p>
+        {!preview && <span className="cb-note">Takes about 5 minutes · Your progress saves in this browser</span>}
+      </section>
+
+      {!preview ? (
+        <div className="cb-layout">
+          <aside className="cb-steps">
+            <strong>YOUR SIGN-UP</strong>
+            {STEPS.map((label, i) => (
+              <button
+                type="button"
+                key={label}
+                className={step === i ? "current" : i < reached || (i === reached && i !== step) ? "visited" : ""}
+                disabled={i > reached}
+                onClick={() => go(i)}
+              >
+                <span>{i < reached && step !== i ? <Check size={13} /> : i + 1}</span>
+                {label}
+              </button>
+            ))}
+            <p>Accurate details help golfers choose you. Your email and phone are never shown on your profile.</p>
+          </aside>
+
+          <section className="cb-form" ref={formTop}>
+            <small>STEP {String(step + 1).padStart(2, "0")} / {String(STEPS.length).padStart(2, "0")}</small>
+
+            {step === 0 && (
+              <>
+                <h2>Your details</h2>
+                <p>How golfers will see your name, and how we'll reach you about your profile.</p>
+                <div className="cb-grid">
+                  <Field label="First name *" error={errors.first}><input autoComplete="given-name" value={f.first} onChange={(e) => update({ first: e.target.value })} placeholder="e.g. Raj" /></Field>
+                  <Field label="Last name *" error={errors.last}><input autoComplete="family-name" value={f.last} onChange={(e) => update({ last: e.target.value })} placeholder="e.g. Mehta" /></Field>
+                  <Field label="Email *" error={errors.email} wide><input type="email" autoComplete="email" value={f.email} onChange={(e) => update({ email: e.target.value })} placeholder="you@example.com" /></Field>
+                  <Field label="Mobile (WhatsApp) *" error={errors.phone}>
+                    <div className="cb-phone"><span>+91</span><input type="tel" inputMode="numeric" autoComplete="tel-national" value={f.phone} onChange={(e) => update({ phone: e.target.value })} placeholder="98765 43210" /></div>
+                  </Field>
+                  <Field label="City *" error={errors.city}><input autoComplete="address-level2" value={f.city} onChange={(e) => update({ city: e.target.value })} placeholder="e.g. Gurugram" /></Field>
+                </div>
+                <input ref={honeypot} className="cb-hp" tabIndex={-1} autoComplete="off" name="website" aria-hidden="true" />
+              </>
+            )}
+
+            {step === 1 && (
+              <>
+                <h2>Your coaching</h2>
+                <p>Your experience, where you teach and a short introduction.</p>
+                <div className="cb-grid">
+                  <Field label="Years coaching *" error={errors.experience}><input type="number" min="0" max="60" inputMode="numeric" value={f.experience} onChange={(e) => update({ experience: e.target.value })} placeholder="e.g. 12" /></Field>
+                  <Field label="Your playing level">
+                    <select value={f.level} onChange={(e) => update({ level: e.target.value })}>
+                      <option value="">Select…</option>
+                      {PLAYING_LEVELS.map((x) => <option key={x}>{x}</option>)}
+                    </select>
+                  </Field>
+                  <Field label="Home course or venue" wide><input value={f.venue} onChange={(e) => update({ venue: e.target.value })} placeholder="e.g. DLF Golf & Country Club" /></Field>
+                  <Field label="About you" hint="3–5 sentences" wide>
+                    <textarea maxLength={800} rows={6} value={f.bio} onChange={(e) => update({ bio: e.target.value })} placeholder="Describe your coaching background, playing experience, approach, and the golfers you work best with." />
+                    <small>{f.bio.length}/800 characters</small>
+                  </Field>
+                </div>
+                <h3>Profile photo <em className="cb-optional">Optional</em></h3>
+                <label className="cb-photo">
+                  {photoPreview ? <img src={photoPreview} alt="Your photo" /> : <span className="cb-photo-icon">＋</span>}
+                  <strong>{photoPreview ? "Change photo" : "Upload a profile photo"}</strong>
+                  <span>JPG, PNG or WebP · a clear, front-facing headshot works best</span>
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} />
+                </label>
+                {errors.photo && <p className="cb-error" role="alert">{errors.photo}</p>}
+                {photoPreview && <p className="cb-help">Your photo uploads when you submit. You'll need to add it again if you leave this page before then.</p>}
+              </>
+            )}
+
+            {step === 2 && (
+              <>
+                <h2>Specialities & credentials</h2>
+                <p>Golfers search and filter coaches by these.</p>
+                <h3>Coaching specialities *</h3>
+                <div className="cb-chips">
+                  {SPECIALTIES.map((x) => (
+                    <button type="button" key={x} aria-pressed={f.specialties.includes(x)} className={f.specialties.includes(x) ? "chosen" : ""} onClick={() => toggle("specialties", x)}>
+                      {f.specialties.includes(x) ? "✓ " : ""}{x}
+                    </button>
+                  ))}
+                </div>
+                {errors.specialties && <p className="cb-error" role="alert">{errors.specialties}</p>}
+                <h3>Certifications & memberships</h3>
+                <p className="cb-help">Select only qualifications you currently hold. Our team verifies them before they're marked as verified.</p>
+                <div className="cb-options">
+                  {CERTIFICATIONS.map((x) => (
+                    <button type="button" key={x} aria-pressed={f.certifications.includes(x)} className={f.certifications.includes(x) ? "chosen" : ""} onClick={() => toggle("certifications", x)}>
+                      {f.certifications.includes(x) ? "✓" : "＋"} {x}
+                    </button>
+                  ))}
+                </div>
+                {f.certifications.includes("Other qualification") && (
+                  <div className="cb-grid cb-gap-top">
+                    <Field label="Other qualification" wide><input value={f.otherCert} onChange={(e) => update({ otherCert: e.target.value })} placeholder="e.g. SNAG Level 1" /></Field>
+                  </div>
+                )}
+              </>
+            )}
+
+            {step === 3 && (
+              <>
+                <h2>Packages & format</h2>
+                <p>Set indicative prices in rupees. You can refine your offer before bookings open.</p>
+                {f.packages.map((item, i) => (
+                  <div className="cb-package" key={item.name}>
+                    <h3>{item.name}</h3>
+                    <div className="cb-package-row">
+                      <label>
+                        <span className="cb-label">Price (₹)</span>
+                        <div className="cb-money"><span>₹</span><input inputMode="numeric" value={item.price} onChange={(e) => update({ packages: f.packages.map((x, j) => (i === j ? { ...x, price: e.target.value.replace(/[^\d,]/g, "") } : x)) })} placeholder={["1,200", "4,500", "12,000"][i]} /></div>
+                      </label>
+                      <label>
+                        <span className="cb-label">What's included</span>
+                        <input value={item.detail} maxLength={120} onChange={(e) => update({ packages: f.packages.map((x, j) => (i === j ? { ...x, detail: e.target.value } : x)) })} />
+                      </label>
+                    </div>
+                  </div>
+                ))}
+                <p className="cb-help">Leave a price blank to hide that package. Bookings and payments aren't live yet.</p>
+                <h3>How do you coach? *</h3>
+                <div className="cb-chips">
+                  {FORMATS.map((x) => (
+                    <button type="button" key={x} aria-pressed={f.formats.includes(x)} className={f.formats.includes(x) ? "chosen" : ""} onClick={() => toggle("formats", x)}>
+                      {f.formats.includes(x) ? "✓ " : ""}{x}
+                    </button>
+                  ))}
+                </div>
+                {errors.formats && <p className="cb-error" role="alert">{errors.formats}</p>}
+              </>
+            )}
+
+            {step === 4 && (
+              <>
+                <h2>Availability & submit</h2>
+                <p>Give golfers a broad idea of when you coach, then send your profile to our team.</p>
+                <h3>Coaching days</h3>
+                <div className="cb-days">
+                  {WEEKDAYS.map((x) => (
+                    <button type="button" key={x} aria-pressed={f.days.includes(x)} className={f.days.includes(x) ? "chosen" : ""} onClick={() => toggle("days", x)}>{x}</button>
+                  ))}
+                </div>
+                <div className="cb-grid">
+                  <Field label="Sessions start from"><input type="time" value={f.start} onChange={(e) => update({ start: e.target.value })} /></Field>
+                  <Field label="Sessions finish by" error={errors.end}><input type="time" value={f.end} onChange={(e) => update({ end: e.target.value })} /></Field>
+                  <Field label="How did you hear about ForeSports?" wide>
+                    <select value={f.heard} onChange={(e) => update({ heard: e.target.value })}>
+                      <option value="">Select…</option>
+                      {HEARD_FROM.map((x) => <option key={x}>{x}</option>)}
+                    </select>
+                  </Field>
+                </div>
+                <div className="cb-review">
+                  <div><span>Name</span><strong>{[view.firstName, view.lastName].join(" ")}</strong></div>
+                  <div><span>Contact</span><strong>{f.email.trim()} · +91 {nationalPhone(f.phone)}</strong></div>
+                  <div><span>Coaching</span><strong>{view.yearsCoaching} yrs · {view.city}{view.venue ? " · " + view.venue : ""}</strong></div>
+                  <div><span>Specialities</span><strong>{view.specialties.join(", ")}</strong></div>
+                  <button type="button" className="cb-link" onClick={() => setPreview(true)}><Eye size={14} /> See your full profile preview</button>
+                </div>
+                <label className={`cb-consent${errors.consent ? " has-error" : ""}`}>
+                  <input type="checkbox" checked={f.consent} onChange={(e) => update({ consent: e.target.checked })} />
+                  <span>I confirm these details are accurate, and I agree that ForeSports can store them, show my approved profile publicly (without my email or phone), and contact me by email or WhatsApp. See the <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>.</span>
+                </label>
+                {errors.consent && <p className="cb-error" role="alert">{errors.consent}</p>}
+              </>
+            )}
+
+            {submitError && <p className="cb-error cb-submit-error" role="alert">{submitError}</p>}
+            <div className="cb-footer">
+              <button type="button" className="cb-button cb-outline" disabled={step === 0 || submitting} onClick={() => go(step - 1)}><ArrowLeft size={15} /> Back</button>
+              <div>
+                {step < STEPS.length - 1 ? (
+                  <button type="button" className="cb-button cb-primary" onClick={next}>Continue <ArrowRight size={15} /></button>
+                ) : (
+                  <button type="button" className="cb-button cb-primary" disabled={submitting} onClick={submit}>
+                    {submitting ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : <><Send size={15} /> Submit my profile</>}
+                  </button>
+                )}
+              </div>
+            </div>
+          </section>
+        </div>
+      ) : (
+        <section className="cb-preview">
+          <div className="cb-preview-banner">
+            <div><strong>Preview mode</strong><p>Your profile isn't submitted yet. Approved profiles appear in the coach directory.</p></div>
+            <button type="button" className="cb-button cb-outline" onClick={() => setPreview(false)}>Back to editor</button>
+          </div>
+          <CoachProfileView
+            coach={view}
+            badge="DRAFT PREVIEW"
+            draft
+            aside={
+              <section className="cb-card">
+                <h3>Enquiries</h3>
+                <p>Golfers send enquiries through ForeSports. We pass them on to you, so your phone and email stay private.</p>
+              </section>
+            }
+          />
+          <div className="cb-preview-actions">
+            <button type="button" className="cb-button cb-outline" onClick={() => setPreview(false)}><ArrowLeft size={15} /> Keep editing</button>
+            {reached >= STEPS.length - 1 ? (
+              <button type="button" className="cb-button cb-primary" onClick={() => { setPreview(false); go(STEPS.length - 1); }}>Continue to submit <ArrowRight size={15} /></button>
+            ) : (
+              <button type="button" className="cb-button cb-primary" onClick={() => setPreview(false)}>Continue sign-up <ArrowRight size={15} /></button>
+            )}
+          </div>
+        </section>
+      )}
+      {footer}
+    </main>
+  );
+}
+
+function certificationList(f: Form): string[] {
+  const list = f.certifications.filter((c) => c !== "Other qualification");
+  if (f.certifications.includes("Other qualification") && f.otherCert.trim()) list.push(f.otherCert.trim());
+  return list;
 }
