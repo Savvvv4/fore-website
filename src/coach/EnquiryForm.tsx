@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
-import { Check, Loader2, Send } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 
 export default function EnquiryForm({ coachId, coachFirstName }: { coachId: string; coachFirstName: string }) {
@@ -24,7 +24,7 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
       return;
     }
     if (honeypot.current?.value) { setSent(true); return; }
-    if (!supabase) { setError('Enquiries are not connected yet. Email hello@foresports.in instead.'); return; }
+    if (!supabase) { setError("We couldn't send your message right now. Email hello@foresports.in and we'll pass it on."); return; }
 
     setSending(true);
     setError('');
@@ -38,7 +38,7 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
     setSending(false);
     if (dbError) {
       console.error('Coach enquiry failed', dbError);
-      setError("We couldn't send your enquiry. Check your connection and try again.");
+      setError("We couldn't send your message. Check your connection and try again.");
       return;
     }
     form.reset();
@@ -47,34 +47,33 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
 
   if (sent) {
     return (
-      <section className="cb-card cb-enquiry">
-        <h3>Enquiry sent</h3>
+      <div className="cb-enquiry" id="enquire">
         <div className="cb-enquiry-sent">
           <span><Check size={18} /></span>
-          <p>Thanks. We've passed your message to {coachFirstName}, and you'll hear back by email.</p>
+          <p><strong>Message sent.</strong> {coachFirstName} will get back to you by email.</p>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className="cb-card cb-enquiry" id="enquire">
-      <h3>Enquire about lessons</h3>
+    <div className="cb-enquiry" id="enquire">
+      <h3>Message {coachFirstName}</h3>
       <form onSubmit={submit} noValidate>
-        <label><span className="cb-label">Your name</span><input name="name" autoComplete="name" required maxLength={100} /></label>
-        <label><span className="cb-label">Email</span><input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
-        <label><span className="cb-label">Phone <em>Optional</em></span><input name="phone" type="tel" autoComplete="tel" maxLength={20} /></label>
+        <label><span className="sr-only">Your name</span><input name="name" autoComplete="name" required maxLength={100} placeholder="Your name" /></label>
+        <label><span className="sr-only">Email</span><input name="email" type="email" autoComplete="email" required maxLength={254} placeholder="Email" /></label>
+        <label><span className="sr-only">Phone (optional)</span><input name="phone" type="tel" autoComplete="tel" maxLength={20} placeholder="Phone (optional)" /></label>
         <label>
-          <span className="cb-label">Message</span>
-          <textarea name="message" rows={4} required maxLength={1500} placeholder={`Tell ${coachFirstName} about your game and what you'd like to work on.`} />
+          <span className="sr-only">Message</span>
+          <textarea name="message" rows={4} required maxLength={1500} placeholder={`Your handicap, what you'd like to work on and when you're free.`} />
         </label>
         <input ref={honeypot} className="cb-hp" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         {error && <p className="cb-error" role="alert">{error}</p>}
         <button className="cb-button cb-primary" type="submit" disabled={sending}>
-          {sending ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : <><Send size={15} /> Send enquiry</>}
+          {sending ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : 'Send message'}
         </button>
-        <p className="cb-enquiry-note">Fore passes your message to the coach. Your details aren't shown publicly.</p>
+        <p className="cb-enquiry-note">Free to enquire. No commitment.</p>
       </form>
-    </section>
+    </div>
   );
 }

@@ -142,6 +142,37 @@ export function lowestPrice(packages: CoachPackage[]): number | null {
   return prices.length ? Math.min(...prices) : null;
 }
 
+/** The package with the lowest price, used for "From ₹X" summaries. */
+export function cheapestPackage(packages: CoachPackage[]): CoachPackage | null {
+  const priced = packages.filter((p) => p.price != null && p.price > 0);
+  if (!priced.length) return null;
+  return priced.reduce((a, b) => ((b.price as number) < (a.price as number) ? b : a));
+}
+
+/** Short background line, e.g. "Former touring professional" → "Former tour pro". */
+export function shortLevel(level: string): string {
+  const map: Record<string, string> = {
+    'Touring professional (current)': 'Touring pro',
+    'Former touring professional': 'Former tour pro',
+    'Category 1 amateur (handicap 0–5)': 'Category 1 amateur',
+    'Club golfer (handicap 6+)': '',
+  };
+  return level in map ? map[level] : level;
+}
+
+/** "12 yrs coaching · Former tour pro" */
+export function coachHeadline(c: Pick<CoachView, 'yearsCoaching' | 'playingLevel'>): string {
+  const years = c.yearsCoaching == null ? '' : c.yearsCoaching === 0 ? 'New coach' : `${c.yearsCoaching} ${c.yearsCoaching === 1 ? 'yr' : 'yrs'} coaching`;
+  return [years, shortLevel(c.playingLevel)].filter(Boolean).join(' · ');
+}
+
+/** "6 AM – 7 PM" */
+export function formatHours(start: string, end: string): string {
+  if (!start || !end) return '';
+  const short = (v: string) => formatTime(v).replace(':00', '');
+  return `${short(start)} – ${short(end)}`;
+}
+
 /** "Mon, Tue, Wed, Thu, Fri, Sat" → "Mon–Sat" when the days are consecutive. */
 export function formatDays(days: string[]): string {
   const sorted = WEEKDAYS.filter((d) => days.includes(d));

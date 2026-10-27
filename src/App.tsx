@@ -1081,14 +1081,14 @@ function CoachJoinForm() {
       <div className="container form-layout">
         <div>
           <SectionLabel>Join as a coach</SectionLabel>
-          <h2>Get on Fore early.</h2>
-          <p>Be part of a global community shaping the future of golf coaching. Create your founding coach profile now and be listed in the ForeSports coach directory before launch.</p>
+          <h2>Fill your lesson book.</h2>
+          <p>Create your Fore coach profile in five minutes and get found by golfers looking for lessons in your city.</p>
         </div>
         <div className="form-card coach-join-card">
           <ol className="coach-join-steps">
-            <li><span>1</span><div><strong>Build your profile</strong>Your experience, specialities, packages and availability. About 5 minutes.</div></li>
-            <li><span>2</span><div><strong>We review it</strong>Our team checks your details and credentials.</div></li>
-            <li><span>3</span><div><strong>Golfers find you</strong>Approved profiles go live in the coach directory with a founding coach badge.</div></li>
+            <li><span>1</span><div><strong>Build your profile</strong>Your specialities, prices and availability, in about five minutes.</div></li>
+            <li><span>2</span><div><strong>Go live</strong>We check your details and publish you in the coach directory.</div></li>
+            <li><span>3</span><div><strong>Golfers get in touch</strong>Golfers near you compare coaches and message you directly.</div></li>
           </ol>
           <div className="coach-join-actions">
             <Link className="button acid" to="/coach-profile">

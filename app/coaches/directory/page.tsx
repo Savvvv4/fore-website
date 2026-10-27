@@ -9,7 +9,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Find a Golf Coach',
-  description: 'Browse ForeSports golf coaches in India by city, speciality and coaching format. Every profile is reviewed before it goes live.',
+  description: 'Compare golf coaches in India by city, speciality, experience and price, then message the one that fits your game.',
   alternates: { canonical: '/coaches/directory' },
   openGraph: {
     title: 'Find a golf coach | ForeSports',

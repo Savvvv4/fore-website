@@ -1,26 +1,24 @@
 "use client";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type ReactNode } from "react";
-import { ArrowLeft, ArrowRight, Check, Eye, Loader2, Send } from "lucide-react";
+import { ArrowLeft, ArrowRight, Camera, Check, Eye, Loader2, X } from "lucide-react";
 import { supabase } from "../../src/lib/supabase";
 import CoachProfileView from "../../src/coach/CoachProfileView";
+import CoachCard from "../../src/coach/CoachCard";
 import { SiteShell } from "../../src/App";
 import {
   CERTIFICATIONS,
   FORMATS,
-  HEARD_FROM,
   PHOTO_BUCKET,
   PLAYING_LEVELS,
   SPECIALTIES,
   WEEKDAYS,
-  formatINR,
-  initials,
-  lowestPrice,
   type CoachView,
 } from "../../src/coach/shared";
 import "../../src/coach/coach.css";
 
-const DRAFT_KEY = "foresports-coach-signup-draft-v2";
-const STEPS = ["Your details", "Your coaching", "Specialities & credentials", "Packages & format", "Availability & submit"];
+const DRAFT_KEY = "foresports-coach-signup-draft-v3";
+const STEPS = ["About you", "Your coaching", "Profile & pricing"];
+const PRICE_PLACEHOLDERS = ["1,500", "5,000", "15,000"];
 
 type Pkg = { name: string; price: string; detail: string };
 type Form = {
@@ -41,8 +39,6 @@ type Form = {
   days: string[];
   start: string;
   end: string;
-  heard: string;
-  consent: boolean;
 };
 type ListField = "specialties" | "certifications" | "days" | "formats";
 type Errors = Partial<Record<keyof Form | "photo", string>>;
@@ -62,15 +58,13 @@ const defaults: Form = {
   otherCert: "",
   packages: [
     { name: "Trial lesson", price: "", detail: "A first session to understand your game" },
-    { name: "Lesson pack", price: "", detail: "A block of 4 coaching sessions" },
+    { name: "Lesson pack", price: "", detail: "4 coaching sessions" },
     { name: "Monthly programme", price: "", detail: "Ongoing coaching and progress tracking" },
   ],
   formats: ["In-person"],
   days: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
   start: "06:00",
   end: "19:00",
-  heard: "",
-  consent: false,
 };
 
 const digits = (s: string) => s.replace(/\D/g, "");
@@ -85,19 +79,18 @@ function validateStep(step: number, f: Form): Errors {
   if (step === 0) {
     if (!f.first.trim()) e.first = "Enter your first name.";
     if (!f.last.trim()) e.last = "Enter your last name.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = "Enter a valid email address, like name@gmail.com.";
     if (nationalPhone(f.phone).length !== 10) e.phone = "Enter a 10-digit mobile number.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = "Enter a valid email, like name@gmail.com.";
     if (!f.city.trim()) e.city = "Enter the city you coach in.";
   }
   if (step === 1) {
     const y = Number(f.experience);
-    if (f.experience === "" || !Number.isInteger(y) || y < 0 || y > 60) e.experience = "Enter your years of coaching, from 0 to 60.";
+    if (f.experience === "" || !Number.isInteger(y) || y < 0 || y > 60) e.experience = "Enter a number from 0 to 60.";
+    if (!f.specialties.length) e.specialties = "Pick at least one.";
+    if (!f.formats.length) e.formats = "Pick at least one.";
   }
-  if (step === 2 && !f.specialties.length) e.specialties = "Pick at least one speciality.";
-  if (step === 3 && !f.formats.length) e.formats = "Pick at least one way you coach.";
-  if (step === 4) {
-    if (f.start && f.end && f.start >= f.end) e.end = "Choose an end time after the start time.";
-    if (!f.consent) e.consent = "Tick the box so we can contact you about your profile.";
+  if (step === 2) {
+    if (f.start && f.end && f.start >= f.end) e.end = "Pick a time after the start time.";
   }
   return e;
 }
@@ -126,16 +119,29 @@ async function prepareImage(file: File): Promise<Blob> {
   }
 }
 
-function Field({ label, error, wide, hint, children }: { label: ReactNode; error?: string; wide?: boolean; hint?: string; children: ReactNode }) {
+function Field({ label, error, wide, optional, children }: { label: ReactNode; error?: string; wide?: boolean; optional?: boolean; children: ReactNode }) {
   return (
-    <label className={`${wide ? "wide " : ""}${error ? "has-error" : ""}`}>
-      <span className="cb-label">
+    <label className={`su-field${wide ? " wide" : ""}${error ? " has-error" : ""}`}>
+      <span className="su-label">
         {label}
-        {hint && <em>{hint}</em>}
+        {optional && <em>Optional</em>}
       </span>
       {children}
-      {error && <span className="cb-field-error">{error}</span>}
+      {error && <span className="su-error">{error}</span>}
     </label>
+  );
+}
+
+function Group({ title, optional, error, children }: { title: string; optional?: boolean; error?: string; children: ReactNode }) {
+  return (
+    <fieldset className={`su-group${error ? " has-error" : ""}`}>
+      <legend className="su-label">
+        {title}
+        {optional && <em>Optional</em>}
+      </legend>
+      {children}
+      {error && <span className="su-error" role="alert">{error}</span>}
+    </fieldset>
   );
 }
 
@@ -154,12 +160,13 @@ export default function CoachSignup() {
   const honeypot = useRef<HTMLInputElement>(null);
   const formTop = useRef<HTMLElement>(null);
 
+  // Restore an unfinished sign-up from this browser.
   useEffect(() => {
     try {
       const saved = localStorage.getItem(DRAFT_KEY);
       if (saved) {
         const d = JSON.parse(saved);
-        setF({ ...defaults, ...d.form, consent: false });
+        setF({ ...defaults, ...d.form });
         setReached(Math.min(Number(d.reached) || 0, STEPS.length - 1));
       }
     } catch {}
@@ -169,11 +176,24 @@ export default function CoachSignup() {
   useEffect(() => {
     if (!ready || done) return;
     try {
-      localStorage.setItem(DRAFT_KEY, JSON.stringify({ form: { ...f, consent: false }, reached }));
+      localStorage.setItem(DRAFT_KEY, JSON.stringify({ form: f, reached }));
     } catch {}
   }, [f, reached, ready, done]);
 
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview); }, [photoPreview]);
+
+  // Full-profile preview: close on Escape and keep the page behind it still.
+  useEffect(() => {
+    if (!preview) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setPreview(false);
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = overflow;
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [preview]);
 
   function update(patch: Partial<Form>) {
     setF((old) => ({ ...old, ...patch }));
@@ -188,13 +208,16 @@ export default function CoachSignup() {
     const current = f[field];
     update({ [field]: current.includes(value) ? current.filter((x) => x !== value) : [...current, value] } as Partial<Form>);
   }
+  function setPackage(i: number, patch: Partial<Pkg>) {
+    update({ packages: f.packages.map((x, j) => (i === j ? { ...x, ...patch } : x)) });
+  }
 
   async function onPhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
     if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 10 * 1024 * 1024) {
-      setErrors((e) => ({ ...e, photo: "Choose a JPG, PNG or WebP image smaller than 10 MB." }));
+      setErrors((e) => ({ ...e, photo: "Choose a JPG, PNG or WebP image under 10 MB." }));
       return;
     }
     try {
@@ -203,7 +226,7 @@ export default function CoachSignup() {
       setPhotoPreview(URL.createObjectURL(blob));
       setErrors((e) => ({ ...e, photo: undefined }));
     } catch {
-      setErrors((e) => ({ ...e, photo: "We couldn't read that image. Try a different JPG or PNG." }));
+      setErrors((e) => ({ ...e, photo: "We couldn't read that image. Try a different one." }));
     }
   }
 
@@ -258,7 +281,7 @@ export default function CoachSignup() {
       return;
     }
     if (!supabase) {
-      setSubmitError("Sign-ups aren't connected yet. Email hello@foresports.in and we'll set up your profile for you.");
+      setSubmitError("We couldn't send your profile right now. Email hello@foresports.in and we'll set it up for you.");
       return;
     }
     setSubmitting(true);
@@ -289,16 +312,16 @@ export default function CoachSignup() {
         days: view.days,
         start_time: f.start || null,
         end_time: f.end || null,
-        heard_from: f.heard || null,
-        consent: f.consent,
+        // Agreement is given by submitting; the terms line sits directly above the button.
+        consent: true,
         source: "coach_signup",
       });
       if (error) {
         if (error.code === "23505") {
-          setSubmitError("A coach profile with this email already exists. To change it, email hello@foresports.in.");
+          setSubmitError("There's already a profile with this email. To update it, email hello@foresports.in.");
         } else {
           console.error("Coach sign-up failed", error);
-          setSubmitError("We couldn't send your sign-up. Check your connection and try again. Your answers are still here.");
+          setSubmitError("We couldn't send your profile. Check your connection and try again.");
         }
         return;
       }
@@ -308,77 +331,28 @@ export default function CoachSignup() {
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("Coach sign-up failed", err);
-      setSubmitError("We couldn't send your sign-up. Check your connection and try again. Your answers are still here.");
+      setSubmitError("We couldn't send your profile. Check your connection and try again.");
     } finally {
       setSubmitting(false);
     }
   }
 
-  if (!ready) {
-    return (
-      <SiteShell>
-        <div className="cb-scope cb-page"><p className="cb-loading">Loading coach sign-up…</p></div>
-      </SiteShell>
-    );
-  }
-
-  const fromPrice = lowestPrice(view.packages);
-  const liveCard = (
-    <div className="aud-mock cb-live-card" aria-label="Live preview of your profile card">
-      <div className="mock-bar">
-        <span className="mock-dot" />
-        <span className="mock-dot" />
-        <span className="mock-dot" />
-        <span className="mock-bar-label">FORE · YOUR COACH PROFILE</span>
-        <span className="mock-preview-badge">Live preview</span>
-      </div>
-      <div className="mock-body">
-        <div className="cb-live-head">
-          <div className="cb-live-avatar">{photoPreview ? <img src={photoPreview} alt="" /> : initials(view.firstName, view.lastName)}</div>
-          <div>
-            <strong>{[view.firstName, view.lastName].filter(Boolean).join(" ") || "Your name"}</strong>
-            <span>{["Golf coach", view.yearsCoaching != null ? `${view.yearsCoaching} yrs` : "", view.city].filter(Boolean).join(" · ")}</span>
-          </div>
-        </div>
-        <div className="cb-live-chips">
-          {(view.specialties.length ? view.specialties.slice(0, 4) : ["Your specialities"]).map((x) => (
-            <span key={x} className={view.specialties.length ? "" : "is-empty"}>{x}</span>
-          ))}
-        </div>
-        <div className="cb-live-label">Coaching days</div>
-        <div className="cb-live-days">
-          {WEEKDAYS.map((d) => <span key={d} className={f.days.includes(d) ? "on" : ""}>{d[0]}</span>)}
-        </div>
-        <div className="cb-live-foot">
-          <div>
-            <strong>{fromPrice ? formatINR(fromPrice) : "₹ —"}</strong>
-            <span>{fromPrice ? "lessons from" : "add your prices"}</span>
-          </div>
-          <span className="cb-live-cta">Enquire</span>
-        </div>
-      </div>
-    </div>
-  );
-
   if (done) {
     return (
       <SiteShell>
         <div className="cb-scope cb-page">
-          <section className="container cb-done">
-            <div className="cb-done-ring"><Check size={30} /></div>
-            <div className="section-label"><span />Profile received</div>
-            <h1>Thanks, {view.firstName || "coach"}. <em>You're on Fore early.</em></h1>
-            <p>We'll review your profile and email {f.email.trim() || "you"} as soon as it's live in the Fore coach directory.</p>
-            <ol className="cb-next">
-              <li><span>1</span><div><strong>We review your profile</strong>The Fore team checks your details and credentials, usually within a few days.</div></li>
-              <li><span>2</span><div><strong>Golfers find you</strong>Your profile goes live in the coach directory with a founding coach badge, and golfers can send you enquiries.</div></li>
-              <li><span>3</span><div><strong>First into the app</strong>You'll get early access when bookings, payments and student tools open.</div></li>
-            </ol>
-            <div className="button-row center">
-              <a className="button acid" href="/coaches/directory">Browse the coach directory <ArrowRight size={16} /></a>
-              <a className="button light" href="/coaches">Back to Fore for coaches</a>
+          <section className="su-done">
+            <div className="su-done-ring"><Check size={30} strokeWidth={2.5} /></div>
+            <h1>You're all set, {view.firstName || "coach"}.</h1>
+            <p>Our team is giving your profile a quick check. We'll email <strong>{f.email.trim()}</strong> the moment it's live.</p>
+            <div className="su-done-card">
+              <CoachCard coach={view} />
             </div>
-            <p className="cb-help">Need to change something? Email <strong>hello@foresports.in</strong>.</p>
+            <div className="cb-done-actions">
+              <a className="cb-button cb-primary" href="/coaches/directory">See the coach directory <ArrowRight size={16} /></a>
+              <a className="cb-button cb-outline" href="/coaches">Fore for coaches</a>
+            </div>
+            <p className="su-done-help">Want to change something? Email <a href="mailto:hello@foresports.in">hello@foresports.in</a></p>
           </section>
         </div>
       </SiteShell>
@@ -387,246 +361,217 @@ export default function CoachSignup() {
 
   return (
     <SiteShell>
-    <div className="cb-scope cb-page">
-      <section className={`aud-hero-section cb-hero${preview ? " is-preview" : ""}`}>
-        <div className="container aud-hero">
-          <div className="aud-hero-copy">
-            <div className="section-label"><span />{preview ? "Profile preview" : "Founding coaches"}</div>
-            <h1>{preview ? <>Your profile, <em>as golfers see it.</em></> : <>Get found by golfers <em>before launch.</em></>}</h1>
-            <p>
-              {preview
-                ? "Nothing is submitted yet. Once our team approves your profile, this is what golfers see in the Fore coach directory."
-                : "Create your Fore coach profile in about five minutes. We review every profile, and approved coaches are listed in the Fore coach directory from day one."}
-            </p>
-            <div className="button-row">
-              {preview ? (
-                <button type="button" className="button acid" onClick={() => setPreview(false)}><ArrowLeft size={16} /> Back to editing</button>
-              ) : (
+      <div className="cb-scope cb-page">
+        <header className="su-head">
+          <div className="section-label"><span />For coaches</div>
+          <h1>Get found by golfers <em>looking for a coach.</em></h1>
+          <p>Create your Fore profile in five minutes. Golfers in your city compare coaches, see your lessons and prices, and message you directly.</p>
+          <ul className="su-values">
+            <li><Check size={16} aria-hidden="true" /> Listed where golfers search</li>
+            <li><Check size={16} aria-hidden="true" /> Your prices, your schedule</li>
+            <li><Check size={16} aria-hidden="true" /> No upfront cost</li>
+          </ul>
+        </header>
+
+        <div className="su-layout">
+          <section className="su-form" ref={formTop} aria-labelledby="su-step-title">
+            <nav className="su-steps" aria-label="Sign-up steps">
+              {STEPS.map((label, i) => (
+                <button
+                  type="button"
+                  key={label}
+                  className={i === step ? "is-current" : i < reached || i < step ? "is-done" : ""}
+                  aria-current={i === step ? "step" : undefined}
+                  disabled={i > reached || submitting}
+                  onClick={() => go(i)}
+                >
+                  <span className="su-steps-bar" />
+                  <span className="su-steps-text"><b>{i + 1}</b> {label}</span>
+                </button>
+              ))}
+            </nav>
+
+            <div className="su-body" key={step}>
+              {ready && step === 0 && (
                 <>
-                  <a className="button acid" href="#sign-up">Start your profile <ArrowRight size={16} /></a>
-                  <button type="button" className="button light" onClick={() => setPreview(true)}><Eye size={16} /> Preview your profile</button>
+                  <h2 id="su-step-title">Let's start with you</h2>
+                  <div className="su-grid">
+                    <Field label="First name" error={errors.first}><input autoComplete="given-name" value={f.first} onChange={(e) => update({ first: e.target.value })} placeholder="Raj" /></Field>
+                    <Field label="Last name" error={errors.last}><input autoComplete="family-name" value={f.last} onChange={(e) => update({ last: e.target.value })} placeholder="Mehta" /></Field>
+                    <Field label="WhatsApp number" error={errors.phone}>
+                      <div className="su-phone"><span>+91</span><input type="tel" inputMode="numeric" autoComplete="tel-national" value={f.phone} onChange={(e) => update({ phone: e.target.value })} placeholder="98765 43210" /></div>
+                    </Field>
+                    <Field label="Email" error={errors.email}><input type="email" autoComplete="email" value={f.email} onChange={(e) => update({ email: e.target.value })} placeholder="you@example.com" /></Field>
+                    <Field label="City you coach in" error={errors.city} wide><input autoComplete="address-level2" value={f.city} onChange={(e) => update({ city: e.target.value })} placeholder="Gurugram" /></Field>
+                  </div>
+                </>
+              )}
+
+              {ready && step === 1 && (
+                <>
+                  <h2 id="su-step-title">Your coaching</h2>
+                  <div className="su-grid">
+                    <Field label="Years coaching" error={errors.experience}><input type="number" min="0" max="60" inputMode="numeric" value={f.experience} onChange={(e) => update({ experience: e.target.value })} placeholder="12" /></Field>
+                    <Field label="Playing background" optional>
+                      <select value={f.level} onChange={(e) => update({ level: e.target.value })}>
+                        <option value="">Select</option>
+                        {PLAYING_LEVELS.map((x) => <option key={x}>{x}</option>)}
+                      </select>
+                    </Field>
+                    <Field label="Home course or academy" optional wide><input value={f.venue} onChange={(e) => update({ venue: e.target.value })} placeholder="DLF Golf & Country Club" /></Field>
+                  </div>
+
+                  <Group title="What do you coach best?" error={errors.specialties}>
+                    <div className="su-chips">
+                      {SPECIALTIES.map((x) => (
+                        <button type="button" key={x} aria-pressed={f.specialties.includes(x)} onClick={() => toggle("specialties", x)}>
+                          {f.specialties.includes(x) && <Check size={14} aria-hidden="true" />}{x}
+                        </button>
+                      ))}
+                    </div>
+                  </Group>
+
+                  <Group title="How do you coach?" error={errors.formats}>
+                    <div className="su-chips">
+                      {FORMATS.map((x) => (
+                        <button type="button" key={x} aria-pressed={f.formats.includes(x)} onClick={() => toggle("formats", x)}>
+                          {f.formats.includes(x) && <Check size={14} aria-hidden="true" />}{x}
+                        </button>
+                      ))}
+                    </div>
+                  </Group>
+
+                  <Group title="Qualifications" optional>
+                    <div className="su-chips">
+                      {CERTIFICATIONS.map((x) => (
+                        <button type="button" key={x} aria-pressed={f.certifications.includes(x)} onClick={() => toggle("certifications", x)}>
+                          {f.certifications.includes(x) && <Check size={14} aria-hidden="true" />}{x}
+                        </button>
+                      ))}
+                    </div>
+                    {f.certifications.includes("Other qualification") && (
+                      <input className="su-gap" aria-label="Other qualification" value={f.otherCert} onChange={(e) => update({ otherCert: e.target.value })} placeholder="e.g. SNAG Level 1" />
+                    )}
+                  </Group>
+                </>
+              )}
+
+              {ready && step === 2 && (
+                <>
+                  <h2 id="su-step-title">Your profile & pricing</h2>
+
+                  <div className="su-photo-row">
+                    <label className="su-photo">
+                      {photoPreview ? <img src={photoPreview} alt="Your photo" /> : <Camera size={22} aria-hidden="true" />}
+                      <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} aria-label="Profile photo" />
+                    </label>
+                    <div>
+                      <strong>Profile photo</strong>
+                      <label className="su-photo-btn">
+                        {photoPreview ? "Change photo" : "Upload a headshot"}
+                        <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} tabIndex={-1} aria-hidden="true" />
+                      </label>
+                      {errors.photo && <span className="su-error" role="alert">{errors.photo}</span>}
+                    </div>
+                  </div>
+
+                  <Field label="About you" optional wide>
+                    <textarea maxLength={800} rows={4} value={f.bio} onChange={(e) => update({ bio: e.target.value })} placeholder="Your background, how you coach and the golfers you love working with." />
+                    <small className="su-count">{f.bio.length}/800</small>
+                  </Field>
+
+                  <Group title="Lesson prices">
+                    <ul className="su-prices">
+                      {f.packages.map((item, i) => (
+                        <li key={item.name}>
+                          <div>
+                            <strong>{item.name}</strong>
+                            <input className="su-detail" aria-label={`${item.name}: what's included`} value={item.detail} maxLength={120} onChange={(e) => setPackage(i, { detail: e.target.value })} />
+                          </div>
+                          <div className="su-money">
+                            <span>₹</span>
+                            <input inputMode="numeric" aria-label={`${item.name} price in rupees`} value={item.price} onChange={(e) => setPackage(i, { price: e.target.value.replace(/[^\d,]/g, "") })} placeholder={PRICE_PLACEHOLDERS[i]} />
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </Group>
+
+                  <Group title="When do you coach?" error={errors.end}>
+                    <div className="su-days">
+                      {WEEKDAYS.map((x) => (
+                        <button type="button" key={x} aria-pressed={f.days.includes(x)} onClick={() => toggle("days", x)}>{x}</button>
+                      ))}
+                    </div>
+                    <div className="su-hours">
+                      <label><span className="sr-only">From</span><input type="time" value={f.start} onChange={(e) => update({ start: e.target.value })} /></label>
+                      <span aria-hidden="true">to</span>
+                      <label><span className="sr-only">Until</span><input type="time" value={f.end} onChange={(e) => update({ end: e.target.value })} /></label>
+                    </div>
+                  </Group>
                 </>
               )}
             </div>
-            {!preview && (
-              <ul className="cb-hero-facts">
-                <li>About 5 minutes</li>
-                <li>Reviewed by the Fore team</li>
-                <li>No upfront cost</li>
-              </ul>
-            )}
-          </div>
-          {!preview && liveCard}
-        </div>
-      </section>
 
-      <div id="sign-up" className="cb-anchor" />
-      {!preview ? (
-        <div className="cb-layout">
-          <aside className="cb-steps">
-            <div className="section-label"><span />Your profile</div>
-            {STEPS.map((label, i) => (
-              <button
-                type="button"
-                key={label}
-                className={step === i ? "current" : i < reached || (i === reached && i !== step) ? "visited" : ""}
-                disabled={i > reached}
-                onClick={() => go(i)}
-              >
-                <span>{i < reached && step !== i ? <Check size={13} /> : i + 1}</span>
-                {label}
-              </button>
-            ))}
-            <p>Your progress saves in this browser. Your email and phone number are never shown on your profile.</p>
-          </aside>
+            {/* Spam trap: kept mounted on every step so it is still there at submit. */}
+            <input ref={honeypot} className="cb-hp" tabIndex={-1} autoComplete="off" name="website" aria-hidden="true" />
 
-          <section className="cb-form" ref={formTop}>
-            <div className="section-label"><span />Step {step + 1} of {STEPS.length}</div>
-            <div className="cb-progress" aria-hidden="true"><span style={{ width: `${((step + 1) / STEPS.length) * 100}%` }} /></div>
+            {submitError && <p className="cb-error su-submit-error" role="alert">{submitError}</p>}
 
-            {step === 0 && (
-              <>
-                <h2>Your details</h2>
-                <p>The name golfers will see, and how the Fore team can reach you.</p>
-                <div className="cb-grid">
-                  <Field label="First name *" error={errors.first}><input autoComplete="given-name" value={f.first} onChange={(e) => update({ first: e.target.value })} placeholder="e.g. Raj" /></Field>
-                  <Field label="Last name *" error={errors.last}><input autoComplete="family-name" value={f.last} onChange={(e) => update({ last: e.target.value })} placeholder="e.g. Mehta" /></Field>
-                  <Field label="Email *" error={errors.email} wide><input type="email" autoComplete="email" value={f.email} onChange={(e) => update({ email: e.target.value })} placeholder="you@example.com" /></Field>
-                  <Field label="Mobile (WhatsApp) *" error={errors.phone}>
-                    <div className="cb-phone"><span>+91</span><input type="tel" inputMode="numeric" autoComplete="tel-national" value={f.phone} onChange={(e) => update({ phone: e.target.value })} placeholder="98765 43210" /></div>
-                  </Field>
-                  <Field label="City *" error={errors.city}><input autoComplete="address-level2" value={f.city} onChange={(e) => update({ city: e.target.value })} placeholder="e.g. Gurugram" /></Field>
-                </div>
-                <input ref={honeypot} className="cb-hp" tabIndex={-1} autoComplete="off" name="website" aria-hidden="true" />
-              </>
-            )}
-
-            {step === 1 && (
-              <>
-                <h2>Your coaching</h2>
-                <p>Your experience, where you teach, and a few lines about how you coach.</p>
-                <div className="cb-grid">
-                  <Field label="Years coaching *" error={errors.experience}><input type="number" min="0" max="60" inputMode="numeric" value={f.experience} onChange={(e) => update({ experience: e.target.value })} placeholder="e.g. 12" /></Field>
-                  <Field label="Your playing level">
-                    <select value={f.level} onChange={(e) => update({ level: e.target.value })}>
-                      <option value="">Select…</option>
-                      {PLAYING_LEVELS.map((x) => <option key={x}>{x}</option>)}
-                    </select>
-                  </Field>
-                  <Field label="Home course or venue" wide><input value={f.venue} onChange={(e) => update({ venue: e.target.value })} placeholder="e.g. DLF Golf & Country Club" /></Field>
-                  <Field label="About you" hint="3–5 sentences" wide>
-                    <textarea maxLength={800} rows={6} value={f.bio} onChange={(e) => update({ bio: e.target.value })} placeholder="Describe your coaching background, playing experience, approach, and the golfers you work best with." />
-                    <small>{f.bio.length}/800 characters</small>
-                  </Field>
-                </div>
-                <h3>Profile photo <em className="cb-optional">Optional</em></h3>
-                <label className="cb-photo">
-                  {photoPreview ? <img src={photoPreview} alt="Your photo" /> : <span className="cb-photo-icon">＋</span>}
-                  <strong>{photoPreview ? "Change photo" : "Upload a profile photo"}</strong>
-                  <span>JPG, PNG or WebP · a clear, front-facing headshot works best</span>
-                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} />
-                </label>
-                {errors.photo && <p className="cb-error" role="alert">{errors.photo}</p>}
-                {photoPreview && <p className="cb-help">Your photo uploads when you submit. You'll need to add it again if you leave this page before then.</p>}
-              </>
-            )}
-
-            {step === 2 && (
-              <>
-                <h2>Specialities & credentials</h2>
-                <p>Golfers filter the coach directory by these, so pick what you're best at.</p>
-                <h3>Coaching specialities *</h3>
-                <div className="cb-chips">
-                  {SPECIALTIES.map((x) => (
-                    <button type="button" key={x} aria-pressed={f.specialties.includes(x)} className={f.specialties.includes(x) ? "chosen" : ""} onClick={() => toggle("specialties", x)}>
-                      {f.specialties.includes(x) ? "✓ " : ""}{x}
-                    </button>
-                  ))}
-                </div>
-                {errors.specialties && <p className="cb-error" role="alert">{errors.specialties}</p>}
-                <h3>Certifications & memberships</h3>
-                <p className="cb-help">Select only qualifications you hold now. The Fore team checks them before your profile shows them as verified.</p>
-                <div className="cb-options">
-                  {CERTIFICATIONS.map((x) => (
-                    <button type="button" key={x} aria-pressed={f.certifications.includes(x)} className={f.certifications.includes(x) ? "chosen" : ""} onClick={() => toggle("certifications", x)}>
-                      {f.certifications.includes(x) ? "✓" : "＋"} {x}
-                    </button>
-                  ))}
-                </div>
-                {f.certifications.includes("Other qualification") && (
-                  <div className="cb-grid cb-gap-top">
-                    <Field label="Other qualification" wide><input value={f.otherCert} onChange={(e) => update({ otherCert: e.target.value })} placeholder="e.g. SNAG Level 1" /></Field>
-                  </div>
-                )}
-              </>
-            )}
-
-            {step === 3 && (
-              <>
-                <h2>Packages & format</h2>
-                <p>Indicative prices in rupees. You can change them before bookings open on Fore.</p>
-                {f.packages.map((item, i) => (
-                  <div className="cb-package" key={item.name}>
-                    <h3>{item.name}</h3>
-                    <div className="cb-package-row">
-                      <label>
-                        <span className="cb-label">Price (₹)</span>
-                        <div className="cb-money"><span>₹</span><input inputMode="numeric" value={item.price} onChange={(e) => update({ packages: f.packages.map((x, j) => (i === j ? { ...x, price: e.target.value.replace(/[^\d,]/g, "") } : x)) })} placeholder={["1,200", "4,500", "12,000"][i]} /></div>
-                      </label>
-                      <label>
-                        <span className="cb-label">What's included</span>
-                        <input value={item.detail} maxLength={120} onChange={(e) => update({ packages: f.packages.map((x, j) => (i === j ? { ...x, detail: e.target.value } : x)) })} />
-                      </label>
-                    </div>
-                  </div>
-                ))}
-                <p className="cb-help">Leave a price blank to hide that package. Bookings and payments aren't live yet.</p>
-                <h3>How do you coach? *</h3>
-                <div className="cb-chips">
-                  {FORMATS.map((x) => (
-                    <button type="button" key={x} aria-pressed={f.formats.includes(x)} className={f.formats.includes(x) ? "chosen" : ""} onClick={() => toggle("formats", x)}>
-                      {f.formats.includes(x) ? "✓ " : ""}{x}
-                    </button>
-                  ))}
-                </div>
-                {errors.formats && <p className="cb-error" role="alert">{errors.formats}</p>}
-              </>
-            )}
-
-            {step === 4 && (
-              <>
-                <h2>Availability & submit</h2>
-                <p>Give golfers a broad idea of when you coach, then send your profile to the Fore team.</p>
-                <h3>Coaching days</h3>
-                <div className="cb-days">
-                  {WEEKDAYS.map((x) => (
-                    <button type="button" key={x} aria-pressed={f.days.includes(x)} className={f.days.includes(x) ? "chosen" : ""} onClick={() => toggle("days", x)}>{x}</button>
-                  ))}
-                </div>
-                <div className="cb-grid">
-                  <Field label="Sessions start from"><input type="time" value={f.start} onChange={(e) => update({ start: e.target.value })} /></Field>
-                  <Field label="Sessions finish by" error={errors.end}><input type="time" value={f.end} onChange={(e) => update({ end: e.target.value })} /></Field>
-                  <Field label="How did you hear about Fore?" wide>
-                    <select value={f.heard} onChange={(e) => update({ heard: e.target.value })}>
-                      <option value="">Select…</option>
-                      {HEARD_FROM.map((x) => <option key={x}>{x}</option>)}
-                    </select>
-                  </Field>
-                </div>
-                <div className="cb-review">
-                  <div><span>Name</span><strong>{[view.firstName, view.lastName].join(" ")}</strong></div>
-                  <div><span>Contact</span><strong>{f.email.trim()} · +91 {nationalPhone(f.phone)}</strong></div>
-                  <div><span>Coaching</span><strong>{view.yearsCoaching} yrs · {view.city}{view.venue ? " · " + view.venue : ""}</strong></div>
-                  <div><span>Specialities</span><strong>{view.specialties.join(", ")}</strong></div>
-                  <button type="button" className="cb-link" onClick={() => setPreview(true)}><Eye size={14} /> See your full profile preview</button>
-                </div>
-                <label className={`cb-consent${errors.consent ? " has-error" : ""}`}>
-                  <input type="checkbox" checked={f.consent} onChange={(e) => update({ consent: e.target.checked })} />
-                  <span>I confirm these details are accurate, and I agree that ForeSports can store them, show my approved profile publicly (without my email or phone), and contact me by email or WhatsApp. See the <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>.</span>
-                </label>
-                {errors.consent && <p className="cb-error" role="alert">{errors.consent}</p>}
-              </>
-            )}
-
-            {submitError && <p className="cb-error cb-submit-error" role="alert">{submitError}</p>}
-            <div className="cb-footer">
-              <button type="button" className="cb-button cb-outline" disabled={step === 0 || submitting} onClick={() => go(step - 1)}><ArrowLeft size={15} /> Back</button>
-              <div>
-                {step < STEPS.length - 1 ? (
-                  <button type="button" className="cb-button cb-primary" onClick={next}>Continue <ArrowRight size={15} /></button>
-                ) : (
-                  <button type="button" className="cb-button cb-primary" disabled={submitting} onClick={submit}>
-                    {submitting ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : <><Send size={15} /> Submit my profile</>}
-                  </button>
-                )}
-              </div>
+            <div className="su-footer">
+              {step > 0 ? (
+                <button type="button" className="su-back" disabled={submitting} onClick={() => go(step - 1)}><ArrowLeft size={16} /> Back</button>
+              ) : (
+                <button type="button" className="su-back su-preview-link" onClick={() => setPreview(true)}><Eye size={16} /> Preview</button>
+              )}
+              {step < STEPS.length - 1 ? (
+                <button type="button" className="cb-button cb-primary" onClick={next}>Continue <ArrowRight size={16} /></button>
+              ) : (
+                <button type="button" className="cb-button cb-primary" disabled={submitting} onClick={submit}>
+                  {submitting ? <><Loader2 size={16} className="cb-spin" /> Submitting…</> : <>Submit profile <ArrowRight size={16} /></>}
+                </button>
+              )}
             </div>
-          </section>
-        </div>
-      ) : (
-        <section className="cb-preview">
-          <CoachProfileView
-            coach={view}
-            badge="PREVIEW"
-            draft
-            aside={
-              <section className="cb-card">
-                <h3>Enquiries</h3>
-                <p>Golfers send enquiries through Fore. We pass them on to you, so your phone number and email stay private.</p>
-              </section>
-            }
-          />
-          <div className="cb-preview-actions">
-            <button type="button" className="cb-button cb-outline" onClick={() => setPreview(false)}><ArrowLeft size={15} /> Keep editing</button>
-            {reached >= STEPS.length - 1 ? (
-              <button type="button" className="cb-button cb-primary" onClick={() => { setPreview(false); go(STEPS.length - 1); }}>Continue to submit <ArrowRight size={15} /></button>
-            ) : (
-              <button type="button" className="cb-button cb-primary" onClick={() => setPreview(false)}>Continue sign-up <ArrowRight size={15} /></button>
+            {step === STEPS.length - 1 && (
+              <p className="su-terms">By submitting, you agree to our <a href="/terms" target="_blank" rel="noreferrer">Terms</a> and <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>.</p>
             )}
+          </section>
+
+          <aside className="su-side" aria-label="How golfers see your listing">
+            <div className="su-side-head">
+              <span>How golfers see you</span>
+              <button type="button" className="cb-link" onClick={() => setPreview(true)}><Eye size={15} /> Full profile</button>
+            </div>
+            <CoachCard coach={view} draft />
+          </aside>
+        </div>
+
+        {preview && (
+          <div className="su-overlay" role="dialog" aria-modal="true" aria-label="Profile preview">
+            <div className="su-overlay-bar">
+              <span>Profile preview</span>
+              <button type="button" className="cb-button cb-outline" onClick={() => setPreview(false)} autoFocus>
+                <X size={16} /> Close
+              </button>
+            </div>
+            <div className="su-overlay-body">
+              <CoachProfileView
+                coach={view}
+                draft
+                aside={
+                  <div className="cb-enquiry is-mock" aria-hidden="true">
+                    <h3>Message {view.firstName || "you"}</h3>
+                    <div className="mock-input">Your name</div>
+                    <div className="mock-input">Email</div>
+                    <div className="mock-input tall">Your handicap, what you'd like to work on…</div>
+                    <span className="cb-button cb-primary">Send message</span>
+                  </div>
+                }
+              />
+            </div>
           </div>
-        </section>
-      )}
-    </div>
+        )}
+      </div>
     </SiteShell>
   );
 }

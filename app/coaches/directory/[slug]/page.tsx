@@ -65,7 +65,7 @@ export default async function CoachPage({ params }: Props) {
           <CoachProfileView
             coach={coach}
             headingLevel="h1"
-            badge={coach.foundingCoach ? 'FOUNDING COACH' : undefined}
+            badge={coach.foundingCoach ? 'Founding coach' : undefined}
             aside={<EnquiryForm coachId={coach.id} coachFirstName={coach.firstName} />}
           />
         </div>
