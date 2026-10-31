@@ -1,7 +1,5 @@
 import type { Metadata } from 'next';
-import NextLink from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
 import { SiteShell } from '../../../../src/App';
 import CoachProfileView from '../../../../src/coach/CoachProfileView';
 import EnquiryForm from '../../../../src/coach/EnquiryForm';
@@ -58,25 +56,18 @@ export default async function CoachPage({ params }: Props) {
 
   return (
     <SiteShell>
-      <div className="cb-scope cb-dir cb-dir-profile">
+      <div className="cb-scope cp-page">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, '\\u003c') }} />
-        <div className="cb-dir-wrap">
-          <nav className="cb-crumbs" aria-label="Breadcrumb">
-            <NextLink href="/coaches/directory"><ArrowLeft size={14} /> All coaches</NextLink>
-          </nav>
+        <div className="container">
           <CoachProfileView
             coach={coach}
             headingLevel="h1"
-            badge={coach.foundingCoach ? '★ Founding coach' : undefined}
             aside={<EnquiryForm coachId={coach.id} coachFirstName={coach.firstName} options={options} />}
           />
         </div>
-        <div className="cb-sticky-cta">
-          <div>
-            <small>{price ? price.label : 'Lessons'}</small>
-            <strong>{price ? price.value : `with ${coach.firstName}`}</strong>
-          </div>
-          <a className="cb-button cb-primary" href="#enquire">Enquire</a>
+        <div className="cp-sticky">
+          <p>{price ? <><small>{price.label}</small> {price.value}</> : <small>Lessons with {coach.firstName}</small>}</p>
+          <a className="button acid small" href="#enquire">Message</a>
         </div>
       </div>
     </SiteShell>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, type FormEvent } from 'react';
-import { Check, Loader2, Send } from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 
 export default function EnquiryForm({ coachId, coachFirstName, options = [] }: { coachId: string; coachFirstName: string; options?: string[] }) {
@@ -50,27 +50,27 @@ export default function EnquiryForm({ coachId, coachFirstName, options = [] }: {
 
   if (sent) {
     return (
-      <section className="cb-card cb-enquiry">
-        <h3>Enquiry sent</h3>
-        <div className="cb-enquiry-sent">
+      <section className="cp-enquiry">
+        <h2>Message sent</h2>
+        <div className="cp-enquiry-sent">
           <span><Check size={18} /></span>
-          <p>Thanks. We've passed your message to {coachFirstName}, and you'll hear back by email.</p>
+          <p>{coachFirstName} will reply by email.</p>
         </div>
       </section>
     );
   }
 
   return (
-    <section className="cb-card cb-enquiry" id="enquire">
-      <h3>Enquire about lessons</h3>
-      <p className="cb-enquiry-lead">Tell {coachFirstName} about your game. You’ll hear back by email.</p>
+    <section className="cp-enquiry" id="enquire">
+      <h2>Ask {coachFirstName} about lessons</h2>
+      <p className="cp-enquiry-lead">Replies come to your email.</p>
       <form onSubmit={submit} noValidate>
         <label><span className="cb-label">Your name</span><input name="name" autoComplete="name" required maxLength={100} /></label>
         <label><span className="cb-label">Email</span><input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
         <label><span className="cb-label">Phone <em>Optional</em></span><input name="phone" type="tel" autoComplete="tel" maxLength={20} /></label>
         {options.length > 0 && (
           <label>
-            <span className="cb-label">Interested in <em>Optional</em></span>
+            <span className="cb-label">Interested in</span>
             <select name="interest" defaultValue="">
               <option value="">Not sure yet</option>
               {options.map((o) => <option key={o}>{o}</option>)}
@@ -79,14 +79,14 @@ export default function EnquiryForm({ coachId, coachFirstName, options = [] }: {
         )}
         <label>
           <span className="cb-label">Message</span>
-          <textarea name="message" rows={4} required maxLength={1500} placeholder="Your level, what you'd like to work on, and when you're free." />
+          <textarea name="message" rows={4} required maxLength={1500} placeholder="Your level, what you want to work on and when you're free" />
         </label>
         <input ref={honeypot} className="cb-hp" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         {error && <p className="cb-error" role="alert">{error}</p>}
-        <button className="cb-button cb-primary" type="submit" disabled={sending}>
-          {sending ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : <><Send size={15} /> Send enquiry</>}
+        <button className="button acid" type="submit" disabled={sending}>
+          {sending ? <><Loader2 size={15} className="cb-spin" /> Sending…</> : <>Send message</>}
         </button>
-        <p className="cb-enquiry-note">Fore passes your message to the coach. Your details aren't shown publicly.</p>
+        <p className="cp-enquiry-note">Your details stay private.</p>
       </form>
     </section>
   );

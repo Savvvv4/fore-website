@@ -109,29 +109,6 @@ export function TeachSearchScreen() {
   );
 }
 
-export function TeachReviewsScreen() {
-  return (
-    <Phone label="Verified reviews on a coach's public profile">
-      <Head title="Reviews" sub="Your public profile" />
-      <div className="cf-s-body">
-        <div className="cf-s-score"><b>4.9</b><div><span>★★★★★</span><small>86 verified reviews</small></div></div>
-        <div className="cf-s-chips sm"><span>Clear drills</span><span>Patient</span><span>Great value</span></div>
-        <div className="cf-s-review">
-          <small>Beginner · October <b>★ 5.0</b></small>
-          <p>“Fixed my slice in three lessons. The notes after each one really help.”</p>
-          <Tag tone="green">✓ Verified lesson</Tag>
-        </div>
-        <div className="cf-s-review">
-          <small>New golfer · September <b>★ 5.0</b></small>
-          <p>“Very patient with a total beginner. I bought the 8-lesson pack after my trial.”</p>
-          <Tag tone="green">✓ Verified lesson</Tag>
-        </div>
-      </div>
-      <Foot label="Your rating" value="4.9 ★" cta="Share profile" />
-    </Phone>
-  );
-}
-
 export function TeachPlanScreen() {
   return (
     <Phone label="A lesson plan sent to a golfer after their trial">
@@ -154,25 +131,6 @@ export function TeachPlanScreen() {
         </ul>
       </div>
       <Foot label="Student pays" value="₹25,500" cta="Buy plan" />
-    </Phone>
-  );
-}
-
-export function TeachPackagesScreen() {
-  return (
-    <Phone label="Lesson packs, monthly plans and group classes with prices set by the coach">
-      <Head title="Packages" sub="Prices set by you" />
-      <div className="cf-s-body">
-        <Row lead="4" title="Starter" sub="4 lessons · 60 min" end={<b>₹15,000</b>} />
-        <div className="cf-s-panel accent tight">
-          <Tag tone="orange">Most popular</Tag>
-          <Row lead="8" title="Swing rebuild" sub="8 lessons · video notes" end={<b>₹28,000</b>} />
-        </div>
-        <Row lead="6" title="Group class" sub="4 weeks · 6 golfers" end={<b>₹9,000</b>} />
-        <Row lead="▶" title="Video feedback" sub="Unlimited swing reviews" end={<b>₹6,000/mo</b>} />
-        <div className="cf-s-add">＋ Add a new package</div>
-      </div>
-      <Foot label="Sold this month" value="₹3,64,000" cta="Edit plans" />
     </Phone>
   );
 }
@@ -361,48 +319,6 @@ export function PerfStrokesScreen() {
         </div>
       </div>
       <Foot label="Training block" value="Wedges · 3 wks" cta="Assign" />
-    </Phone>
-  );
-}
-
-export function PerfEventScreen() {
-  const holes = [0, 1, 0, 0, -1, 0, 0, 1, 0, 0, -1, 0, 0, 0, -1, 0, 1, 0];
-  return (
-    <Phone label="A tournament round debrief compared with the player's season average">
-      <Head title="Junior Championship" sub="Player #04 · Round 3" />
-      <div className="cf-s-body">
-        <div className="cf-s-score"><b>71</b><div><span>1 under par</span><small>4th place after 3 rounds</small></div></div>
-        <div className="cf-s-table">
-          <span /><small>Round</small><small>Season</small>
-          <small>Fairways hit</small><b>9/14</b><span>8/14</span>
-          <small>Greens hit</small><b>13/18</b><span>11/18</span>
-          <small>Putts</small><b>31</b><span>30</span>
-        </div>
-        <Label>Hole by hole</Label>
-        <div className="cf-s-holes">
-          {holes.map((h, i) => <span key={i} className={h < 0 ? 'birdie' : h > 0 ? 'bogey' : ''}>{i + 1}</span>)}
-        </div>
-      </div>
-      <Foot label="Debrief" value="Sun 26 Oct" cta="Add note" />
-    </Phone>
-  );
-}
-
-export function PerfSquadScreen() {
-  return (
-    <Phone label="The whole squad in one list with handicaps and status">
-      <div className="cf-s-body">
-        <div className="cf-s-title lg">Squad</div>
-        <small className="cf-s-meta">U-18 group · 14 players</small>
-        <div className="cf-s-tabs"><span className="on">All</span><span>Needs help</span><span>Events</span></div>
-        <Row lead="#04" title="Handicap +0.4" sub="Down 2.1 this season" end={<Tag tone="green">On track</Tag>} />
-        <Row lead="#09" title="Handicap 3.1" sub="Practice down 40%" end={<Tag tone="orange">Needs help</Tag>} />
-        <Row lead="#11" title="Handicap 0.2" sub="Junior event on Saturday" end={<Tag>Event</Tag>} />
-        <Row lead="#02" title="Handicap 5.8" sub="Down 1.4 this season" end={<Tag tone="green">On track</Tag>} />
-        <Row lead="#06" title="Handicap 2.7" sub="Wrist flagged by fitness" end={<Tag>Rest</Tag>} />
-        <div className="cf-s-chips sm"><span>Swing</span><span>Short game</span><span>Fitness</span><span>Mental</span></div>
-      </div>
-      <Foot label="4 coaches" value="One shared record" cta="Add player" />
     </Phone>
   );
 }
