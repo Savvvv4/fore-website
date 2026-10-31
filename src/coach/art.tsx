@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 /**
  * Warm golf-landscape illustration used for profile covers, directory cards and mock-ups.
  * `variant` shifts the sun and hills so neighbouring cards don't look identical.
@@ -34,21 +32,5 @@ export function CoverArt({ variant = 0, className = '', wide = false }: { varian
       <line x1={flagX * k} y1="162" x2={flagX * k} y2="126" stroke="#2C2C2C" strokeWidth="2" strokeLinecap="round" />
       <path d={`M${flagX * k} 127 l18 6 l-18 6 Z`} fill="#FF6E00" />
     </svg>
-  );
-}
-
-/** Phone frame for product mock-ups. The status bar matches the coach decks. */
-export function Phone({ children, label, className = '' }: { children: ReactNode; label: string; className?: string }) {
-  return (
-    <div className={`cf-phone ${className}`} role="img" aria-label={label}>
-      <div className="cf-phone-screen" aria-hidden="true">
-        <div className="cf-phone-status">
-          <span>9:41</span>
-          <span className="cf-phone-notch" />
-          <span className="cf-phone-icons"><i /><i /><i /></span>
-        </div>
-        {children}
-      </div>
-    </div>
   );
 }

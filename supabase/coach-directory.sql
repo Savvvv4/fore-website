@@ -7,7 +7,9 @@
 -- How it works
 -- • /coaches/join (and /coaches/teaching/join, /coaches/performance/join) insert a row
 --   into coach_profiles with status 'pending' and a coach_type of 'teaching' or 'performance'.
--- • Only rows you set to status 'approved' appear on /coaches/directory (Find a coach).
+-- • Sign-ups are approved automatically and appear on /coaches/directory (Find a coach)
+--   straight away. Set status to 'hidden' or 'rejected' to take one down.
+-- • Each phone number can sign up once.
 -- • Email, phone, consent and admin notes are never readable by visitors.
 -- • Golfer enquiries from a coach's profile land in coach_enquiries.
 -- • Profile photos go to the public 'coach-photos' storage bucket.
@@ -80,9 +82,23 @@ alter table public.coach_profiles add constraint coach_profiles_funnel_fields_ch
 create index if not exists coach_profiles_type_idx on public.coach_profiles (coach_type, status);
 
 create unique index if not exists coach_profiles_email_key on public.coach_profiles (lower(email));
+
+-- One sign-up per phone number. Skipped (with a notice) if duplicates already exist;
+-- set the extra rows to 'rejected' or delete them, then run this file again.
+do $$
+begin
+  if exists (select 1 from public.coach_profiles group by phone having count(*) > 1) then
+    raise notice 'Some phone numbers have more than one coach profile. Remove the duplicates and run this file again to enforce one sign-up per phone.';
+  else
+    create unique index if not exists coach_profiles_phone_key on public.coach_profiles (phone);
+  end if;
+end $$;
+
+-- Sign-ups waiting from before auto-approval go live too.
+update public.coach_profiles set status = 'approved', approved_at = coalesce(approved_at, now()) where status = 'pending';
 create index if not exists coach_profiles_status_idx on public.coach_profiles (status, approved_at desc);
 
--- Sign-ups from the website always start as pending, unverified, and get a URL slug.
+-- Sign-ups from the website are approved straight away, start unverified, and get a URL slug.
 create or replace function public.coach_profiles_before_insert()
 returns trigger
 language plpgsql
@@ -91,11 +107,11 @@ declare
   base text;
 begin
   if current_user in ('anon', 'authenticated') then
-    new.status := 'pending';
+    new.status := 'approved';
     new.verified := false;
     new.founding_coach := true;
     new.admin_notes := null;
-    new.approved_at := null;
+    new.approved_at := now();
     new.created_at := now();
     new.slug := null;
   end if;
@@ -144,7 +160,7 @@ drop policy if exists "Website can submit coach sign-ups" on public.coach_profil
 create policy "Website can submit coach sign-ups"
   on public.coach_profiles for insert
   to anon, authenticated
-  with check (status = 'pending' and consent);
+  with check (consent);
 
 drop policy if exists "Visitors can read approved coaches" on public.coach_profiles;
 create policy "Visitors can read approved coaches"

@@ -1883,7 +1883,3 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
 .coach-join-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 560px) { .coach-join-actions .button { flex: 1 1 100%; } }
 
-/* Intro paragraph with a call to action beneath it (golfers page, Find a coach). */
-.aud-intro-side { max-width: 380px; flex-shrink: 0; }
-.aud-intro-side p { margin: 0 0 20px; font-size: 20px; line-height: 1.65; color: var(--muted); }
-@media (max-width: 950px) { .aud-intro-side { max-width: 100%; } }

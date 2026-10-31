@@ -28,7 +28,11 @@ const supabaseKey =
   "";
 
 /** Ready immediately on the server, and in the browser when the key was inlined at build time. */
-export const supabase: SupabaseClient | null = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+/** Never serve stale rows from Next.js's data cache: approvals and verification must show straight away. */
+const noStore: typeof fetch = (input, init) => fetch(input, { ...init, cache: "no-store" });
+
+export const supabase: SupabaseClient | null =
+  supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey, { global: { fetch: noStore } }) : null;
 
 let pending: Promise<SupabaseClient | null> | null = null;
 

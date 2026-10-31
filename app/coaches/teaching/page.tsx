@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { SiteShell } from '../../../src/App';
 import { TeachingLanding } from '../../../src/coach/CoachFunnels';
-import '../../../src/coach/coach.css';
 import '../../../src/coach/funnel.css';
 
 export const metadata: Metadata = {

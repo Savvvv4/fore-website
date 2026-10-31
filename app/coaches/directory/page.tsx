@@ -4,8 +4,8 @@ import CoachDirectory from '../../../src/coach/CoachDirectory';
 import { getApprovedCoaches } from '../../../src/coach/data';
 import '../../../src/coach/coach.css';
 
-// Newly approved coaches appear within a minute.
-export const revalidate = 60;
+// Always read live data, so new sign-ups and verification show straight away.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Find a Golf Coach',

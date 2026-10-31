@@ -91,7 +91,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
       <section className="cd-hero">
         <div className="container">
           <h1>Find your <em>coach.</em></h1>
-          <p>Golf coaches near you, each one checked by Fore.</p>
+          <p>Browse golf coaches near you and message them directly.</p>
           {coaches.length > 0 && (
             <form className="cd-search" role="search" onSubmit={(e) => e.preventDefault()}>
               <label className="cd-q">
@@ -203,7 +203,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
         ) : (
           <div className="cd-empty">
             <h2>{ok ? 'Coaches are joining now.' : 'Back in a moment.'}</h2>
-            <p>{ok ? 'We check every coach before they go live. Join Fore and we’ll tell you when coaches near you are ready.' : 'We couldn’t load coaches just now. Please try again shortly.'}</p>
+            <p>{ok ? 'Join Fore and we’ll tell you when coaches near you are ready.' : 'We couldn’t load coaches just now. Please try again shortly.'}</p>
             <div className="button-row">
               <NextLink className="button acid" href="/golfers">Join as a golfer</NextLink>
             </div>

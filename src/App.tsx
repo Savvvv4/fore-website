@@ -1231,9 +1231,9 @@ function GolfersPage() {
               <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
                 Join as a golfer <ArrowUpRight size={18} />
               </button>
-              <a className="button light" href="#how">
-                See how it works <ArrowUpRight size={18} />
-              </a>
+              <Link className="button light" to="/coaches/directory">
+                Find a coach <ArrowUpRight size={18} />
+              </Link>
             </div>
           </motion.div>
           <GolfersMock />
@@ -1273,12 +1273,6 @@ function GolfersPage() {
           <div className="aud-section-intro">
             <div>
               <h2>Find a coach who <span>fits your game.</span></h2>
-            </div>
-            <div className="aud-intro-side">
-              <p>See qualifications, specialties, reviews, fees and availability — then try a lesson before committing.</p>
-              <Link className="button acid" to="/coaches/directory">
-                Find a coach <ArrowUpRight size={18} />
-              </Link>
             </div>
           </div>
           <div className="val-grid two-col">

@@ -108,7 +108,9 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en-IN">
+    // data-scroll-behavior lets Next.js turn off the site's smooth scrolling while it moves
+    // to the top of a new page, so links from low on a page don't open the next one mid-way.
+    <html lang="en-IN" data-scroll-behavior="smooth">
       <body className={`${dmSans.variable} ${manrope.variable}`}>
         <script
           type="application/ld+json"

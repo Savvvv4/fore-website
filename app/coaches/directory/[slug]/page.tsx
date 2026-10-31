@@ -7,7 +7,8 @@ import { getCoachBySlug } from '../../../../src/coach/data';
 import { lowestPrice, priceLine } from '../../../../src/coach/shared';
 import '../../../../src/coach/coach.css';
 
-export const revalidate = 60;
+// Always read live data, so new sign-ups and verification show straight away.
+export const dynamic = 'force-dynamic';
 
 type Props = { params: Promise<{ slug: string }> };
 

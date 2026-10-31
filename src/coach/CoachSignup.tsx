@@ -5,12 +5,12 @@ import NextLink from 'next/link';
 import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import { SiteShell } from '../App';
+import ScrollToTop from './ScrollToTop';
 import {
   CERTIFICATIONS,
   FORMATS,
   PHOTO_BUCKET,
   PLAYER_GROUPS,
-  PROGRAM_ROLES,
   SPECIALTIES,
   type CoachType,
 } from './shared';
@@ -33,8 +33,6 @@ type Form = {
   formats: string[];
   trial: string;
   lesson: string;
-  role: string;
-  program: string;
   squad: string;
   groups: string[];
   consent: boolean;
@@ -57,8 +55,6 @@ const defaults: Form = {
   formats: ['In-person'],
   trial: '',
   lesson: '',
-  role: '',
-  program: '',
   squad: '',
   groups: [],
   consent: false,
@@ -93,12 +89,11 @@ function validate(step: number, f: Form): Errors {
       if (!f.specialties.length) e.specialties = 'Choose at least one.';
       if (!f.formats.length) e.formats = 'Choose at least one.';
     } else {
-      if (!f.role) e.role = 'Choose your role.';
       if (!f.groups.length) e.groups = 'Choose at least one.';
       const n = Number(f.squad);
       if (f.squad !== '' && (!Number.isInteger(n) || n < 0 || n > 2000)) e.squad = 'Enter a number, or leave it blank.';
     }
-    if (!f.consent) e.consent = 'Please agree so we can review your sign-up.';
+    if (!f.consent) e.consent = 'Please agree so we can list you on Fore.';
   }
   return e;
 }
@@ -315,13 +310,11 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     };
     const programLine = teaching
       ? ''
-      : `[Performance coach] ${[f.role, f.program.trim(), squad != null ? `${squad} players` : '', f.groups.join(', ')].filter(Boolean).join(' · ')}`;
+      : `[Performance coach] ${[squad != null ? `${squad} players` : '', f.groups.join(', ')].filter(Boolean).join(' · ')}`;
     const attempts = [
       {
         ...base,
         coach_type: type,
-        program_name: teaching ? null : f.program.trim() || null,
-        program_role: teaching ? null : f.role || null,
         squad_size: teaching ? null : squad,
         player_groups: teaching ? [] : f.groups,
       },
@@ -368,8 +361,8 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   if (result) {
     const nextSteps = teaching
       ? [
-          ['We check your details', 'Usually within a few days.'],
-          ['You go live', 'Golfers find you in Find a coach and message you through Fore.'],
+          ['You’re live', 'Golfers can find you in Find a coach and message you through Fore.'],
+          ['Get verified', 'We check your qualifications and add a verified badge to your profile.'],
           ['You’re first in', 'Bookings, payments and student tools open to you first.'],
         ]
       : [
@@ -385,7 +378,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
             <h1>{result === 'duplicate' ? <>Welcome back, {f.first.trim() || 'coach'}.</> : <>You’re in, {f.first.trim() || 'coach'}.</>}</h1>
             <p>
               {result === 'duplicate'
-                ? `We already have a sign-up for ${f.email.trim()}. We’ve noted your new details and will be in touch.`
+                ? 'This phone number or email is already signed up. We’ve noted your new details and will be in touch.'
                 : `We’ll be in touch at ${f.email.trim()} or on WhatsApp.`}
             </p>
             <ol className="cb-next">
@@ -405,6 +398,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
 
   return (
     <SiteShell>
+      <ScrollToTop />
       <div className="cb-scope cb-page cb-signup">
         <div className="cb-signup-wrap" ref={top}>
           <h1>
@@ -463,22 +457,11 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                 <h2>Your coaching</h2>
                 <p>{teaching ? 'What golfers see on your profile. You can change it anytime.' : 'So we can set Fore up around your program.'}</p>
                 <div className="cb-grid">
-                  {!teaching && (
-                    <Field label="Your role" error={errors.role}>
-                      <select value={f.role} onChange={(e) => update({ role: e.target.value })}>
-                        <option value="">Choose one</option>
-                        {PROGRAM_ROLES.map((x) => <option key={x}>{x}</option>)}
-                      </select>
-                    </Field>
-                  )}
                   <Field label="Years coaching" error={errors.experience}><input type="number" min="0" max="60" inputMode="numeric" value={f.experience} onChange={(e) => update({ experience: e.target.value })} placeholder="12" /></Field>
                   {!teaching && (
-                    <>
-                      <Field label="Players" hint="Optional" error={errors.squad}><input type="number" min="0" max="2000" inputMode="numeric" value={f.squad} onChange={(e) => update({ squad: e.target.value })} placeholder="14" /></Field>
-                      <Field label="Program name" hint="Optional"><input value={f.program} maxLength={120} onChange={(e) => update({ program: e.target.value })} placeholder="U-18 Performance Squad" /></Field>
-                    </>
+                    <Field label="Players" hint="Optional" error={errors.squad}><input type="number" min="0" max="2000" inputMode="numeric" value={f.squad} onChange={(e) => update({ squad: e.target.value })} placeholder="14" /></Field>
                   )}
-                  <Field label="Where you coach" hint="Optional" wide={teaching}><input value={f.venue} maxLength={120} onChange={(e) => update({ venue: e.target.value })} placeholder="DLF Golf & Country Club" /></Field>
+                  <Field label="Where you coach" hint="Optional" wide><input value={f.venue} maxLength={120} onChange={(e) => update({ venue: e.target.value })} placeholder="DLF Golf & Country Club" /></Field>
                   {teaching && (
                     <>
                       <Field label="Trial lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.trial} onChange={(e) => update({ trial: e.target.value.replace(/[^\d,]/g, '') })} placeholder="2,500" /></div></Field>
@@ -516,7 +499,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                 <label className={`cb-consent${errors.consent ? ' has-error' : ''}`}>
                   <input type="checkbox" checked={f.consent} onChange={(e) => update({ consent: e.target.checked })} />
                   <span>
-                    My details are accurate. Fore can store them, show my approved profile in Find a coach without my email or number, and contact me by email or WhatsApp.{' '}
+                    My details are accurate. Fore can store them, show my profile in Find a coach without my email or number, and contact me by email or WhatsApp.{' '}
                     <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>
                   </span>
                 </label>

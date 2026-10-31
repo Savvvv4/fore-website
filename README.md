@@ -31,7 +31,7 @@ Both files are safe to run again.
 | `/coaches/performance` | Shareable page for performance coaches. Its buttons go to `/coaches/performance/join`. |
 | `/coaches/join` | Two-step sign-up that asks which kind of coach you are, then a confirmation screen. `?type=teaching` or `?type=performance` pre-selects it. |
 | `/coaches/teaching/join`, `/coaches/performance/join` | The same sign-up with the coach type already set. |
-| `/coaches/directory` | Find a coach: every approved coach, with search and filters. Linked from the golfers page and the footer. |
+| `/coaches/directory` | Find a coach: every approved coach, with search and filters. Linked from the golfers page and the footer. Always shows live data. |
 | `/coaches/directory/<slug>` | A coach's public profile with a message form. |
 
 `/coach-profile` redirects to `/coaches`.
@@ -44,16 +44,20 @@ The sign-up tries three places in turn, so a sign-up is only lost if Supabase is
 2. `coach_profiles` with the original columns, if `supabase/coach-directory.sql` hasn't been re-run yet. A performance coach's program details go at the top of their bio.
 3. `waitlist_submissions` with name, email, phone and city, role `coach` and a `source` ending in `_backup`. A coach who signs up again with the same email is saved here with a source ending in `_repeat`.
 
-`source` in `coach_profiles` is `teaching_signup` or `performance_signup`. Re-run `supabase/coach-directory.sql` once to add the coach type and program columns.
+`source` in `coach_profiles` is `teaching_signup` or `performance_signup`.
 
-### Approving a coach
+Re-run `supabase/coach-directory.sql` after pulling these changes. It adds the coach type columns, approves sign-ups automatically (including any still pending), and allows one sign-up per phone number. If two profiles already share a phone number, it skips that last rule and says so; reject or delete the extra row and run it again.
+
+### Approving and verifying coaches
+
+Sign-ups are approved automatically and appear in Find a coach as soon as they're saved.
 
 1. Supabase → Table Editor → `coach_profiles`.
-2. Review the row (filter `status` = `pending`). Also check `waitlist_submissions` for rows with role `coach`.
-3. Set `status` to `approved`. The coach appears on the site within about a minute.
-4. Optional: set `verified` to `true` once you've checked their certifications. Their profile then shows a verified badge.
+2. To mark a coach as verified, set `verified` to `true` once you've checked their qualifications. The badge shows on their card and profile the next time the page loads.
+3. To take a coach down, set `status` to `hidden` or `rejected`.
+4. Also check `waitlist_submissions` for rows with role `coach`: backup and repeat sign-ups land there.
 
-Use `rejected` or `hidden` to keep a profile off the site. `admin_notes` is private to your team.
+`admin_notes` is private to your team.
 
 ### Enquiries
 
