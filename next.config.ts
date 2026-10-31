@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     FORE_SUPABASE_KEY: process.env.SUPABASE_ANON_KEY ?? process.env.SUPABASE_PUBLISHABLE_KEY ?? '',
   },
   images: { unoptimized: true },
+  async redirects() {
+    return [{ source: '/coach-profile', destination: '/coaches', permanent: true }];
+  },
   async headers() {
     return [{ source: '/:path*', headers: [
       { key: 'X-Content-Type-Options', value: 'nosniff' },

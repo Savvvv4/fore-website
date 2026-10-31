@@ -161,10 +161,10 @@ function Footer() {
   );
 }
 
-export type Page = 'home' | 'golfers' | 'coaches' | 'facilities' | 'about' | 'privacy' | 'terms' | 'not-found';
+export type Page = 'home' | 'golfers' | 'facilities' | 'about' | 'privacy' | 'terms' | 'not-found';
 
 function Layout({ page }: { page: Page }) {
-  const content = { home: <Home />, golfers: <GolfersPage />, coaches: <CoachesPage />, facilities: <FacilitiesPage />, about: <About />, privacy: <Privacy />, terms: <Terms />, 'not-found': <NotFound /> }[page];
+  const content = { home: <Home />, golfers: <GolfersPage />, facilities: <FacilitiesPage />, about: <About />, privacy: <Privacy />, terms: <Terms />, 'not-found': <NotFound /> }[page];
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
@@ -611,7 +611,7 @@ function FinalCTA() {
             Join as a golfer <ArrowUpRight size={16} />
           </Link>
 
-          <Link className="button acid" to="/coaches#join">
+          <Link className="button acid" to="/coaches">
             Join as a coach <ArrowUpRight size={16} />
           </Link>
 
@@ -1073,35 +1073,6 @@ function GolferJoinForm() {
   );
 }
 
-function CoachJoinForm() {
-  return (
-    <section id="join" className="form-section">
-      <div className="container form-layout">
-        <div>
-          <SectionLabel>Join as a coach</SectionLabel>
-          <h2>Get on Fore early.</h2>
-          <p>Be part of a global community shaping the future of golf coaching. Create your founding coach profile now and be listed in the ForeSports coach directory before launch.</p>
-        </div>
-        <div className="form-card coach-join-card">
-          <ol className="coach-join-steps">
-            <li><span>1</span><div><strong>Build your profile</strong>Your experience, specialities, packages and availability. About 5 minutes.</div></li>
-            <li><span>2</span><div><strong>We review it</strong>Our team checks your details and credentials.</div></li>
-            <li><span>3</span><div><strong>Golfers find you</strong>Approved profiles go live in the coach directory with a founding coach badge.</div></li>
-          </ol>
-          <div className="coach-join-actions">
-            <Link className="button acid" to="/coach-profile">
-              Create your coach profile <ArrowUpRight size={16} />
-            </Link>
-            <Link className="button light" to="/coaches/directory">
-              See the directory
-            </Link>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function FacilityJoinForm() {
   const [confirmed, setConfirmed] = useState(false);
   const submit = async (e: FormEvent<HTMLFormElement>) => {
@@ -1197,50 +1168,6 @@ function GolfersMock() {
             </div>
             <span style={{ background: '#FFFFFF', color: '#111111', borderRadius: 999, padding: '4px 10px', fontSize: 11, fontWeight: 700 }}>Available</span>
           </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function CoachesMock() {
-  return (
-    <div className="aud-mock">
-      <div className="mock-bar">
-        <span className="mock-dot" />
-        <span className="mock-dot" />
-        <span className="mock-dot" />
-        <span className="mock-bar-label">FORE · COACH PROFILE</span>
-        <span className="mock-preview-badge">Concept preview</span>
-      </div>
-      <div className="mock-body">
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div style={{ width: 60, height: 60, borderRadius: '50%', background: 'var(--orange)', color: '#111111', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'Manrope', fontWeight: 800, fontSize: 18, flexShrink: 0 }}>AR</div>
-          <div>
-            <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 17, color: 'var(--ink)' }}>Arjun Rao</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>PGA Coach · 12 yrs · Delhi</div>
-            <div style={{ fontSize: 12, color: 'var(--ink)', marginTop: 3 }}>★★★★★ 4.8 · 94 reviews</div>
-          </div>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap' as const, gap: 6 }}>
-          {['Short game', 'Full swing', 'Juniors', 'TrackMan'].map((s) => (
-            <span key={s} style={{ background: '#FFFFFF', color: '#111111', borderRadius: 999, padding: '5px 12px', fontSize: 12, fontWeight: 600 }}>{s}</span>
-          ))}
-        </div>
-        <div>
-          <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.12em', textTransform: 'uppercase' as const, color: 'var(--label)', marginBottom: 10 }}>Next available</div>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' as const }}>
-            {['Sat 10:00', 'Sat 14:00', 'Sun 09:00'].map((slot) => (
-              <span key={slot} style={{ background: 'var(--bg)', border: '1px solid var(--line)', borderRadius: 8, padding: '7px 12px', fontSize: 12, fontWeight: 600, color: 'var(--ink)' }}>{slot}</span>
-            ))}
-          </div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--line)', paddingTop: 16 }}>
-          <div>
-            <div style={{ fontFamily: 'Manrope', fontWeight: 700, fontSize: 18, color: 'var(--ink)' }}>₹3,000</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)' }}>/ lesson</div>
-          </div>
-          <span style={{ background: 'var(--orange)', color: '#FFFFFF', borderRadius: 999, padding: '10px 20px', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Book lesson</span>
         </div>
       </div>
     </div>
@@ -1400,171 +1327,6 @@ function GolfersPage() {
 
       <GolferJoinForm />
       {signupOpen && <AudienceSignupModal role="golfer" onClose={() => setSignupOpen(false)} />}
-    </>
-  );
-}
-
-function CoachesPage() {
-  return (
-    <>
-      <section className="aud-hero-section">
-        <div className="container aud-hero">
-          <motion.div
-            className="aud-hero-copy"
-            initial={{ y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}
-          >
-            <h1>Coach beyond <em>your network.</em></h1>
-            <p>Get discovered by more golfers, fill your calendar, and run your coaching business from one place.</p>
-            <div className="button-row">
-              <Link className="button acid" to="/coach-profile">
-                Create your coach profile <ArrowUpRight size={18} />
-              </Link>
-              <Link className="button light" to="/coaches/directory">
-                Browse coaches <ArrowUpRight size={18} />
-              </Link>
-            </div>
-          </motion.div>
-          <CoachesMock />
-        </div>
-      </section>
-
-      <section id="business" className="section">
-        <div className="container">
-          <div className="aud-section-intro">
-            <div>
-              <h2>Get found. Get booked. <span>Coach better.</span></h2>
-            </div>
-            <p>A professional home for your coaching business — discovery, bookings, admin and progress in one place.</p>
-          </div>
-          <div className="val-grid">
-            <div className="val-card">
-              <div className="val-num">01 · GET FOUND</div>
-              <h3>Be easier to choose.</h3>
-              <p>Show qualifications, specialties, experience, fees, packages, availability and reviews in one credible profile.</p>
-            </div>
-            <div className="val-card">
-              <div className="val-num">02 · RUN YOUR BUSINESS</div>
-              <h3>Keep the admin in one place.</h3>
-              <p>Manage your calendar, sessions, students, lesson history, notes, payments and rescheduling without the WhatsApp back-and-forth.</p>
-            </div>
-            <div className="val-card">
-              <div className="val-num">03 · GROW</div>
-              <h3>Turn more golfers into students.</h3>
-              <p>Offer trials and packages, receive warm leads from the Fore network, and build reputation through reviews and visible progress.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="aud-section-intro">
-            <div>
-              <h2>Your profile <span>does the selling.</span></h2>
-            </div>
-            <p>Put your reputation, offer and availability in front of golfers already looking to improve.</p>
-          </div>
-          <div className="val-grid two-col">
-            <div className="val-card">
-              <div className="val-num">ARJUN RAO · COACH</div>
-              <h3>Turn your track record into trust.</h3>
-              <p>Qualifications, reviews, lessons and visible results give golfers more confidence in choosing you.</p>
-              <div className="coach-trust-pills">
-                {['4.8 ★', '94 reviews', '340+ lessons', '#2 at Delhi Golf Club'].map((t) => (
-                  <span key={t} className="pill">{t}</span>
-                ))}
-              </div>
-            </div>
-            <div className="val-card">
-              <div className="val-num">YOUR OFFER</div>
-              <h3>Clear pricing. Every package.</h3>
-              <ul className="offer-list">
-                {[
-                  ['Trial Lesson', '₹800'],
-                  ['Single Lesson', '₹3,000'],
-                  ['6-Lesson Bundle', '₹16,200'],
-                  ['12-Lesson Bundle', '₹30,000'],
-                ].map(([name, price]) => (
-                  <li key={name} className="offer-row">
-                    <span className="offer-name">{name}</span>
-                    <span className="offer-price">{price}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="aud-section-intro">
-            <div>
-              <h2>Everything <span>after the booking.</span></h2>
-            </div>
-            <p>Run your schedule and sessions, manage students and payments, analyse swings, assign practice and review results — all from your Fore workspace.</p>
-          </div>
-          <div className="pill-strip">
-            {['Calendar & availability', 'Session notes', 'Student lesson history', 'Payments', 'Swing analysis', 'Drill assignments', 'Practice results', 'Rounds & performance'].map((f) => (
-              <span key={f} className="pill">{f}</span>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="aud-section-intro">
-            <div>
-              <h2>Keep every student <span>moving forward.</span></h2>
-            </div>
-            <p>Connect what happens in the lesson with what happens between lessons.</p>
-          </div>
-          <div className="val-grid">
-            <div className="val-card">
-              <div className="val-num">ONE</div>
-              <h3>Diagnose</h3>
-              <p>Capture lesson notes, swing feedback and what the student needs to work on next.</p>
-            </div>
-            <div className="val-card">
-              <div className="val-num">TWO</div>
-              <h3>Prescribe</h3>
-              <p>Assign drills and practice with clear targets, frequency and duration.</p>
-            </div>
-            <div className="val-card">
-              <div className="val-num">THREE</div>
-              <h3>Measure</h3>
-              <p>Review practice results, rounds and swing feedback, then use the data to guide the next session.</p>
-            </div>
-          </div>
-          <div className="perf-card">
-            <div className="perf-card-copy">
-              <div className="val-num">PERFORMANCE SUITE</div>
-              <h3>See what changed between lessons.</h3>
-              <p>Rounds, practice results, swing feedback and drill completion give you a clearer picture of the golfer you're coaching.</p>
-            </div>
-            <div className="perf-stats">
-              <span className="perf-stats-label">MEERA · LAST 30 DAYS</span>
-              <div className="perf-stat-row">
-                <span className="perf-stat-name">Avg score</span>
-                <span className="perf-stat-val">74.8</span>
-              </div>
-              <div className="perf-stat-row">
-                <span className="perf-stat-name">Fairways</span>
-                <span className="perf-stat-val">62%</span>
-              </div>
-              <div className="perf-stat-row">
-                <span className="perf-stat-name">GIR</span>
-                <span className="perf-stat-val">58%</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <CoachJoinForm />
     </>
   );
 }

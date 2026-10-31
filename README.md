@@ -22,18 +22,28 @@ Run each file once in Supabase → SQL Editor:
 
 Both files are safe to run again.
 
-## Coach sign-ups and the directory
+## Coach funnels, sign-ups and the directory
+
+There are two coach funnels, one per kind of coach:
 
 | Page | What it does |
 | --- | --- |
-| `/coach-profile` | Five-step coach sign-up. Saves to `coach_profiles` with status `pending`. |
-| `/coaches/directory` | Public listing of approved coaches, with search and filters. |
-| `/coaches/directory/<slug>` | A coach's public profile with an enquiry form. |
+| `/coaches` | Chooser: Teaching Pros or Performance Coaches. |
+| `/coaches/teaching` | Landing page for teaching pros (lessons to the public). |
+| `/coaches/teaching/join` | Five-step sign-up with a live preview of the directory card. Saves to `coach_profiles` with `coach_type = 'teaching'`. |
+| `/coaches/performance` | Landing page for performance coaches (squads, academies, elite players). |
+| `/coaches/performance/join` | Five-step sign-up about the coach's program. Saves with `coach_type = 'performance'`. |
+| `/coaches/directory` | Public listing of approved **teaching pros**, with search, filters and sorting. Filters are kept in the URL. |
+| `/coaches/directory/<slug>` | A teaching pro's public profile with an enquiry form. |
+
+`/coach-profile` redirects to `/coaches`. Performance coaches are never listed publicly; follow up with them to set up their squad.
+
+After pulling these changes, re-run `supabase/coach-directory.sql` once. It adds `coach_type` and the new fields (languages, tools, program name and role, squad size, player groups, disciplines, priorities). Until then the site keeps working: sign-ups save the original fields, `source` records `teaching_signup` or `performance_signup`, and a performance coach's program details are added to the top of their bio.
 
 ### Approving a coach
 
 1. Supabase → Table Editor → `coach_profiles`.
-2. Review the row (filter `status` = `pending`).
+2. Review the row (filter `status` = `pending`). Check `coach_type`: only `teaching` profiles appear in the directory.
 3. Set `status` to `approved`. The coach appears on the site within about a minute.
 4. Optional: set `verified` to `true` once you've checked their certifications. Their profile then shows a verified badge.
 

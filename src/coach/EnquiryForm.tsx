@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { Check, Loader2, Send } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 
-export default function EnquiryForm({ coachId, coachFirstName }: { coachId: string; coachFirstName: string }) {
+export default function EnquiryForm({ coachId, coachFirstName, options = [] }: { coachId: string; coachFirstName: string; options?: string[] }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -17,7 +17,9 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
     const name = String(data.get('name') ?? '').trim();
     const email = String(data.get('email') ?? '').trim();
     const phone = String(data.get('phone') ?? '').trim();
-    const message = String(data.get('message') ?? '').trim();
+    const interest = String(data.get('interest') ?? '').trim();
+    const note = String(data.get('message') ?? '').trim();
+    const message = interest && note ? `Interested in: ${interest}\n\n${note}` : note;
 
     if (!name || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || !message) {
       setError('Add your name, a valid email address and a short message.');
@@ -61,13 +63,23 @@ export default function EnquiryForm({ coachId, coachFirstName }: { coachId: stri
   return (
     <section className="cb-card cb-enquiry" id="enquire">
       <h3>Enquire about lessons</h3>
+      <p className="cb-enquiry-lead">Tell {coachFirstName} about your game. You’ll hear back by email.</p>
       <form onSubmit={submit} noValidate>
         <label><span className="cb-label">Your name</span><input name="name" autoComplete="name" required maxLength={100} /></label>
         <label><span className="cb-label">Email</span><input name="email" type="email" autoComplete="email" required maxLength={254} /></label>
         <label><span className="cb-label">Phone <em>Optional</em></span><input name="phone" type="tel" autoComplete="tel" maxLength={20} /></label>
+        {options.length > 0 && (
+          <label>
+            <span className="cb-label">Interested in <em>Optional</em></span>
+            <select name="interest" defaultValue="">
+              <option value="">Not sure yet</option>
+              {options.map((o) => <option key={o}>{o}</option>)}
+            </select>
+          </label>
+        )}
         <label>
           <span className="cb-label">Message</span>
-          <textarea name="message" rows={4} required maxLength={1500} placeholder={`Tell ${coachFirstName} about your game and what you'd like to work on.`} />
+          <textarea name="message" rows={4} required maxLength={1500} placeholder="Your level, what you'd like to work on, and when you're free." />
         </label>
         <input ref={honeypot} className="cb-hp" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" />
         {error && <p className="cb-error" role="alert">{error}</p>}

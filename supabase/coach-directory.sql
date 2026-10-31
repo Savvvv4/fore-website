@@ -5,8 +5,10 @@
 -- Safe to run again; it only creates what is missing and resets policies.
 --
 -- How it works
--- • /coach-profile inserts a row into coach_profiles with status 'pending'.
--- • Only rows you set to status 'approved' appear on /coaches/directory.
+-- • /coaches/teaching/join and /coaches/performance/join insert a row into
+--   coach_profiles with status 'pending' and a coach_type of 'teaching' or 'performance'.
+-- • Only approved teaching pros appear on /coaches/directory. Performance coaches
+--   are never listed publicly; the Fore team sets up their squad with them.
 -- • Email, phone, consent and admin notes are never readable by visitors.
 -- • Golfer enquiries from a coach's profile land in coach_enquiries.
 -- • Profile photos go to the public 'coach-photos' storage bucket.
@@ -51,6 +53,32 @@ create table if not exists public.coach_profiles (
   updated_at      timestamptz not null default now(),
   approved_at     timestamptz
 );
+
+-- Added with the two coach funnels. Existing rows become teaching pros.
+alter table public.coach_profiles add column if not exists coach_type text not null default 'teaching';
+alter table public.coach_profiles add column if not exists languages text[] not null default '{}';
+alter table public.coach_profiles add column if not exists tools text[] not null default '{}';
+alter table public.coach_profiles add column if not exists program_name text;
+alter table public.coach_profiles add column if not exists program_role text;
+alter table public.coach_profiles add column if not exists squad_size integer;
+alter table public.coach_profiles add column if not exists player_groups text[] not null default '{}';
+alter table public.coach_profiles add column if not exists disciplines text[] not null default '{}';
+alter table public.coach_profiles add column if not exists priorities text[] not null default '{}';
+
+alter table public.coach_profiles drop constraint if exists coach_profiles_funnel_fields_check;
+alter table public.coach_profiles add constraint coach_profiles_funnel_fields_check check (
+  coach_type in ('teaching', 'performance')
+  and cardinality(languages) <= 10
+  and cardinality(tools) <= 20
+  and char_length(coalesce(program_name, '')) <= 120
+  and char_length(coalesce(program_role, '')) <= 80
+  and (squad_size is null or squad_size between 0 and 2000)
+  and cardinality(player_groups) <= 10
+  and cardinality(disciplines) <= 10
+  and cardinality(priorities) <= 10
+);
+
+create index if not exists coach_profiles_type_idx on public.coach_profiles (coach_type, status);
 
 create unique index if not exists coach_profiles_email_key on public.coach_profiles (lower(email));
 create index if not exists coach_profiles_status_idx on public.coach_profiles (status, approved_at desc);
@@ -131,13 +159,14 @@ revoke all on public.coach_profiles from anon, authenticated;
 grant insert (
   first_name, last_name, email, phone, city, venue, years_coaching, playing_level, bio,
   photo_path, specialties, certifications, packages, formats, days, start_time, end_time,
-  heard_from, consent, source
+  heard_from, consent, source, coach_type, languages, tools, program_name, program_role,
+  squad_size, player_groups, disciplines, priorities
 ) on public.coach_profiles to anon, authenticated;
 
 grant select (
   id, slug, verified, founding_coach, first_name, last_name, city, venue, years_coaching,
   playing_level, bio, photo_path, specialties, certifications, packages, formats, days,
-  start_time, end_time, approved_at
+  start_time, end_time, approved_at, coach_type, languages, tools
 ) on public.coach_profiles to anon, authenticated;
 
 -- 2. Enquiries from golfers --------------------------------------------
@@ -162,7 +191,7 @@ drop policy if exists "Visitors can enquire about approved coaches" on public.co
 create policy "Visitors can enquire about approved coaches"
   on public.coach_enquiries for insert
   to anon, authenticated
-  with check (exists (select 1 from public.coach_profiles c where c.id = coach_id));
+  with check (exists (select 1 from public.coach_profiles c where c.id = coach_id and c.coach_type = 'teaching'));
 
 revoke all on public.coach_enquiries from anon, authenticated;
 grant insert (coach_id, name, email, phone, message) on public.coach_enquiries to anon, authenticated;

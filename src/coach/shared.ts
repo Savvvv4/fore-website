@@ -24,6 +24,16 @@ export const PLAYING_LEVELS = [
   'Club golfer (handicap 6+)',
 ];
 export const HEARD_FROM = ['Another coach', 'My golf club', 'Instagram', 'WhatsApp group', 'ForeSports team reached out', 'Other'];
+export const LANGUAGES = ['English', 'Hindi', 'Punjabi', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Gujarati'];
+export const TOOLS = ['TrackMan', 'FlightScope', 'GCQuad / Foresight', 'Uneekor', 'SAM PuttLab', 'Video analysis (V1, OnForm…)', 'Upgame', 'Arccos', 'Force plates', 'Spreadsheets & WhatsApp'];
+
+/** Performance coaches */
+export const PROGRAM_ROLES = ['Head coach', 'Academy director', 'Assistant coach', 'Independent performance coach', 'Coach to touring professionals'];
+export const PLAYER_GROUPS = ['National-level juniors', 'Elite juniors (U-14 to U-18)', 'College-bound juniors', 'Top amateurs', 'Touring professionals', 'Development squad'];
+export const DISCIPLINES = ['Swing', 'Short game', 'Putting', 'Fitness', 'Mental', 'Course strategy', 'Nutrition'];
+export const PRIORITIES = ['Lesson notes & video', 'Practice plans & homework', 'Round stats & strokes gained', 'Swing comparisons', 'Squad overview', 'Event debriefs', 'Parent reports', 'Coordinating with other coaches'];
+
+export type CoachType = 'teaching' | 'performance';
 export const PHOTO_BUCKET = 'coach-photos';
 
 export type CoachPackage = { name: string; price: number | null; detail: string };
@@ -46,6 +56,8 @@ export type CoachView = {
   startTime: string;
   endTime: string;
   verified: boolean;
+  languages: string[];
+  tools: string[];
 };
 
 export type CoachListing = CoachView & { id: string; slug: string; foundingCoach: boolean };
@@ -72,10 +84,14 @@ export type CoachRow = {
   start_time: string | null;
   end_time: string | null;
   approved_at: string | null;
+  languages?: string[] | null;
+  tools?: string[] | null;
 };
 
-export const PUBLIC_COLUMNS =
+/** Columns readable before supabase/coach-directory.sql adds coach types. */
+export const LEGACY_PUBLIC_COLUMNS =
   'id,slug,verified,founding_coach,first_name,last_name,city,venue,years_coaching,playing_level,bio,photo_path,specialties,certifications,packages,formats,days,start_time,end_time,approved_at';
+export const PUBLIC_COLUMNS = `${LEGACY_PUBLIC_COLUMNS},languages,tools`;
 
 export function photoUrl(path: string | null | undefined): string {
   if (!path || !supabaseUrl) return '';
@@ -116,6 +132,8 @@ export function rowToListing(row: CoachRow): CoachListing {
     days: row.days ?? [],
     startTime: row.start_time ?? '',
     endTime: row.end_time ?? '',
+    languages: row.languages ?? [],
+    tools: row.tools ?? [],
   };
 }
 
@@ -138,6 +156,23 @@ export function initials(first: string, last: string): string {
   return ((first.trim()[0] || '') + (last.trim()[0] || '')).toUpperCase() || 'FS';
 }
 
+/** Rough measure of how complete a profile is, used to order the directory. */
+export function completeness(c: CoachView): number {
+  return (
+    (c.photoUrl ? 3 : 0) +
+    (c.bio.length > 120 ? 2 : c.bio ? 1 : 0) +
+    (lowestPrice(c.packages) ? 2 : 0) +
+    Math.min(c.certifications.length, 2) +
+    (c.venue ? 1 : 0) +
+    (c.languages.length ? 1 : 0)
+  );
+}
+
+/** First credential worth showing next to a name, e.g. "PGA of India". */
+export function headlineCredential(c: CoachView): string {
+  return c.certifications[0] ?? '';
+}
+
 export function lowestPrice(packages: CoachPackage[]): number | null {
   const prices = packages.map((p) => p.price).filter((p): p is number => p != null && p > 0);
   return prices.length ? Math.min(...prices) : null;
@@ -151,4 +186,12 @@ export function formatDays(days: string[]): string {
   const idx = sorted.map((d) => WEEKDAYS.indexOf(d));
   const consecutive = idx.every((v, i) => i === 0 || v === idx[i - 1] + 1);
   return consecutive && sorted.length > 2 ? `${sorted[0]}–${sorted[sorted.length - 1]}` : sorted.join(', ');
+}
+
+/** The price to lead with on a card: the trial lesson if there is one, otherwise the lowest price. */
+export function priceLine(c: { packages: CoachPackage[] }): { label: string; value: string } | null {
+  const trial = c.packages.find((p) => /trial/i.test(p.name) && p.price);
+  if (trial) return { label: 'Trial lesson', value: formatINR(trial.price) };
+  const from = lowestPrice(c.packages);
+  return from ? { label: 'Lessons from', value: formatINR(from) } : null;
 }

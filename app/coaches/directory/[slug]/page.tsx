@@ -6,7 +6,7 @@ import { SiteShell } from '../../../../src/App';
 import CoachProfileView from '../../../../src/coach/CoachProfileView';
 import EnquiryForm from '../../../../src/coach/EnquiryForm';
 import { getCoachBySlug } from '../../../../src/coach/data';
-import { lowestPrice } from '../../../../src/coach/shared';
+import { lowestPrice, priceLine } from '../../../../src/coach/shared';
 import '../../../../src/coach/coach.css';
 
 export const revalidate = 60;
@@ -41,6 +41,8 @@ export default async function CoachPage({ params }: Props) {
 
   const name = `${coach.firstName} ${coach.lastName}`;
   const from = lowestPrice(coach.packages);
+  const price = priceLine(coach);
+  const options = coach.packages.filter((p) => p.price).map((p) => p.name);
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -65,9 +67,16 @@ export default async function CoachPage({ params }: Props) {
           <CoachProfileView
             coach={coach}
             headingLevel="h1"
-            badge={coach.foundingCoach ? 'FOUNDING COACH' : undefined}
-            aside={<EnquiryForm coachId={coach.id} coachFirstName={coach.firstName} />}
+            badge={coach.foundingCoach ? '★ Founding coach' : undefined}
+            aside={<EnquiryForm coachId={coach.id} coachFirstName={coach.firstName} options={options} />}
           />
+        </div>
+        <div className="cb-sticky-cta">
+          <div>
+            <small>{price ? price.label : 'Lessons'}</small>
+            <strong>{price ? price.value : `with ${coach.firstName}`}</strong>
+          </div>
+          <a className="cb-button cb-primary" href="#enquire">Enquire</a>
         </div>
       </div>
     </SiteShell>

@@ -1,17 +1,23 @@
 import type { Metadata } from 'next';
-import App from '../../src/App';
+import { SiteShell } from '../../src/App';
+import { CoachChooser } from '../../src/coach/CoachFunnels';
+import '../../src/coach/funnel.css';
 
 export const metadata: Metadata = {
   title: 'For Golf Coaches',
-  description: 'Build your golf coaching business with discovery, bookings, payments, student management and performance tools on ForeSports.',
+  description: 'Two ways to coach on Fore: Teaching Pros get found by new students and run their week from one app; Performance Coaches run their whole squad from one shared record.',
   alternates: { canonical: '/coaches' },
   openGraph: {
-    title: 'Golf coaching platform for coaches | ForeSports',
-    description: 'Grow your golf coaching business with ForeSports — discovery, bookings, student management and performance tools.',
+    title: 'Coaches, on Fore | ForeSports',
+    description: 'Fore for Teaching Pros and Fore for Performance Coaches.',
     url: '/coaches',
   },
 };
 
 export default function CoachesPage() {
-  return <App page="coaches" />;
+  return (
+    <SiteShell>
+      <CoachChooser />
+    </SiteShell>
+  );
 }
