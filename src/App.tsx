@@ -1272,28 +1272,6 @@ function GolfersPage() {
         <div className="container">
           <div className="aud-section-intro">
             <div>
-              <h2>Find a coach who <span>fits your game.</span></h2>
-            </div>
-          </div>
-          <div className="val-grid two-col">
-            <div className="val-card">
-              <div className="val-num">COACH PROFILE</div>
-              <h3>Know who you're booking.</h3>
-              <p>See qualifications, specialties, reviews, fees, packages and availability before you choose.</p>
-            </div>
-            <div className="val-card">
-              <div className="val-num">YOUR PROGRESS</div>
-              <h3>Make every lesson count.</h3>
-              <p>Practice results, swing analysis, drills and lesson history stay connected to your coach — so the next session starts where the last one ended.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
-          <div className="aud-section-intro">
-            <div>
               <h2>Your golf, <span>connected.</span></h2>
             </div>
             <p>Playing, practicing, improving and staying connected to golf — without needing a different app for every part of the journey.</p>
