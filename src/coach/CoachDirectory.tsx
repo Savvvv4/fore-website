@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import NextLink from 'next/link';
 import { ArrowRight, Search, SlidersHorizontal } from 'lucide-react';
 import { CoachCardView } from './cards';
-import { FORMATS, SPECIALTIES, completeness, type CoachListing } from './shared';
+import { COACH_TYPES, FORMATS, SPECIALTIES, completeness, type CoachListing, type CoachType } from './shared';
 
 type Props = { coaches: CoachListing[]; ok: boolean };
 type Sort = 'recommended' | 'experience' | 'newest';
@@ -20,6 +20,7 @@ const LEVELS: [string, string][] = [
 export default function CoachDirectory({ coaches, ok }: Props) {
   const [query, setQuery] = useState('');
   const [city, setCity] = useState('');
+  const [kind, setKind] = useState<CoachType | ''>('');
   const [level, setLevel] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [format, setFormat] = useState('');
@@ -33,6 +34,8 @@ export default function CoachDirectory({ coaches, ok }: Props) {
     const p = new URLSearchParams(window.location.search);
     setQuery(p.get('q') ?? '');
     setCity(p.get('city') ?? '');
+    const t = p.get('type');
+    setKind(t === 'teaching' || t === 'performance' ? t : '');
     setLevel(p.get('for') ?? '');
     setSpecialty(p.get('speciality') ?? '');
     setFormat(p.get('format') ?? '');
@@ -43,6 +46,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
     const p = new URLSearchParams();
     if (query) p.set('q', query);
     if (city) p.set('city', city);
+    if (kind) p.set('type', kind);
     if (level) p.set('for', level);
     if (specialty) p.set('speciality', specialty);
     if (format) p.set('format', format);
@@ -50,7 +54,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
     if (verifiedOnly) p.set('verified', '1');
     const qs = p.toString();
     window.history.replaceState(null, '', qs ? `?${qs}` : window.location.pathname);
-  }, [query, city, level, specialty, format, language, verifiedOnly]);
+  }, [query, city, kind, level, specialty, format, language, verifiedOnly]);
 
   const cities = useMemo(() => Array.from(new Set(coaches.map((c) => c.city.trim()).filter(Boolean))).sort((a, b) => a.localeCompare(b)), [coaches]);
   const levels = useMemo(() => LEVELS.filter(([, s]) => coaches.some((c) => c.specialties.includes(s))), [coaches]);
@@ -63,6 +67,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
       (c) =>
         (!q || [c.firstName, c.lastName, c.city, c.venue, ...c.specialties, ...c.certifications].join(' ').toLowerCase().includes(q)) &&
         (!city || c.city.trim() === city) &&
+        (!kind || c.coachType === kind) &&
         (!level || c.specialties.includes(level)) &&
         (!specialty || c.specialties.includes(specialty)) &&
         (!format || c.formats.includes(format)) &&
@@ -72,12 +77,13 @@ export default function CoachDirectory({ coaches, ok }: Props) {
     if (sort === 'experience') return [...list].sort((a, b) => (b.yearsCoaching ?? -1) - (a.yearsCoaching ?? -1));
     if (sort === 'newest') return list;
     return [...list].sort((a, b) => Number(b.verified) - Number(a.verified) || completeness(b) - completeness(a));
-  }, [coaches, query, city, level, specialty, format, language, verifiedOnly, sort]);
+  }, [coaches, query, city, kind, level, specialty, format, language, verifiedOnly, sort]);
 
-  const filterCount = [level, specialty, format, language, verifiedOnly ? '1' : ''].filter(Boolean).length;
+  const hasPerformance = coaches.some((c) => c.coachType === 'performance');
+  const filterCount = [kind, level, specialty, format, language, verifiedOnly ? '1' : ''].filter(Boolean).length;
   const filtered = Boolean(query || city || filterCount);
   const clear = () => {
-    setQuery(''); setCity(''); setLevel(''); setSpecialty(''); setFormat(''); setLanguage(''); setVerifiedOnly(false);
+    setQuery(''); setCity(''); setKind(''); setLevel(''); setSpecialty(''); setFormat(''); setLanguage(''); setVerifiedOnly(false);
   };
 
   return (
@@ -113,6 +119,14 @@ export default function CoachDirectory({ coaches, ok }: Props) {
                 <SlidersHorizontal size={16} aria-hidden="true" /> Filters{filterCount ? ` (${filterCount})` : ''}
               </button>
               <div id="cd-filters" className={`cd-filters${filtersOpen ? ' open' : ''}`}>
+                {hasPerformance && (
+                  <label><span className="sr-only">Coaching</span>
+                    <select value={kind} onChange={(e) => setKind(e.target.value as CoachType | '')}>
+                      <option value="">All coaching</option>
+                      {(Object.keys(COACH_TYPES) as CoachType[]).map((k) => <option key={k} value={k}>{COACH_TYPES[k]}</option>)}
+                    </select>
+                  </label>
+                )}
                 {levels.length > 0 && (
                   <label><span className="sr-only">Good for</span>
                     <select value={level} onChange={(e) => setLevel(e.target.value)}>
@@ -189,7 +203,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
         ) : (
           <div className="cd-empty">
             <h2>{ok ? 'Coaches are joining now.' : 'Back in a moment.'}</h2>
-            <p>{ok ? 'We check every profile before it goes live. Join Fore and we’ll tell you when coaches near you are ready.' : 'We couldn’t load coaches just now. Please try again shortly.'}</p>
+            <p>{ok ? 'We check every coach before they go live. Join Fore and we’ll tell you when coaches near you are ready.' : 'We couldn’t load coaches just now. Please try again shortly.'}</p>
             <div className="button-row">
               <NextLink className="button acid" href="/golfers">Join as a golfer</NextLink>
             </div>
@@ -197,7 +211,7 @@ export default function CoachDirectory({ coaches, ok }: Props) {
         )}
 
         <p className="cd-coach-line">
-          Teach golf? <NextLink href="/coaches/teaching">Get found by golfers near you <ArrowRight size={15} aria-hidden="true" /></NextLink>
+          Coach golf? <NextLink href="/coaches">Get found by golfers near you <ArrowRight size={15} aria-hidden="true" /></NextLink>
         </p>
       </section>
     </div>

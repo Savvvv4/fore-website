@@ -4,7 +4,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { Check, Loader2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 
-export default function EnquiryForm({ coachId, coachFirstName, options = [] }: { coachId: string; coachFirstName: string; options?: string[] }) {
+export default function EnquiryForm({ coachId, coachFirstName, options = [], topic = 'lessons' }: { coachId: string; coachFirstName: string; options?: string[]; topic?: string }) {
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState('');
@@ -62,7 +62,7 @@ export default function EnquiryForm({ coachId, coachFirstName, options = [] }: {
 
   return (
     <section className="cp-enquiry" id="enquire">
-      <h2>Ask {coachFirstName} about lessons</h2>
+      <h2>Ask {coachFirstName} about {topic}</h2>
       <p className="cp-enquiry-lead">Replies come to your email.</p>
       <form onSubmit={submit} noValidate>
         <label><span className="cb-label">Your name</span><input name="name" autoComplete="name" required maxLength={100} /></label>

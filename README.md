@@ -22,28 +22,34 @@ Run each file once in Supabase → SQL Editor:
 
 Both files are safe to run again.
 
-## Coach funnels, sign-ups and the directory
-
-There are two coach funnels, one per kind of coach:
+## Coach pages, sign-ups and Find a coach
 
 | Page | What it does |
 | --- | --- |
-| `/coaches` | Chooser: Teaching Pros or Performance Coaches. |
-| `/coaches/teaching` | Landing page for teaching pros (lessons to the public). |
-| `/coaches/teaching/join` | Five-step sign-up with a live preview of the directory card. Saves to `coach_profiles` with `coach_type = 'teaching'`. |
-| `/coaches/performance` | Landing page for performance coaches (squads, academies, elite players). |
-| `/coaches/performance/join` | Five-step sign-up about the coach's program. Saves with `coach_type = 'performance'`. |
-| `/coaches/directory` | Public listing of approved **teaching pros**, with search, filters and sorting. Filters are kept in the URL. |
-| `/coaches/directory/<slug>` | A teaching pro's public profile with an enquiry form. |
+| `/coaches` | Marketing page for every coach, linking to sign-up and to the two pages below. |
+| `/coaches/teaching` | Shareable page for teaching pros. Its buttons go to `/coaches/teaching/join`. |
+| `/coaches/performance` | Shareable page for performance coaches. Its buttons go to `/coaches/performance/join`. |
+| `/coaches/join` | Two-step sign-up that asks which kind of coach you are, then a confirmation screen. `?type=teaching` or `?type=performance` pre-selects it. |
+| `/coaches/teaching/join`, `/coaches/performance/join` | The same sign-up with the coach type already set. |
+| `/coaches/directory` | Find a coach: every approved coach, with search and filters. Linked from the golfers page and the footer. |
+| `/coaches/directory/<slug>` | A coach's public profile with a message form. |
 
-`/coach-profile` redirects to `/coaches`. Performance coaches are never listed publicly; follow up with them to set up their squad.
+`/coach-profile` redirects to `/coaches`.
 
-After pulling these changes, re-run `supabase/coach-directory.sql` once. It adds `coach_type` and the new fields (languages, tools, program name and role, squad size, player groups, disciplines, priorities). Until then the site keeps working: sign-ups save the original fields, `source` records `teaching_signup` or `performance_signup`, and a performance coach's program details are added to the top of their bio.
+### How sign-ups are saved
+
+The sign-up tries three places in turn, so a sign-up is only lost if Supabase is unreachable altogether (the coach then sees an error and their answers stay in the form):
+
+1. `coach_profiles` with every field.
+2. `coach_profiles` with the original columns, if `supabase/coach-directory.sql` hasn't been re-run yet. A performance coach's program details go at the top of their bio.
+3. `waitlist_submissions` with name, email, phone and city, role `coach` and a `source` ending in `_backup`. A coach who signs up again with the same email is saved here with a source ending in `_repeat`.
+
+`source` in `coach_profiles` is `teaching_signup` or `performance_signup`. Re-run `supabase/coach-directory.sql` once to add the coach type and program columns.
 
 ### Approving a coach
 
 1. Supabase → Table Editor → `coach_profiles`.
-2. Review the row (filter `status` = `pending`). Check `coach_type`: only `teaching` profiles appear in the directory.
+2. Review the row (filter `status` = `pending`). Also check `waitlist_submissions` for rows with role `coach`.
 3. Set `status` to `approved`. The coach appears on the site within about a minute.
 4. Optional: set `verified` to `true` once you've checked their certifications. Their profile then shows a verified badge.
 

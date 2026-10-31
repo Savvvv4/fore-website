@@ -24,7 +24,8 @@ export default function CoachProfileView({ coach: p, aside, draft = false, headi
   const name = [p.firstName, p.lastName].filter(Boolean).join(' ');
   const first = p.firstName || 'Your coach';
   const priced = p.packages.filter((x) => x.price != null && x.price > 0);
-  const meta = [headlineCredential(p) || 'Golf coach', p.yearsCoaching != null ? `${p.yearsCoaching} years coaching` : '', p.playingLevel].filter(Boolean).join(' · ');
+  const performance = p.coachType === 'performance';
+  const meta = [(performance ? p.programRole || 'Performance coach' : headlineCredential(p)) || 'Golf coach', p.yearsCoaching != null ? `${p.yearsCoaching} years coaching` : '', p.playingLevel].filter(Boolean).join(' · ');
   const place = [p.venue, p.city].filter(Boolean).join(', ');
   const hours = p.startTime && p.endTime ? `${formatTime(p.startTime)} to ${formatTime(p.endTime)}` : '';
 
@@ -53,7 +54,15 @@ export default function CoachProfileView({ coach: p, aside, draft = false, headi
             </section>
           )}
 
-          {(priced.length > 0 || draft) && (
+          {performance && (p.programName || p.playerGroups.length > 0) && (
+            <section>
+              <h2>Program</h2>
+              {p.programName && <p><strong>{p.programName}</strong></p>}
+              {p.playerGroups.length > 0 && <p className="cp-small">Coaches {listSentence(p.playerGroups.map((g) => (/^[A-Z][a-z]/.test(g) ? g[0].toLowerCase() + g.slice(1) : g)), true)}.</p>}
+            </section>
+          )}
+
+          {!performance && (priced.length > 0 || draft) && (
             <section>
               <h2>Lessons</h2>
               {priced.length ? (

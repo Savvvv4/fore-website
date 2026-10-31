@@ -24,6 +24,7 @@ export const PLAYING_LEVELS = [
   'Club golfer (handicap 6+)',
 ];
 export const HEARD_FROM = ['Another coach', 'My golf club', 'Instagram', 'WhatsApp group', 'ForeSports team reached out', 'Other'];
+export const COACH_TYPES: Record<CoachType, string> = { teaching: 'Lessons', performance: 'Squads & academies' };
 export const LANGUAGES = ['English', 'Hindi', 'Punjabi', 'Bengali', 'Marathi', 'Tamil', 'Telugu', 'Kannada', 'Malayalam', 'Gujarati'];
 export const TOOLS = ['TrackMan', 'FlightScope', 'GCQuad / Foresight', 'Uneekor', 'SAM PuttLab', 'Video analysis (V1, OnForm…)', 'Upgame', 'Arccos', 'Force plates', 'Spreadsheets & WhatsApp'];
 
@@ -58,6 +59,10 @@ export type CoachView = {
   verified: boolean;
   languages: string[];
   tools: string[];
+  coachType: CoachType;
+  programName: string;
+  programRole: string;
+  playerGroups: string[];
 };
 
 export type CoachListing = CoachView & { id: string; slug: string; foundingCoach: boolean };
@@ -86,12 +91,16 @@ export type CoachRow = {
   approved_at: string | null;
   languages?: string[] | null;
   tools?: string[] | null;
+  coach_type?: string | null;
+  program_name?: string | null;
+  program_role?: string | null;
+  player_groups?: string[] | null;
 };
 
 /** Columns readable before supabase/coach-directory.sql adds coach types. */
 export const LEGACY_PUBLIC_COLUMNS =
   'id,slug,verified,founding_coach,first_name,last_name,city,venue,years_coaching,playing_level,bio,photo_path,specialties,certifications,packages,formats,days,start_time,end_time,approved_at';
-export const PUBLIC_COLUMNS = `${LEGACY_PUBLIC_COLUMNS},languages,tools`;
+export const PUBLIC_COLUMNS = `${LEGACY_PUBLIC_COLUMNS},languages,tools,coach_type,program_name,program_role,player_groups`;
 
 export function photoUrl(path: string | null | undefined): string {
   if (!path || !supabaseUrl) return '';
@@ -134,6 +143,10 @@ export function rowToListing(row: CoachRow): CoachListing {
     endTime: row.end_time ?? '',
     languages: row.languages ?? [],
     tools: row.tools ?? [],
+    coachType: row.coach_type === 'performance' ? 'performance' : 'teaching',
+    programName: row.program_name ?? '',
+    programRole: row.program_role ?? '',
+    playerGroups: row.player_groups ?? [],
   };
 }
 

@@ -62,11 +62,11 @@ export default async function CoachPage({ params }: Props) {
           <CoachProfileView
             coach={coach}
             headingLevel="h1"
-            aside={<EnquiryForm coachId={coach.id} coachFirstName={coach.firstName} options={options} />}
+            aside={<EnquiryForm coachId={coach.id} coachFirstName={coach.firstName} options={options} topic={coach.coachType === 'performance' ? 'coaching' : 'lessons'} />}
           />
         </div>
         <div className="cp-sticky">
-          <p>{price ? <><small>{price.label}</small> {price.value}</> : <small>Lessons with {coach.firstName}</small>}</p>
+          <p>{price ? <><small>{price.label}</small> {price.value}</> : <small>{coach.coachType === 'performance' ? 'Coaching' : 'Lessons'} with {coach.firstName}</small>}</p>
           <a className="button acid small" href="#enquire">Message</a>
         </div>
       </div>

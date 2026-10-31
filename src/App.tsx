@@ -1274,7 +1274,12 @@ function GolfersPage() {
             <div>
               <h2>Find a coach who <span>fits your game.</span></h2>
             </div>
-            <p>See qualifications, specialties, reviews, fees and availability — then try a lesson before committing.</p>
+            <div className="aud-intro-side">
+              <p>See qualifications, specialties, reviews, fees and availability — then try a lesson before committing.</p>
+              <Link className="button acid" to="/coaches/directory">
+                Find a coach <ArrowUpRight size={18} />
+              </Link>
+            </div>
           </div>
           <div className="val-grid two-col">
             <div className="val-card">

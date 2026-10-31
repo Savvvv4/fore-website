@@ -2005,7 +2005,7 @@ export default function ProductDemo() {
                   <h1 className="ft-serif">{COMPLETION_TEXT.coach.h1}</h1>
                   <p>{COMPLETION_TEXT.coach.p}</p>
                   <div className="ft-heroBtns">
-                    <Link className="ft-btn ft-primary ft-lg ft-completionPrimary" href="/coaches#join">Join as a coach</Link>
+                    <Link className="ft-btn ft-primary ft-lg ft-completionPrimary" href="/coaches/join">Join as a coach</Link>
                     <div className="ft-completionSecondary">
                       <button className="ft-btn ft-lg" onClick={() => switchRole('facility', true)}>See the facility demo</button>
                       <button className="ft-btn ft-lg" onClick={() => switchRole('golfer', true)}>See the golfer demo</button>

@@ -4,9 +4,6 @@ import { useState, type ReactNode } from 'react';
 import NextLink from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { CoverArt } from './art';
-import { CoachCardView, ProgramCard } from './cards';
-import { DEFAULT_PACKAGES, readDraft, seedDraft, splitName } from './draft';
-import { PLAYER_GROUPS, SPECIALTIES, type CoachListing } from './shared';
 import {
   PerfCompareScreen,
   PerfNoteScreen,
@@ -22,23 +19,21 @@ import {
   TeachSearchScreen,
 } from './screens';
 
+export const JOIN = '/coaches/join';
 export const TEACHING_JOIN = '/coaches/teaching/join';
 export const PERFORMANCE_JOIN = '/coaches/performance/join';
 
 /* ─── Building blocks ────────────────────────────────────────────── */
 
-function Hero({ title, copy, cta, note, visual }: { title: ReactNode; copy: string; cta: { href: string; label: string }; note: string; visual: ReactNode }) {
+function Hero({ title, copy, actions, note, visual }: { title: ReactNode; copy: string; actions: ReactNode; note?: string; visual: ReactNode }) {
   return (
     <section className="cf-hero">
       <div className="container cf-hero-grid">
         <div className="cf-hero-copy">
           <h1>{title}</h1>
           <p>{copy}</p>
-          <div className="button-row">
-            <NextLink className="button acid" href={cta.href}>{cta.label} <ArrowUpRight size={17} /></NextLink>
-            <a className="button light" href="#how">See how it works</a>
-          </div>
-          <p className="cf-note">{note}</p>
+          <div className="button-row">{actions}</div>
+          {note && <p className="cf-note">{note}</p>}
         </div>
         <div className="cf-hero-visual">{visual}</div>
       </div>
@@ -55,38 +50,56 @@ function Intro({ title, copy }: { title: ReactNode; copy?: string }) {
   );
 }
 
+function Values({ title, copy, items }: { title: ReactNode; copy?: string; items: [string, string][] }) {
+  return (
+    <section className="cf-section">
+      <div className="container">
+        <Intro title={title} copy={copy} />
+        <div className="cf-values">
+          {items.map(([h, p]) => (
+            <div key={h}>
+              <h3>{h}</h3>
+              <p>{p}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 type Step = { label: string; copy: string; screen: ReactNode };
 
-/** Tap through a coach's week. One phone; the steps change what it shows. */
+/** Tap through the product. One phone; the steps change what it shows. */
 function Walkthrough({ id, title, steps }: { id: string; title: ReactNode; steps: Step[] }) {
   const [active, setActive] = useState(0);
   const step = steps[active];
   return (
-    <section id="how" className="cf-section cf-walk">
+    <section className="cf-section cf-walk">
       <div className="container">
         <div className="cf-walk-grid">
           <div>
-          <Intro title={title} />
-          <div className="cf-walk-steps" role="tablist" aria-label="How it works">
-            {steps.map((s, i) => (
-              <button
-                key={s.label}
-                type="button"
-                role="tab"
-                id={`${id}-tab-${i}`}
-                aria-selected={i === active}
-                aria-controls={`${id}-panel`}
-                className={i === active ? 'on' : ''}
-                onClick={() => setActive(i)}
-              >
-                <span className="cf-walk-n">{i + 1}</span>
-                <span className="cf-walk-text">
-                  <strong>{s.label}</strong>
-                  <span className="cf-walk-copy">{s.copy}</span>
-                </span>
-              </button>
-            ))}
-          </div>
+            <Intro title={title} />
+            <div className="cf-walk-steps" role="tablist" aria-label="How it works">
+              {steps.map((s, i) => (
+                <button
+                  key={s.label}
+                  type="button"
+                  role="tab"
+                  id={`${id}-tab-${i}`}
+                  aria-selected={i === active}
+                  aria-controls={`${id}-panel`}
+                  className={i === active ? 'on' : ''}
+                  onClick={() => setActive(i)}
+                >
+                  <span className="cf-walk-n">{i + 1}</span>
+                  <span className="cf-walk-text">
+                    <strong>{s.label}</strong>
+                    <span className="cf-walk-copy">{s.copy}</span>
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
           <div className="cf-walk-stage" role="tabpanel" id={`${id}-panel`} aria-labelledby={`${id}-tab-${active}`}>
             <p className="cf-walk-mobile-copy">{step.copy}</p>
@@ -121,40 +134,76 @@ function Faq({ items }: { items: [string, string][] }) {
   );
 }
 
-function Field({ label, children, wide = false }: { label: string; children: ReactNode; wide?: boolean }) {
+function Closing({ title, copy, href, label }: { title: ReactNode; copy: string; href: string; label: string }) {
   return (
-    <label className={wide ? 'wide' : ''}>
-      <span>{label}</span>
-      {children}
-    </label>
+    <section className="cf-closing">
+      <div className="container">
+        <div className="cf-closing-band">
+          <div>
+            <h2>{title}</h2>
+            <p>{copy}</p>
+          </div>
+          <NextLink className="button acid" href={href}>{label} <ArrowUpRight size={17} /></NextLink>
+        </div>
+      </div>
+    </section>
   );
 }
 
-/* ─── /coaches ───────────────────────────────────────────────────── */
+/* ─── /coaches — for every coach ─────────────────────────────────── */
 
-export function CoachChooser() {
+export function CoachesLanding() {
   const paths = [
     {
       href: '/coaches/teaching',
       art: 1,
-      title: 'I teach lessons',
-      copy: 'Get found by golfers near you, fill your week and get paid before you teach.',
-      cta: 'For teaching pros',
+      title: 'Teaching pros',
+      copy: 'You teach lessons to golfers in your city. Fore brings you new students and runs your week.',
     },
     {
       href: '/coaches/performance',
       art: 3,
-      title: 'I coach a squad',
-      copy: 'Keep every player’s lessons, rounds and practice in one record your whole team shares.',
-      cta: 'For performance coaches',
+      title: 'Performance coaches',
+      copy: 'You run a squad, an academy or work with elite players. Fore keeps every player in one record.',
     },
   ];
   return (
     <div className="cb-scope cf">
-      <section className="cf-hero cf-chooser">
+      <Hero
+        title={<>Coach beyond <em>your network.</em></>}
+        copy="Get found by more golfers, keep every player improving and run your coaching from one app."
+        actions={
+          <>
+            <NextLink className="button acid" href={JOIN}>Join as a coach <ArrowUpRight size={17} /></NextLink>
+            <NextLink className="button light" href="/coaches/directory">Find a coach</NextLink>
+          </>
+        }
+        note="Two minutes to sign up. Your prices, your hours."
+        visual={<TeachProfileScreen />}
+      />
+      <Values
+        title={<>Get found. Get booked. <span>Coach better.</span></>}
+        copy="One home for your coaching, from the first message to the hundredth lesson."
+        items={[
+          ['Be easy to choose', 'Your qualifications, specialities, prices and reviews in one profile golfers trust.'],
+          ['Leave the admin to Fore', 'Bookings, reminders and payments, without the WhatsApp back-and-forth.'],
+          ['Show the progress', 'Lesson notes, drills, rounds and swing videos in one record you share with every player.'],
+        ]}
+      />
+      <Walkthrough
+        id="all"
+        title={<>From first lesson <span>to lasting progress.</span></>}
+        steps={[
+          { label: 'Get found', copy: 'Golfers near you find your profile and send you a message.', screen: <TeachSearchScreen /> },
+          { label: 'Fill your week', copy: 'Students book and reschedule themselves, with reminders.', screen: <TeachCalendarScreen /> },
+          { label: 'Coach it', copy: 'Film the swing and talk. Fore writes the note and sends the drills.', screen: <PerfNoteScreen /> },
+          { label: 'See the work', copy: 'Know who practised before the next lesson.', screen: <PerfPracticeScreen /> },
+          { label: 'Show the change', copy: 'Put two swings side by side so players see what moved.', screen: <PerfCompareScreen /> },
+        ]}
+      />
+      <section className="cf-section">
         <div className="container">
-          <h1>Coach on <em>Fore.</em></h1>
-          <p>Built around the way you coach. Which sounds like you?</p>
+          <Intro title={<>Built for <span>how you coach.</span></>} />
           <div className="cf-paths">
             {paths.map((p) => (
               <NextLink key={p.href} href={p.href} className="cf-path">
@@ -162,86 +211,42 @@ export function CoachChooser() {
                 <span className="cf-path-body">
                   <strong>{p.title}</strong>
                   <span>{p.copy}</span>
-                  <span className="cf-path-go">{p.cta} <ArrowRight size={16} aria-hidden="true" /></span>
+                  <span className="cf-path-go">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
                 </span>
               </NextLink>
             ))}
           </div>
-          <p className="cf-aside">Looking for a coach? <NextLink href="/coaches/directory">Find one near you</NextLink></p>
         </div>
       </section>
+      <Faq
+        items={[
+          ['Who can join?', 'Any golf coach in India, from teaching pros at a local range to coaches of national squads and touring professionals.'],
+          ['How do golfers find me?', 'Through Find a coach, by city, speciality and level. We check every coach before they go live.'],
+          ['Can I bring my current students?', 'Yes, and there’s no exclusivity. Bring your regulars so lessons, notes and progress live in one place.'],
+          ['Is my phone number shared?', 'Never. Golfers message you through Fore, so your number and email stay private.'],
+          ['What can I use today?', 'Coach profiles and messages from golfers are live now. Bookings, payments and player tools open to coaches on Fore first.'],
+        ]}
+      />
+      <Closing
+        title={<>Your coaching, <span>on Fore.</span></>}
+        copy="Sign up in two minutes. We’ll review your details and get you live."
+        href={JOIN}
+        label="Join as a coach"
+      />
     </div>
   );
 }
 
-/* ─── /coaches/teaching ──────────────────────────────────────────── */
+/* ─── /coaches/teaching — shareable page for teaching pros ───────── */
 
-function TeachingBuilder() {
-  const [name, setName] = useState('');
-  const [city, setCity] = useState('');
-  const [best, setBest] = useState('');
-  const [trial, setTrial] = useState('');
-  const { first, last } = splitName(name);
-  const price = parseInt(trial.replace(/\D/g, ''), 10);
-
-  const coach: CoachListing = {
-    id: 'draft', slug: '', foundingCoach: false, verified: false,
-    firstName: first, lastName: last, city: city.trim(), venue: '', yearsCoaching: null, playingLevel: '', bio: '', photoUrl: '',
-    specialties: best ? [best] : [], certifications: [], formats: [], days: [], startTime: '', endTime: '', languages: [], tools: [],
-    packages: price > 0 ? [{ name: 'Trial lesson', price, detail: '' }] : [],
-  };
-
-  function carryOver() {
-    const patch: Record<string, unknown> = {};
-    if (first) patch.first = first;
-    if (last) patch.last = last;
-    if (city.trim()) patch.city = city.trim();
-    if (best) patch.specialties = [best];
-    if (price > 0) {
-      const saved = readDraft('teaching').form?.packages;
-      const packages = Array.isArray(saved) && saved.length ? saved : DEFAULT_PACKAGES;
-      patch.packages = packages.map((p: { price?: string }, i: number) => (i === 0 ? { ...p, price: String(price) } : p));
-    }
-    seedDraft('teaching', patch);
-  }
-
-  return (
-    <section className="cf-section cf-build" id="start">
-      <div className="container">
-        <Intro title={<>See your profile <span>first.</span></>} copy="Add a few details and watch it come together. Finish the rest in about five minutes." />
-        <div className="cf-build-grid">
-        <div>
-          <div className="cf-form">
-            <Field label="Your name"><input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Aarav Sharma" /></Field>
-            <Field label="City"><input value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" placeholder="Gurugram" /></Field>
-            <Field label="What you teach best">
-              <select value={best} onChange={(e) => setBest(e.target.value)}>
-                <option value="">Choose one</option>
-                {SPECIALTIES.map((s) => <option key={s}>{s}</option>)}
-              </select>
-            </Field>
-            <Field label="Trial lesson price (₹)"><input value={trial} onChange={(e) => setTrial(e.target.value.replace(/[^\d,]/g, ''))} inputMode="numeric" placeholder="2,500" /></Field>
-          </div>
-          <NextLink className="button acid" href={TEACHING_JOIN} onClick={carryOver}>Continue <ArrowRight size={17} /></NextLink>
-        </div>
-        <div className="cf-build-preview" aria-live="polite">
-          <CoachCardView coach={coach} draft />
-          <p className="cf-note">How golfers see you on Fore</p>
-        </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function TeachingFunnel() {
+export function TeachingLanding() {
   return (
     <div className="cb-scope cf">
       <Hero
         title={<>More students. <em>Less admin.</em></>}
         copy="Get found by golfers near you, fill your calendar and get paid before every lesson."
-        cta={{ href: '#start', label: 'Create your profile' }}
-        note="Takes five minutes. Your prices, your hours."
+        actions={<NextLink className="button acid" href={TEACHING_JOIN}>Create your profile <ArrowUpRight size={17} /></NextLink>}
+        note="Two minutes to sign up. Your prices, your hours."
         visual={<TeachProfileScreen />}
       />
       <Walkthrough
@@ -255,88 +260,41 @@ export function TeachingFunnel() {
           { label: 'Keep them coming back', copy: 'When a student goes quiet, send them your next free slot in one tap.', screen: <TeachNudgeScreen /> },
         ]}
       />
-      <TeachingBuilder />
+      <Values
+        title={<>Teach more. <span>Chase less.</span></>}
+        items={[
+          ['Look like the pro you are', 'Your training, specialities and prices in one profile. Golfers trust you before they meet you.'],
+          ['Sell plans, not single lessons', 'Offer trials, lesson packs and group classes, at prices you set.'],
+          ['Let reviews sell for you', 'Only students who took a lesson can review you. Good reviews move you up.'],
+        ]}
+      />
       <Faq
         items={[
-          ['How do golfers find me?', 'They search Fore by city, speciality and level. Profiles with a photo, a short introduction and clear prices get chosen most.'],
-          ['Can I bring my current students?', 'Yes, and there’s no exclusivity. Bring your regulars onto Fore so lessons, notes and payments live in one place.'],
+          ['How do golfers find me?', 'They search Find a coach by city, speciality and level. Profiles with a photo and clear prices get chosen most.'],
+          ['Can I bring my current students?', 'Yes, and there’s no exclusivity. Move your regulars onto Fore so lessons, notes and payments live in one place.'],
           ['Who sets my prices?', 'You do. Offer trials, lesson packs, monthly plans and group classes, and change them whenever you like.'],
           ['Is my phone number shared?', 'Never. Golfers message you through Fore, so your number and email stay private.'],
-          ['What can I use today?', 'Profiles and enquiries are live now. Bookings, payments and student tools open to coaches on Fore first.'],
         ]}
+      />
+      <Closing
+        title={<>Your profile, <span>live on Fore.</span></>}
+        copy="Two minutes to sign up. We’ll check your details and list you in Find a coach."
+        href={TEACHING_JOIN}
+        label="Create your profile"
       />
     </div>
   );
 }
 
-/* ─── /coaches/performance ───────────────────────────────────────── */
+/* ─── /coaches/performance — shareable page for performance coaches ─ */
 
-function PerformanceBuilder() {
-  const [name, setName] = useState('');
-  const [city, setCity] = useState('');
-  const [program, setProgram] = useState('');
-  const [squad, setSquad] = useState('');
-  const [group, setGroup] = useState('');
-  const { first, last } = splitName(name);
-  const players = squad === '' ? null : Math.min(2000, Number(squad.replace(/\D/g, '')) || 0);
-
-  function carryOver() {
-    const patch: Record<string, unknown> = {};
-    if (first) patch.first = first;
-    if (last) patch.last = last;
-    if (city.trim()) patch.city = city.trim();
-    if (program.trim()) patch.program = program.trim();
-    if (players != null) patch.squad = String(players);
-    if (group) patch.groups = [group];
-    seedDraft('performance', patch);
-  }
-
-  return (
-    <section className="cf-section cf-build" id="start">
-      <div className="container">
-        <Intro title={<>Bring your squad <span>to Fore.</span></>} copy="Tell us a little about your program. We’ll set up the rest with you on a short call." />
-        <div className="cf-build-grid">
-        <div>
-          <div className="cf-form">
-            <Field label="Your name"><input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Meera Iyer" /></Field>
-            <Field label="City"><input value={city} onChange={(e) => setCity(e.target.value)} autoComplete="address-level2" placeholder="Bengaluru" /></Field>
-            <Field label="Program name"><input value={program} onChange={(e) => setProgram(e.target.value)} placeholder="U-18 Performance Squad" /></Field>
-            <Field label="Players"><input value={squad} onChange={(e) => setSquad(e.target.value.replace(/\D/g, ''))} inputMode="numeric" placeholder="14" /></Field>
-            <Field label="Who you coach" wide>
-              <select value={group} onChange={(e) => setGroup(e.target.value)}>
-                <option value="">Choose one</option>
-                {PLAYER_GROUPS.map((g) => <option key={g}>{g}</option>)}
-              </select>
-            </Field>
-          </div>
-          <NextLink className="button acid" href={PERFORMANCE_JOIN} onClick={carryOver}>Continue <ArrowRight size={17} /></NextLink>
-        </div>
-        <div className="cf-build-preview" aria-live="polite">
-          <ProgramCard
-            coach={{ firstName: first, lastName: last, city: city.trim(), photoUrl: '' }}
-            program={{ role: '', name: program.trim(), squad: players, groups: group ? [group] : [], disciplines: [] }}
-          />
-          <p className="cf-note">What your players see when they join</p>
-        </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function PerformanceFunnel() {
-  const circle: [string, string][] = [
-    ['You', 'Every player’s status at a glance, so you spot problems before they cost a season.'],
-    ['Your players', 'A clear focus, drills for the week and proof they’re getting better.'],
-    ['Parents', 'A monthly report instead of weekly calls.'],
-    ['Your team', 'Swing, short-game, fitness and mental coaches working from one record.'],
-  ];
+export function PerformanceLanding() {
   return (
     <div className="cb-scope cf">
       <Hero
         title={<>Every player. <em>One record.</em></>}
         copy="Lessons, rounds, practice and progress in one place, shared with your players, their parents and your coaching team."
-        cta={{ href: '#start', label: 'Set up your squad' }}
+        actions={<NextLink className="button acid" href={PERFORMANCE_JOIN}>Set up your squad <ArrowUpRight size={17} /></NextLink>}
         note="We set it up with you on a 20-minute call."
         visual={<PerfPlayersScreen />}
       />
@@ -351,26 +309,28 @@ export function PerformanceFunnel() {
           { label: 'Report home', copy: 'Send parents a monthly progress report in one tap.', screen: <PerfParentScreen /> },
         ]}
       />
-      <section className="cf-section cf-circle">
-        <div className="container">
-          <Intro title={<>Everyone around the player, <span>on the same page.</span></>} />
-          <ul className="cf-circle-grid">
-            {circle.map(([h, p]) => (
-              <li key={h}><strong>{h}</strong><span>{p}</span></li>
-            ))}
-          </ul>
-          <p className="cf-note">Players own their record. Your notes and drills stay yours.</p>
-        </div>
-      </section>
-      <PerformanceBuilder />
+      <Values
+        title={<>Everyone around the player, <span>on the same page.</span></>}
+        copy="Players own their record. Your notes and drills stay yours."
+        items={[
+          ['You', 'Every player’s status at a glance, so you spot problems before they cost a season.'],
+          ['Players and parents', 'A clear focus, drills for the week and a monthly report instead of weekly calls.'],
+          ['Your team', 'Swing, short-game, fitness and mental coaches working from one record.'],
+        ]}
+      />
       <Faq
         items={[
           ['Do my players need the app?', 'Yes. Players log rounds and practice, and see your notes and drills. Parents of juniors get their own view.'],
           ['Who owns the data?', 'Players own their record and choose which coaches see it. Your notes, drills and videos stay yours.'],
           ['Can my whole coaching team join?', 'Yes. Swing, short-game, fitness and mental coaches share one squad and one view of every player.'],
-          ['Will I show up in Find a coach?', 'No, squads stay private. If you also teach lessons to the public, create a teaching profile too.'],
           ['How long does setup take?', 'About 20 minutes on a call. We load your squad with you.'],
         ]}
+      />
+      <Closing
+        title={<>Your squad, <span>on Fore.</span></>}
+        copy="Tell us about your program in two minutes. We’ll set up the rest with you."
+        href={PERFORMANCE_JOIN}
+        label="Set up your squad"
       />
     </div>
   );

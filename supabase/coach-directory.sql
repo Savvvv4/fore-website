@@ -5,10 +5,9 @@
 -- Safe to run again; it only creates what is missing and resets policies.
 --
 -- How it works
--- • /coaches/teaching/join and /coaches/performance/join insert a row into
---   coach_profiles with status 'pending' and a coach_type of 'teaching' or 'performance'.
--- • Only approved teaching pros appear on /coaches/directory. Performance coaches
---   are never listed publicly; the Fore team sets up their squad with them.
+-- • /coaches/join (and /coaches/teaching/join, /coaches/performance/join) insert a row
+--   into coach_profiles with status 'pending' and a coach_type of 'teaching' or 'performance'.
+-- • Only rows you set to status 'approved' appear on /coaches/directory (Find a coach).
 -- • Email, phone, consent and admin notes are never readable by visitors.
 -- • Golfer enquiries from a coach's profile land in coach_enquiries.
 -- • Profile photos go to the public 'coach-photos' storage bucket.
@@ -166,7 +165,8 @@ grant insert (
 grant select (
   id, slug, verified, founding_coach, first_name, last_name, city, venue, years_coaching,
   playing_level, bio, photo_path, specialties, certifications, packages, formats, days,
-  start_time, end_time, approved_at, coach_type, languages, tools
+  start_time, end_time, approved_at, coach_type, languages, tools, program_name,
+  program_role, player_groups
 ) on public.coach_profiles to anon, authenticated;
 
 -- 2. Enquiries from golfers --------------------------------------------
@@ -191,7 +191,7 @@ drop policy if exists "Visitors can enquire about approved coaches" on public.co
 create policy "Visitors can enquire about approved coaches"
   on public.coach_enquiries for insert
   to anon, authenticated
-  with check (exists (select 1 from public.coach_profiles c where c.id = coach_id and c.coach_type = 'teaching'));
+  with check (exists (select 1 from public.coach_profiles c where c.id = coach_id));
 
 revoke all on public.coach_enquiries from anon, authenticated;
 grant insert (coach_id, name, email, phone, message) on public.coach_enquiries to anon, authenticated;

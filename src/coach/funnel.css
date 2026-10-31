@@ -1,6 +1,6 @@
 /* Coach funnels: /coaches, /coaches/teaching, /coaches/performance.
    Compact scale on top of the site's .container and .button classes. */
-.cf-walk-grid > div, .cf-build-grid > div { min-width: 0; }
+.cf-walk-grid > div { min-width: 0; }
 .cf { --cf-peach: #FFF0EB; --cf-soft: #FFFAF7; --cf-green: #247341; --cf-red: #B42318; overflow-x: clip; }
 .cf h2 { font-size: clamp(28px, 3.4vw, 40px); line-height: 1.1; }
 .cf-note { margin-top: 14px !important; color: var(--cb-muted); font-size: 14px; }
@@ -14,7 +14,7 @@
 
 /* Sections */
 .cf-section { padding: 72px 0; }
-.cf-intro { max-width: 620px; margin-bottom: 32px; }
+.cf-intro { max-width: 780px; margin-bottom: 32px; }
 .cf-intro p { margin-top: 10px !important; color: var(--cb-muted); font-size: 17px; }
 
 /* Walkthrough */
@@ -39,20 +39,16 @@
 .cf-walk-nav button:disabled { opacity: .35; cursor: default; }
 @keyframes cf-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-/* Builder */
-.cf-build-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 56px; align-items: start; }
-.cf-form { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; max-width: 560px; margin-bottom: 20px; }
-.cf-form label { display: grid; gap: 6px; font-size: 14px; font-weight: 600; }
-.cf-form .wide { grid-column: 1 / -1; }
-.cf-build-preview { display: grid; justify-items: center; }
-.cf-build-preview .cc { width: 100%; box-shadow: 0 24px 60px rgba(36,26,20,.10); }
+/* Value props */
+.cf-values { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.cf-values > div { padding: 28px; border: 1px solid var(--cb-line); border-radius: 24px; }
+.cf-values h3 { font-size: 21px; line-height: 1.25; }
+.cf-values p { margin-top: 8px !important; color: var(--cb-muted); font-size: 16px; }
 
-/* Performance: people around the player */
-.cf-circle-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; margin: 0; padding: 0; list-style: none; }
-.cf-circle-grid li { display: grid; gap: 6px; padding-top: 16px; border-top: 2px solid var(--cb-orange); }
-.cf-circle-grid strong { font-family: var(--font-manrope), sans-serif; font-size: 19px; font-weight: 600; letter-spacing: -.02em; }
-.cf-circle-grid span { color: var(--cb-muted); font-size: 15px; }
-.cf-circle .cf-note { margin-top: 24px !important; }
+/* Closing call to action */
+.cf-closing { padding: 24px 0 88px; }
+.cf-closing-band { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 44px 48px; border-radius: 28px; background: var(--cf-peach); }
+.cf-closing-band p { margin-top: 8px !important; color: var(--cb-muted); font-size: 17px; }
 
 /* FAQ */
 .cf-faq { border-top: 1px solid var(--cb-line); }
@@ -68,10 +64,8 @@
 .cf-plus::after { transform: rotate(90deg); }
 details[open] .cf-plus { transform: rotate(45deg); }
 
-/* Chooser */
-.cf-chooser { padding-bottom: 88px; }
-.cf-chooser > .container > p { margin-top: 12px; color: var(--cb-muted); font-size: 19px; }
-.cf-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+/* Coach type cards */
+.cf-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .cf-path { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--cb-line); border-radius: 24px; color: inherit; text-decoration: none; transition: border-color .15s ease, box-shadow .15s ease; }
 .cf-path:hover { border-color: rgba(255,110,0,.5); box-shadow: 0 16px 44px rgba(17,17,17,.07); }
 .cf-path-art { display: block; height: 120px; }
@@ -80,8 +74,6 @@ details[open] .cf-plus { transform: rotate(45deg); }
 .cf-path-body > span { color: var(--cb-muted); font-size: 16px; }
 .cf-path-body .cf-path-go { display: inline-flex; align-items: center; gap: 6px; margin-top: 10px; color: var(--cb-ink); font-weight: 700; }
 .cf-path:hover .cf-path-go { color: var(--cb-accent); }
-.cf-aside { margin-top: 28px !important; color: var(--cb-muted); font-size: 16px; }
-.cf-aside a { color: var(--cb-ink); font-weight: 700; }
 
 /* ─── Phone mock-ups ──────────────────────────────────────────── */
 .cf-phone {
@@ -240,8 +232,8 @@ details[open] .cf-plus { transform: rotate(45deg); }
   .cf-hero-grid { grid-template-columns: minmax(0, 1fr) auto; gap: 32px; }
   .cf-hero-visual { padding-right: 0; }
   .cf-hero-visual .cf-phone { zoom: .75; }
-  .cf-walk-grid, .cf-build-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; }
-  .cf-circle-grid { grid-template-columns: 1fr 1fr; }
+  .cf-walk-grid { grid-template-columns: minmax(0, 1fr) 320px; gap: 32px; }
+  .cf-values { grid-template-columns: 1fr; }
   .cf-faq-grid { grid-template-columns: 1fr; gap: 16px; }
 }
 @media (max-width: 720px) {
@@ -268,15 +260,11 @@ details[open] .cf-plus { transform: rotate(45deg); }
   .cf-walk-phone .cf-phone { zoom: .82; }
   .cf-walk-nav { display: flex; }
 
-  .cf-build-grid { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .cf-build-preview { order: -1; }
-  .cf-form { grid-template-columns: 1fr; }
-  .cf-build .button { width: 100%; }
-  .cf-circle-grid { grid-template-columns: 1fr; gap: 16px; }
+  .cf-values > div { padding: 22px; }
+  .cf-closing { padding: 8px 0 56px; }
+  .cf-closing-band { flex-direction: column; align-items: stretch; gap: 20px; padding: 28px 22px; border-radius: 22px; }
 
-  .cf-chooser { padding-bottom: 56px; }
-  .cf-chooser > .container > p { font-size: 17px; }
-  .cf-paths { grid-template-columns: 1fr; margin-top: 24px; }
+  .cf-paths { grid-template-columns: 1fr; }
   .cf-path-art { height: 88px; }
   .cf-path-body { padding: 18px 20px 20px; }
   .cf-path-body strong { font-size: 22px; }

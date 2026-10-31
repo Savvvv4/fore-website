@@ -2,18 +2,17 @@ import { supabase } from '../lib/supabase';
 import { LEGACY_PUBLIC_COLUMNS, PUBLIC_COLUMNS, rowToListing, type CoachListing, type CoachRow } from './shared';
 
 /*
- * Only Teaching Pros are listed publicly. Performance coaches work with their own squads.
- * Until supabase/coach-directory.sql has been re-run, coach_type and the new columns don't
- * exist yet, so each query falls back to the original columns and lists everyone approved.
+ * Find a coach lists every approved coach, teaching pros and performance coaches alike.
+ * Until supabase/coach-directory.sql has been re-run, the newer columns don't exist yet,
+ * so each query falls back to the original columns.
  */
 
-/** Approved teaching pros, newest first. Row-level security only returns approved rows to visitors. */
+/** Approved coaches, newest first. Row-level security only returns approved rows to visitors. */
 export async function getApprovedCoaches(): Promise<{ coaches: CoachListing[]; ok: boolean }> {
   if (!supabase) return { coaches: [], ok: false };
   const current = await supabase
     .from('coach_profiles')
     .select(PUBLIC_COLUMNS)
-    .eq('coach_type', 'teaching')
     .order('approved_at', { ascending: false, nullsFirst: false })
     .limit(500);
   let data: unknown = current.data;
@@ -34,7 +33,7 @@ export async function getApprovedCoaches(): Promise<{ coaches: CoachListing[]; o
 
 export async function getCoachBySlug(slug: string): Promise<CoachListing | null> {
   if (!supabase || !/^[a-z0-9-]{1,80}$/.test(slug)) return null;
-  const current = await supabase.from('coach_profiles').select(PUBLIC_COLUMNS).eq('slug', slug).eq('coach_type', 'teaching').maybeSingle();
+  const current = await supabase.from('coach_profiles').select(PUBLIC_COLUMNS).eq('slug', slug).maybeSingle();
   let data: unknown = current.data;
   if (current.error) {
     const legacy = await supabase.from('coach_profiles').select(LEGACY_PUBLIC_COLUMNS).eq('slug', slug).maybeSingle();
