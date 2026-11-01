@@ -51,7 +51,7 @@ function Cards({ items, two = false }: { items: [string, string, string][]; two?
     <div className={`val-grid${two ? ' two-col' : ''}`}>
       {items.map(([num, h, p]) => (
         <div className="val-card" key={h}>
-          <div className="val-num">{num}</div>
+          {num && <div className="val-num">{num.replace(/^\d+\s*·\s*/, '')}</div>}
           <h3>{h}</h3>
           <p>{p}</p>
         </div>
@@ -134,7 +134,7 @@ function MockFrame({ label, children }: { label: string; children: ReactNode }) 
 
 function ProfileMock() {
   return (
-    <MockFrame label="FORE · COACH PROFILE">
+    <MockFrame label="Coach profile">
       <div className="cm-person">
         <span className="cm-avatar lg">AR</span>
         <div>
@@ -163,7 +163,7 @@ function WeekMock() {
     ['11:00', 'Trial lesson', 'New student via Fore', 'new'],
   ];
   return (
-    <MockFrame label="FORE · MY WEEK">
+    <MockFrame label="My week">
       <div className="cm-label">Saturday · 4 lessons</div>
       <div className="cm-list">
         {slots.map(([t, h, s, k]) => (
@@ -183,7 +183,7 @@ function WeekMock() {
 
 function SquadMock() {
   return (
-    <MockFrame label="FORE · MY SQUAD">
+    <MockFrame label="My squad">
       <div className="cm-label">U-18 squad · 14 players</div>
       <div className="cm-tiles">
         <div><strong>82%</strong><small>practice done</small></div>
@@ -212,7 +212,7 @@ function SquadMock() {
 
 export function CoachesLanding() {
   return (
-    <>
+    <div className="cf-page">
       <ScrollToTop />
       <Hero
         title={<>Coach beyond <em>your network.</em></>}
@@ -223,7 +223,7 @@ export function CoachesLanding() {
       <Section title={<>Get found. Get booked. <span>Coach better.</span></>} copy="A professional home for your coaching, from the first message to the hundredth lesson.">
         <Cards
           items={[
-            ['01 · GET FOUND', 'Be easier to choose.', 'Show your qualifications, specialities, prices and reviews in one profile golfers trust.'],
+            ['01 · GET FOUND', 'Be easier to choose.', 'Your qualifications, specialities and reviews in one profile golfers trust.'],
             ['02 · RUN YOUR WEEK', 'Leave the admin to Fore.', 'Bookings, reminders, rescheduling and payments, without the WhatsApp back-and-forth.'],
             ['03 · SHOW PROGRESS', 'Keep players improving.', 'Lesson notes, drills, rounds and swing videos in one record you share with every player.'],
           ]}
@@ -240,13 +240,13 @@ export function CoachesLanding() {
               <div className="val-num">TEACHING PROS</div>
               <h3>More students. Less admin.</h3>
               <p>Get found by golfers near you, turn trials into regulars and get paid before every lesson.</p>
-              <span className="cf-more">Fore for teaching pros <ArrowRight size={16} aria-hidden="true" /></span>
+              <span className="cf-more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
             </NextLink>
             <NextLink className="val-card cf-link-card" href="/coaches/performance">
               <div className="val-num">PERFORMANCE COACHES</div>
               <h3>Every player. One record.</h3>
               <p>Lessons, rounds, practice and progress in one place, shared with players, parents and your team.</p>
-              <span className="cf-more">Fore for performance coaches <ArrowRight size={16} aria-hidden="true" /></span>
+              <span className="cf-more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
             </NextLink>
           </div>
         </div>
@@ -254,9 +254,9 @@ export function CoachesLanding() {
       <Section title={<>Keep every player <span>moving forward.</span></>} copy="Connect what happens in the lesson with what happens between lessons.">
         <Cards
           items={[
-            ['ONE', 'Diagnose', 'Capture lesson notes, swing video and the one thing each player needs to work on next.'],
-            ['TWO', 'Prescribe', 'Assign drills and practice with clear targets, frequency and duration.'],
-            ['THREE', 'Measure', 'See practice, rounds and swing changes, then use them to plan the next lesson.'],
+            ['', 'Diagnose', 'Capture lesson notes, swing video and the one thing each player needs to work on next.'],
+            ['', 'Prescribe', 'Assign drills and practice with clear targets, frequency and duration.'],
+            ['', 'Measure', 'See practice, rounds and swing changes, then use them to plan the next lesson.'],
           ]}
         />
       </Section>
@@ -271,8 +271,8 @@ export function CoachesLanding() {
         href={JOIN}
         label="Reserve your profile"
       />
-      <StickyJoin href={JOIN} label="Reserve" text="Be among the first coaches" />
-    </>
+      <StickyJoin href={JOIN} label="Reserve" text="Coach on Fore" />
+    </div>
   );
 }
 
@@ -280,7 +280,7 @@ export function CoachesLanding() {
 
 export function TeachingLanding() {
   return (
-    <>
+    <div className="cf-page">
       <ScrollToTop />
       <Hero
         title={<>More students. <em>Less admin.</em></>}
@@ -333,7 +333,7 @@ export function TeachingLanding() {
         label="Create your profile"
       />
       <StickyJoin href={TEACHING_JOIN} label="Reserve" text="Get found by golfers" />
-    </>
+    </div>
   );
 }
 
@@ -341,7 +341,7 @@ export function TeachingLanding() {
 
 export function PerformanceLanding() {
   return (
-    <>
+    <div className="cf-page">
       <ScrollToTop />
       <Hero
         title={<>Every player. <em>One record.</em></>}
@@ -391,7 +391,7 @@ export function PerformanceLanding() {
         href={PERFORMANCE_JOIN}
         label="Set up your squad"
       />
-      <StickyJoin href={PERFORMANCE_JOIN} label="Set up" text="Bring your squad to Fore" />
-    </>
+      <StickyJoin href={PERFORMANCE_JOIN} label="Set up" text="Bring your squad" />
+    </div>
   );
 }

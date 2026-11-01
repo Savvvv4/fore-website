@@ -564,10 +564,10 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
             )}
 
             {submitError && <p className="cb-error cb-submit-error" role="alert">{submitError}</p>}
-            <div className="cb-footer">
-              {step > 0 ? (
+            <div className={`cb-footer${step === 0 ? ' solo' : ''}`}>
+              {step > 0 && (
                 <button type="button" className="cb-back" disabled={submitting} onClick={() => setStep(0)}><ArrowLeft size={16} /> Back</button>
-              ) : <span />}
+              )}
               {step === 0 ? (
                 <button type="submit" form="cb-about" className="button acid">Continue <ArrowRight size={16} /></button>
               ) : (

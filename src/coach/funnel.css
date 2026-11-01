@@ -67,3 +67,15 @@
   .cf-hero-cta .button { width: 100%; justify-content: center; }
 }
 @media (prefers-reduced-motion: reduce) { .cf-sticky { transition: none; } }
+
+/* Coach pages: section labels as plain text, not filled pills */
+.cf-page .val-num {
+  width: auto; min-height: 0; margin-bottom: 14px; padding: 0; border-radius: 0; background: none;
+  color: var(--orange-text); font-size: 12px; letter-spacing: .12em; text-align: left;
+}
+.cf-page .mock-bar-label { letter-spacing: .04em; text-transform: none; font-size: 12px; }
+@media (max-width: 640px) {
+  .cf-page .val-card { padding: 28px 24px; }
+  .cf-sticky .button { letter-spacing: 0; padding: 0 20px; }
+  .cf-sticky strong { font-size: 16px; }
+}

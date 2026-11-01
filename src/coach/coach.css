@@ -236,6 +236,17 @@
 .cb-done h1:focus { outline: none; }
 .cb-help a { color: var(--cb-ink); }
 
+
+/* Visual pass: spacing, focus, single-column choices on phones */
+.cb-signup-wrap > h1 { margin-bottom: 24px; }
+.cb-scope input[type=radio]:focus, .cb-scope input[type=checkbox]:focus { box-shadow: none; }
+.cb-scope input[type=radio]:focus-visible, .cb-scope input[type=checkbox]:focus-visible { outline: 2px solid var(--cb-orange); outline-offset: 2px; }
+.cb-types .cb-field-error { color: var(--cb-error); }
+.cb-done > p { margin-bottom: 28px; }
+.cb-done .cb-link { margin-top: 4px; }
+.cb-footer.solo { justify-content: stretch; }
+.cb-footer.solo .button { flex: 1; justify-content: center; }
+
 /* ─── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 1024px) {
   .cd-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -252,10 +263,10 @@
   .cb-form { margin: 0 -4px; padding: 20px 18px 24px; border-radius: 20px; }
   .cb-form h2 { font-size: 23px; }
   .cb-grid { grid-template-columns: 1fr; }
-  .cb-checks > div { grid-template-columns: 1fr 1fr; }
-  .cb-checks label { font-size: 14px; padding: 8px 10px; gap: 8px; }
+  .cb-checks > div { grid-template-columns: 1fr; gap: 6px; }
+  .cb-checks label { min-height: 46px; font-size: 15px; padding: 10px 14px; gap: 12px; }
   .cb-footer .button { padding: 0 20px; }
-  .cb-signup-wrap { padding-top: 92px; }
+  .cb-signup-wrap { padding-top: 112px; }
   .cb-signup h1 { font-size: 32px; }
   .cb-footer .button { flex: 1; justify-content: center; }
   .cb-share-actions .button { flex: 1 1 100%; justify-content: center; }
