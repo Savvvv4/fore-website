@@ -117,3 +117,9 @@
 .cf-sticky { border-color: var(--d-line, #d6dcd7); box-shadow: 0 18px 40px -12px rgba(15,53,36,.45); }
 .cf-sticky strong { font-weight: 800; color: #101512; }
 .cf-sticky .button.acid { background: #f26400; border-color: #f26400; font-weight: 800; }
+
+/* Flat: no shadows or glows anywhere on the coach pages; borders do the separating */
+.cf-page *, .cf-page *:hover, .cf-sticky { box-shadow: none !important; }
+.cf-page .aud-mock { border: 1.5px solid var(--d-line); }
+.cf-page .form-section .form-card { border: 0; }
+.cf-sticky { border: 1.5px solid #101512; }

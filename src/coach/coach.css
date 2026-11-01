@@ -359,3 +359,10 @@
   .cb-scope * { transition: none !important; }
   .cb-spin { animation: none; }
 }
+
+/* Flat: no shadows or glows on sign-up and confirmation; a thin ring shows the active field */
+.cb-page *, .cb-page *:hover, .cb-page *:focus { box-shadow: none !important; }
+.cb-page input:not([type=file]):not([type=checkbox]):not([type=radio]):focus, .cb-page textarea:focus {
+  outline: 2px solid var(--cb-orange); outline-offset: -1px;
+}
+.cb-page .cb-form, .cb-page .cb-share { border: 1.5px solid var(--cb-line); }
