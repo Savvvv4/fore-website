@@ -1,10 +1,11 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import NextLink from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import ScrollToTop from './ScrollToTop';
+import { rememberSource } from './source';
 
 /* Coach pages use the same building blocks and type scale as the golfers and facilities
    pages in src/App.tsx: .aud-hero-section, .aud-section-intro, .val-grid and .form-section. */
@@ -14,16 +15,21 @@ export const TEACHING_JOIN = '/coaches/teaching/join';
 export const PERFORMANCE_JOIN = '/coaches/performance/join';
 
 
+/** Shown under every coach call to action, so the promise matches the Instagram posts. */
+const CTA_NOTE = 'Takes 2 minutes · No payment · We launch 1 December';
+
 function Hero({ title, copy, cta, mock }: { title: ReactNode; copy: string; cta: { href: string; label: string }; mock: ReactNode }) {
   return (
     <section className="aud-hero-section">
       <div className="container aud-hero">
         <motion.div className="aud-hero-copy" initial={{ y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}>
+          <span className="cf-kicker">Founding coaches · Launching 1 December</span>
           <h1>{title}</h1>
           <p>{copy}</p>
-          <div className="button-row">
+          <div className="button-row cf-hero-cta">
             <NextLink className="button acid" href={cta.href}>{cta.label} <ArrowUpRight size={18} /></NextLink>
           </div>
+          <p className="cf-cta-note">{CTA_NOTE}</p>
         </motion.div>
         {mock}
       </div>
@@ -85,9 +91,46 @@ function Join({ title, copy, steps, href, label }: { title: string; copy: string
           <div className="coach-join-actions">
             <NextLink className="button acid" href={href}>{label} <ArrowUpRight size={16} /></NextLink>
           </div>
+          <p className="cf-cta-note">{CTA_NOTE}</p>
         </div>
       </div>
     </section>
+  );
+}
+
+/**
+ * Phones only: a join button pinned to the bottom of the screen once the hero button has
+ * scrolled away, hidden again when the join section or the footer comes into view.
+ */
+function StickyJoin({ href, label }: { href: string; label: string }) {
+  const [heroGone, setHeroGone] = useState(false);
+  const [endVisible, setEndVisible] = useState(false);
+
+  useEffect(() => {
+    rememberSource();
+    const hero = document.querySelector('.cf-hero-cta');
+    const ends = Array.from(document.querySelectorAll('.form-section, .footer'));
+    if (!hero || typeof IntersectionObserver === 'undefined') return;
+    const heroObserver = new IntersectionObserver(([e]) => setHeroGone(!e.isIntersecting && e.boundingClientRect.top < 0));
+    heroObserver.observe(hero);
+    const seen = new Set<Element>();
+    const endObserver = new IntersectionObserver((entries) => {
+      entries.forEach((e) => (e.isIntersecting ? seen.add(e.target) : seen.delete(e.target)));
+      setEndVisible(seen.size > 0);
+    });
+    ends.forEach((el) => endObserver.observe(el));
+    return () => { heroObserver.disconnect(); endObserver.disconnect(); };
+  }, []);
+
+  const show = heroGone && !endVisible;
+  return (
+    <div className={`cf-sticky${show ? ' is-shown' : ''}`} aria-hidden={!show}>
+      <div>
+        <strong>Founding coach spots</strong>
+        <small>2 minutes · No payment</small>
+      </div>
+      <NextLink className="button acid" href={href} tabIndex={show ? 0 : -1}>{label} <ArrowUpRight size={16} /></NextLink>
+    </div>
   );
 }
 
@@ -194,7 +237,7 @@ export function CoachesLanding() {
       <Hero
         title={<>Coach beyond <em>your network.</em></>}
         copy="Get discovered by more golfers, fill your calendar and keep every player improving, all from one place."
-        cta={{ href: JOIN, label: 'Join as a coach' }}
+        cta={{ href: JOIN, label: 'Reserve your profile' }}
         mock={<ProfileMock />}
       />
       <Section title={<>Get found. Get booked. <span>Coach better.</span></>} copy="A professional home for your coaching, from the first message to the hundredth lesson.">
@@ -242,13 +285,14 @@ export function CoachesLanding() {
         title="Get on Fore early."
         copy="Join the first coaches on Fore and help shape the future of golf coaching in India. It takes two minutes."
         steps={[
-          ['Sign up', 'Your details, how you coach and what you teach. About two minutes.'],
+          ['Reserve your profile', 'Your details and what you teach. About two minutes.'],
           ['Go live', 'Your profile appears in Find a coach straight away.'],
           ['Get verified', 'We check your qualifications and add a verified badge.'],
         ]}
         href={JOIN}
-        label="Join as a coach"
+        label="Reserve your profile"
       />
+      <StickyJoin href={JOIN} label="Reserve" />
     </>
   );
 }
@@ -310,6 +354,7 @@ export function TeachingLanding() {
         href={TEACHING_JOIN}
         label="Create your profile"
       />
+      <StickyJoin href={TEACHING_JOIN} label="Create profile" />
     </>
   );
 }
@@ -368,6 +413,7 @@ export function PerformanceLanding() {
         href={PERFORMANCE_JOIN}
         label="Set up your squad"
       />
+      <StickyJoin href={PERFORMANCE_JOIN} label="Set up squad" />
     </>
   );
 }

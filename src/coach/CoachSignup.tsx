@@ -2,10 +2,11 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import NextLink from 'next/link';
-import { ArrowLeft, ArrowRight, Check, Loader2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, ChevronDown, Loader2, Lock, Share2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import { SiteShell } from '../App';
 import ScrollToTop from './ScrollToTop';
+import { getSource } from './source';
 import {
   CERTIFICATIONS,
   FORMATS,
@@ -122,24 +123,24 @@ async function prepareImage(file: File): Promise<Blob> {
   }
 }
 
-function Field({ label, error, wide, hint, children }: { label: ReactNode; error?: string; wide?: boolean; hint?: string; children: ReactNode }) {
+function Field({ label, error, wide, hint, field, children }: { label: ReactNode; error?: string; wide?: boolean; hint?: string; field?: string; children: ReactNode }) {
   return (
-    <label className={`${wide ? 'wide ' : ''}${error ? 'has-error' : ''}`}>
+    <label className={`${wide ? 'wide ' : ''}${error ? 'has-error' : ''}`} data-field={field}>
       <span className="cb-label">
         {label}
         {hint && <em>{hint}</em>}
       </span>
       {children}
-      {error && <span className="cb-field-error">{error}</span>}
+      {error && <span className="cb-field-error" role="alert">{error}</span>}
     </label>
   );
 }
 
-function Checks({ legend, hint, options, value, onToggle, error }: {
-  legend: string; hint?: string; options: readonly string[]; value: string[]; onToggle: (v: string) => void; error?: string;
+function Checks({ legend, hint, options, value, onToggle, error, field }: {
+  legend: string; hint?: string; options: readonly string[]; value: string[]; onToggle: (v: string) => void; error?: string; field?: string;
 }) {
   return (
-    <fieldset className={`cb-checks${error ? ' has-error' : ''}`}>
+    <fieldset className={`cb-checks${error ? ' has-error' : ''}`} data-field={field}>
       <legend>{legend}{hint && <em>{hint}</em>}</legend>
       <div>
         {options.map((x) => {
@@ -169,8 +170,11 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [result, setResult] = useState<SaveResult | null>(null);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const honeypot = useRef<HTMLInputElement>(null);
   const top = useRef<HTMLDivElement>(null);
+  const doneHeading = useRef<HTMLHeadingElement>(null);
 
   // Restore an unfinished sign-up, and honour ?type= from shared links.
   useEffect(() => {
@@ -191,6 +195,9 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   }, [f, ready, result]);
 
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview); }, [photoPreview]);
+
+  // Screen readers and keyboards land on the confirmation, not on the old form position.
+  useEffect(() => { if (result) doneHeading.current?.focus({ preventScroll: true }); }, [result]);
 
   const teaching = f.type !== 'performance';
 
@@ -229,10 +236,31 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     top.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  /** Checks a field once the coach leaves it, so mistakes show before they tap Continue. */
+  function check(key: keyof Form) {
+    const v = f[key];
+    if (typeof v === 'string' && !v.trim()) return;
+    const e = validate(step, f);
+    setErrors((old) => ({ ...old, [key]: e[key] }));
+  }
+
+  /** Scrolls to and focuses the first field with a problem (it may be under the keyboard). */
+  function focusFirstError(e: Errors) {
+    if (e.formats || e.squad) setMoreOpen(true);
+    requestAnimationFrame(() => {
+      const first = Array.from(top.current?.querySelectorAll<HTMLElement>('[data-field]') ?? []).find(
+        (el) => e[el.dataset.field as keyof Errors],
+      );
+      if (!first) return;
+      first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      first.querySelector<HTMLElement>('input, textarea')?.focus({ preventScroll: true });
+    });
+  }
+
   function next() {
     const e = validate(0, f);
     setErrors(e);
-    if (Object.keys(e).length) return;
+    if (Object.keys(e).length) { focusFirstError(e); return; }
     setStep(1);
     scrollToForm();
   }
@@ -242,7 +270,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     if (Object.keys(first).length) { setErrors(first); setStep(0); scrollToForm(); return; }
     const e = validate(1, f);
     setErrors(e);
-    if (Object.keys(e).length) return;
+    if (Object.keys(e).length) { focusFirstError(e); return; }
     if (honeypot.current?.value) { setResult('saved'); return; }
 
     setSubmitting(true);
@@ -305,6 +333,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
         : [],
       formats: f.formats.length ? f.formats : ['In-person'],
       days: [],
+      heard_from: getSource(),
       consent: true,
       source: `${type}_signup`,
     };
@@ -363,38 +392,64 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
       ? [
           ['You’re live', 'Golfers can find you in Find a coach and message you through Fore.'],
           ['Get verified', 'We check your qualifications and add a verified badge to your profile.'],
-          ['You’re first in', 'Bookings, payments and student tools open to you first.'],
+          ['You’re first in', 'Bookings, payments and student tools open to you on 1 December.'],
         ]
       : [
           ['We call you', 'A 20-minute chat about your program and players.'],
           ['We set up your squad', 'Players, coaches and parents, loaded with you.'],
           ['Your players start', 'Rounds, practice and progress flow into one record.'],
         ];
+    const shareUrl = 'https://www.foresports.in/coaches?utm_source=coach_referral';
+    const shareText = 'I just reserved my coach profile on Fore. Golfers near you can find and book you. Takes 2 minutes:';
+    const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
+    const shareMore = async () => {
+      try {
+        if (navigator.share) { await navigator.share({ title: 'Fore for coaches', text: shareText, url: shareUrl }); return; }
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+      } catch {}
+    };
     return (
       <SiteShell>
         <div className="cb-scope cb-page">
           <section className="cb-done">
             <span className="cb-done-ring"><Check size={26} /></span>
-            <h1>{result === 'duplicate' ? <>Welcome back, {f.first.trim() || 'coach'}.</> : <>You’re in, {f.first.trim() || 'coach'}.</>}</h1>
+            <h1 ref={doneHeading} tabIndex={-1}>
+              {result === 'duplicate' ? <>Welcome back, {f.first.trim() || 'coach'}.</> : <>You’re in, {f.first.trim() || 'coach'}.</>}
+            </h1>
             <p>
               {result === 'duplicate'
                 ? 'This phone number or email is already signed up. We’ve noted your new details and will be in touch.'
-                : `We’ll be in touch at ${f.email.trim()} or on WhatsApp.`}
+                : `You’re one of Fore’s founding coaches. We’ll be in touch at ${f.email.trim()} or on WhatsApp.`}
             </p>
             <ol className="cb-next">
               {nextSteps.map(([h, p], i) => (
                 <li key={h}><span>{i + 1}</span><div><strong>{h}</strong>{p}</div></li>
               ))}
             </ol>
-            <div className="button-row center">
-              <NextLink className="button light" href="/coaches">Back to Fore for coaches</NextLink>
+            <div className="cb-share">
+              <strong>Know a coach who’d love this?</strong>
+              <p>Send them the link. It takes them two minutes too.</p>
+              <div className="cb-share-actions">
+                <a className="button acid" href={whatsapp} target="_blank" rel="noreferrer">Share on WhatsApp</a>
+                <button type="button" className="button light" onClick={shareMore}>
+                  {copied ? <><Check size={16} /> Link copied</> : <><Share2 size={16} /> More ways</>}
+                </button>
+              </div>
             </div>
-            <p className="cb-help">Need to change something? Email hello@foresports.in.</p>
+            <div className="button-row center">
+              {teaching
+                ? <NextLink className="cb-link" href="/coaches/directory">See Find a coach</NextLink>
+                : <NextLink className="cb-link" href="/coaches">Back to Fore for coaches</NextLink>}
+            </div>
+            <p className="cb-help">Need to change something? Email <a href="mailto:hello@foresports.in">hello@foresports.in</a>.</p>
           </section>
         </div>
       </SiteShell>
     );
   }
+
+  const optionalCount = teaching ? 'Prices, lesson types, qualifications and a photo' : 'Squad size, where you coach, qualifications and a photo';
 
   return (
     <SiteShell>
@@ -402,31 +457,34 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
       <div className="cb-scope cb-page cb-signup">
         <div className="cb-signup-wrap" ref={top}>
           <h1>
-            {fixedType === 'performance' ? <>Set up your <em>squad.</em></> : fixedType === 'teaching' ? <>Create your <em>coach profile.</em></> : <>Join Fore <em>as a coach.</em></>}
+            {fixedType === 'performance' ? <>Set up your <em>squad.</em></> : fixedType === 'teaching' ? <>Create your <em>coach profile.</em></> : <>Reserve your <em>coach profile.</em></>}
           </h1>
-          <p className="cb-signup-sub">Two short steps. Your progress saves as you go.</p>
+          <p className="cb-signup-sub">Two short steps · No payment · Your answers save as you go.</p>
 
           <div className="cb-form">
-            <nav className="cb-progress" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
-              {STEPS.map((label, i) => (
-                <button
-                  type="button"
-                  key={label}
-                  className={i <= step ? 'on' : ''}
-                  disabled={i > step}
-                  onClick={() => setStep(i)}
-                  aria-label={label}
-                  aria-current={i === step ? 'step' : undefined}
-                />
-              ))}
-            </nav>
+            <div className="cb-progress-wrap">
+              <span className="cb-step-label">Step {step + 1} of {STEPS.length} · {STEPS[step]}</span>
+              <nav className="cb-progress" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
+                {STEPS.map((label, i) => (
+                  <button
+                    type="button"
+                    key={label}
+                    className={i <= step ? 'on' : ''}
+                    disabled={i > step}
+                    onClick={() => setStep(i)}
+                    aria-label={label}
+                    aria-current={i === step ? 'step' : undefined}
+                  />
+                ))}
+              </nav>
+            </div>
 
             {step === 0 && (
-              <>
+              <form id="cb-about" noValidate onSubmit={(e) => { e.preventDefault(); next(); }}>
                 <h2>About you</h2>
-                <p>Your name is what golfers see. Your email and number stay private.</p>
+                <p className="cb-form-lead">Your name is what golfers see. Your email and number stay private.</p>
                 {!fixedType && (
-                  <fieldset className={`cb-types${errors.type ? ' has-error' : ''}`}>
+                  <fieldset className={`cb-types${errors.type ? ' has-error' : ''}`} data-field="type">
                     <legend>How do you coach?</legend>
                     <div>
                       {TYPE_OPTIONS.map((o) => (
@@ -440,63 +498,92 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                   </fieldset>
                 )}
                 <div className="cb-grid">
-                  <Field label="First name" error={errors.first}><input autoComplete="given-name" value={f.first} onChange={(e) => update({ first: e.target.value })} /></Field>
-                  <Field label="Last name" error={errors.last}><input autoComplete="family-name" value={f.last} onChange={(e) => update({ last: e.target.value })} /></Field>
-                  <Field label="Email" error={errors.email} wide><input type="email" autoComplete="email" value={f.email} onChange={(e) => update({ email: e.target.value })} placeholder="you@example.com" /></Field>
-                  <Field label="Mobile (WhatsApp)" error={errors.phone}>
-                    <div className="cb-phone"><span>+91</span><input type="tel" inputMode="numeric" autoComplete="tel-national" value={f.phone} onChange={(e) => update({ phone: e.target.value })} placeholder="98765 43210" /></div>
+                  <Field label="First name" error={errors.first} field="first">
+                    <input name="given-name" autoComplete="given-name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" value={f.first} onChange={(e) => update({ first: e.target.value })} onBlur={() => check('first')} />
                   </Field>
-                  <Field label="City" error={errors.city}><input autoComplete="address-level2" value={f.city} onChange={(e) => update({ city: e.target.value })} placeholder="Gurugram" /></Field>
+                  <Field label="Last name" error={errors.last} field="last">
+                    <input name="family-name" autoComplete="family-name" autoCapitalize="words" autoCorrect="off" spellCheck={false} enterKeyHint="next" value={f.last} onChange={(e) => update({ last: e.target.value })} onBlur={() => check('last')} />
+                  </Field>
+                  <Field label="Email" error={errors.email} wide field="email">
+                    <input type="email" name="email" inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" value={f.email} onChange={(e) => update({ email: e.target.value })} onBlur={() => check('email')} placeholder="you@example.com" />
+                  </Field>
+                  <Field label="Mobile (WhatsApp)" error={errors.phone} field="phone">
+                    <div className="cb-phone"><span>+91</span><input type="tel" name="tel-national" inputMode="tel" autoComplete="tel-national" maxLength={16} enterKeyHint="next" value={f.phone} onChange={(e) => update({ phone: e.target.value })} onBlur={() => check('phone')} placeholder="98765 43210" /></div>
+                  </Field>
+                  <Field label="City" error={errors.city} field="city">
+                    <input name="address-level2" autoComplete="address-level2" autoCapitalize="words" enterKeyHint="go" value={f.city} onChange={(e) => update({ city: e.target.value })} onBlur={() => check('city')} placeholder="Gurugram" />
+                  </Field>
                 </div>
                 <input ref={honeypot} className="cb-hp" tabIndex={-1} autoComplete="off" name="website" aria-hidden="true" />
-              </>
+              </form>
             )}
 
             {step === 1 && (
               <>
                 <h2>Your coaching</h2>
-                <p>{teaching ? 'What golfers see on your profile. You can change it anytime.' : 'So we can set Fore up around your program.'}</p>
+                <p className="cb-form-lead">{teaching ? 'Three quick answers and you’re in. You can add more anytime.' : 'Three quick answers so we can set Fore up around your program.'}</p>
                 <div className="cb-grid">
-                  <Field label="Years coaching" error={errors.experience}><input type="number" min="0" max="60" inputMode="numeric" value={f.experience} onChange={(e) => update({ experience: e.target.value })} placeholder="12" /></Field>
-                  {!teaching && (
-                    <Field label="Players" hint="Optional" error={errors.squad}><input type="number" min="0" max="2000" inputMode="numeric" value={f.squad} onChange={(e) => update({ squad: e.target.value })} placeholder="14" /></Field>
-                  )}
-                  <Field label="Where you coach" hint="Optional" wide><input value={f.venue} maxLength={120} onChange={(e) => update({ venue: e.target.value })} placeholder="DLF Golf & Country Club" /></Field>
-                  {teaching && (
-                    <>
-                      <Field label="Trial lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.trial} onChange={(e) => update({ trial: e.target.value.replace(/[^\d,]/g, '') })} placeholder="2,500" /></div></Field>
-                      <Field label="Single lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.lesson} onChange={(e) => update({ lesson: e.target.value.replace(/[^\d,]/g, '') })} placeholder="3,500" /></div></Field>
-                    </>
-                  )}
-                </div>
-
-                {teaching ? (
-                  <>
-                    <Checks legend="What you teach best" options={SPECIALTIES} value={f.specialties} onToggle={(x) => toggle('specialties', x)} error={errors.specialties} />
-                    <Checks legend="Lesson types" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} />
-                  </>
-                ) : (
-                  <Checks legend="Who you coach" options={PLAYER_GROUPS} value={f.groups} onToggle={(x) => toggle('groups', x)} error={errors.groups} />
-                )}
-                <Checks legend="Qualifications" hint="Optional" options={CERTIFICATIONS.filter((c) => c !== 'Other qualification')} value={f.certifications} onToggle={(x) => toggle('certifications', x)} />
-
-                <div className="cb-grid cb-gap-top">
-                  <Field label={teaching ? 'About you' : 'Your coaching philosophy'} hint="Optional" wide>
-                    <textarea maxLength={800} rows={3} value={f.bio} onChange={(e) => update({ bio: e.target.value })} placeholder={teaching ? 'How you coach and who you work best with.' : 'How you develop players.'} />
+                  <Field label="Years coaching" error={errors.experience} field="experience">
+                    <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={2} enterKeyHint="done" value={f.experience} onChange={(e) => update({ experience: digits(e.target.value) })} onBlur={() => check('experience')} placeholder="12" />
                   </Field>
                 </div>
 
-                <label className="cb-photo">
-                  <span className="cb-photo-img">{photoPreview ? <img src={photoPreview} alt="Your photo" /> : '+'}</span>
-                  <span>
-                    <strong>{photoPreview ? 'Change photo' : 'Add a photo'}</strong>
-                    <small>Optional. Coaches with a clear headshot get chosen more.</small>
-                  </span>
-                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} />
-                </label>
-                {errors.photo && <p className="cb-error" role="alert">{errors.photo}</p>}
+                {teaching ? (
+                  <Checks legend="What you teach best" options={SPECIALTIES} value={f.specialties} onToggle={(x) => toggle('specialties', x)} error={errors.specialties} field="specialties" />
+                ) : (
+                  <Checks legend="Who you coach" options={PLAYER_GROUPS} value={f.groups} onToggle={(x) => toggle('groups', x)} error={errors.groups} field="groups" />
+                )}
 
-                <label className={`cb-consent${errors.consent ? ' has-error' : ''}`}>
+                <div className={`cb-more${moreOpen ? ' open' : ''}`}>
+                  <button type="button" className="cb-more-toggle" aria-expanded={moreOpen} aria-controls="cb-more-body" onClick={() => setMoreOpen((o) => !o)}>
+                    <span>
+                      <strong>Make your profile stand out</strong>
+                      <small>Optional · {optionalCount}</small>
+                    </span>
+                    <ChevronDown size={18} aria-hidden="true" />
+                  </button>
+                  <div id="cb-more-body" className="cb-more-body" hidden={!moreOpen}>
+                    <div className="cb-grid">
+                      {!teaching && (
+                        <Field label="Players" hint="Optional" error={errors.squad} field="squad">
+                          <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} value={f.squad} onChange={(e) => update({ squad: digits(e.target.value) })} placeholder="14" />
+                        </Field>
+                      )}
+                      <Field label="Where you coach" hint="Optional" wide>
+                        <input value={f.venue} maxLength={120} autoCapitalize="words" onChange={(e) => update({ venue: e.target.value })} placeholder="DLF Golf & Country Club" />
+                      </Field>
+                      {teaching && (
+                        <>
+                          <Field label="Trial lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.trial} onChange={(e) => update({ trial: e.target.value.replace(/[^\d,]/g, '') })} placeholder="2,500" /></div></Field>
+                          <Field label="Single lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.lesson} onChange={(e) => update({ lesson: e.target.value.replace(/[^\d,]/g, '') })} placeholder="3,500" /></div></Field>
+                        </>
+                      )}
+                    </div>
+
+                    {teaching && (
+                      <Checks legend="Lesson types" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} field="formats" />
+                    )}
+                    <Checks legend="Qualifications" hint="Optional" options={CERTIFICATIONS.filter((c) => c !== 'Other qualification')} value={f.certifications} onToggle={(x) => toggle('certifications', x)} />
+
+                    <div className="cb-grid cb-gap-top">
+                      <Field label={teaching ? 'About you' : 'Your coaching philosophy'} hint="Optional" wide>
+                        <textarea maxLength={800} rows={3} value={f.bio} onChange={(e) => update({ bio: e.target.value })} placeholder={teaching ? 'How you coach and who you work best with.' : 'How you develop players.'} />
+                      </Field>
+                    </div>
+
+                    <label className="cb-photo">
+                      <span className="cb-photo-img">{photoPreview ? <img src={photoPreview} alt="Your photo" /> : '+'}</span>
+                      <span>
+                        <strong>{photoPreview ? 'Change photo' : 'Add a photo'}</strong>
+                        <small>Optional. Coaches with a clear headshot get chosen more.</small>
+                      </span>
+                      <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} />
+                    </label>
+                    {errors.photo && <p className="cb-error" role="alert">{errors.photo}</p>}
+                  </div>
+                </div>
+
+                <label className={`cb-consent${errors.consent ? ' has-error' : ''}`} data-field="consent">
                   <input type="checkbox" checked={f.consent} onChange={(e) => update({ consent: e.target.checked })} />
                   <span>
                     My details are accurate. Fore can store them, show my profile in Find a coach without my email or number, and contact me by email or WhatsApp.{' '}
@@ -513,13 +600,14 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                 <button type="button" className="cb-back" disabled={submitting} onClick={() => setStep(0)}><ArrowLeft size={16} /> Back</button>
               ) : <span />}
               {step === 0 ? (
-                <button type="button" className="button acid" onClick={next}>Continue <ArrowRight size={16} /></button>
+                <button type="submit" form="cb-about" className="button acid">Continue <ArrowRight size={16} /></button>
               ) : (
                 <button type="button" className="button acid" disabled={submitting} onClick={submit}>
-                  {submitting ? <><Loader2 size={16} className="cb-spin" /> Sending…</> : 'Join Fore'}
+                  {submitting ? <><Loader2 size={16} className="cb-spin" /> Saving…</> : teaching ? 'Reserve my profile' : 'Reserve my spot'}
                 </button>
               )}
             </div>
+            <p className="cb-trust"><Lock size={14} aria-hidden="true" /> Your email and number are never shown on your profile.</p>
           </div>
         </div>
       </div>
