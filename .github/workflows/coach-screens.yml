@@ -1,0 +1,41 @@
+# Temporary: builds the site and screenshots the coach funnel on phone sizes.
+# Lives on preview branches only; removed before merging to main.
+name: coach-screens
+on:
+  push:
+    branches: [coach-funnel-v2]
+  workflow_dispatch:
+env:
+  # Fake database: the screenshot script answers these requests itself, so nothing real is touched.
+  SUPABASE_URL: http://127.0.0.1:9999
+  SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYW5vbiJ9.c2ln
+permissions:
+  contents: write
+jobs:
+  screens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - run: npm i --no-save --no-audit --no-fund playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: (npx next start -p 3000 > server.log 2>&1 &) && npx -y wait-on@8.0.1 -t 60000 http://localhost:3000/coaches
+      - run: node .github/screens/shoot.mjs
+      - name: Publish screenshots to the coach-screens-out branch
+        if: always()
+        run: |
+          cd shots
+          git init -q -b coach-screens-out
+          git -c user.name=ci -c user.email=ci@local add -A
+          git -c user.name=ci -c user.email=ci@local commit -q -m "screens ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" coach-screens-out
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coach-screens
+          path: |
+            shots/
+            server.log
