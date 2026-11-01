@@ -79,3 +79,41 @@
   .cf-sticky .button { letter-spacing: 0; padding: 0 20px; }
   .cf-sticky strong { font-size: 16px; }
 }
+
+/* ─── Weight, contrast and depth (coach pages) ───────────────────────
+   Palette: ink #101512 · body #323A35 · line #D6DCD7 · fairway #0F3524 · orange #F26400 */
+.cf-page {
+  --d-ink: #101512; --d-text: #323a35; --d-line: #d6dcd7; --d-fairway: #0f3524; --d-orange: #f26400;
+  --d-lift: 0 1px 0 rgba(16,21,18,.05), 0 22px 44px -22px rgba(15,53,36,.32);
+  color: var(--d-ink);
+}
+.cf-page .aud-hero-copy h1 { font-weight: 800; letter-spacing: -.055em; line-height: .98; color: var(--d-ink); }
+.cf-page .aud-hero-copy > p { color: var(--d-text); font-weight: 500; }
+.cf-page .aud-section-intro h2 { font-weight: 800; letter-spacing: -.05em; color: var(--d-ink); }
+.cf-page .aud-section-intro p { color: var(--d-text); font-weight: 500; }
+.cf-page .val-card { border: 1px solid var(--d-line); box-shadow: var(--d-lift); }
+.cf-page .val-card h3 { font-weight: 800; letter-spacing: -.035em; color: var(--d-ink); }
+.cf-page .val-card p, .cf-page .offer-name { color: var(--d-text); }
+.cf-page .val-num { color: var(--d-orange); font-size: 15px; font-weight: 800; letter-spacing: -.005em; text-transform: none; }
+.cf-page .cf-more { font-weight: 800; }
+.cf-page .aud-mock { border-color: var(--d-line); box-shadow: 0 2px 0 rgba(16,21,18,.04), 0 40px 80px -36px rgba(15,53,36,.45); }
+.cf-page .cm-person strong { font-weight: 800; }
+
+/* Buttons: deeper orange, heavier label, a little lift */
+.cf-page .button.acid {
+  background: var(--d-orange); border-color: var(--d-orange); font-weight: 800; letter-spacing: 0;
+  box-shadow: inset 0 -3px 0 rgba(0,0,0,.16), 0 14px 26px -14px rgba(242,100,0,.85);
+}
+
+/* Closing join section: one deep fairway band */
+.cf-page .form-section { background: var(--d-fairway); color: #fff; }
+.cf-page .form-layout h2 { color: #fff; font-weight: 800; letter-spacing: -.05em; }
+.cf-page .form-layout > div > p { color: rgba(255,255,255,.82); font-weight: 500; }
+.cf-page .form-section .form-card { border: 0; box-shadow: 0 40px 80px -30px rgba(0,0,0,.55); }
+.cf-page .coach-join-steps strong { font-weight: 800; color: var(--d-ink); }
+.cf-page .coach-join-steps li { color: var(--d-text); }
+.cf-page .coach-join-steps li > span { background: var(--d-fairway); color: #fff; }
+
+.cf-sticky { border-color: var(--d-line, #d6dcd7); box-shadow: 0 18px 40px -12px rgba(15,53,36,.45); }
+.cf-sticky strong { font-weight: 800; color: #101512; }
+.cf-sticky .button.acid { background: #f26400; border-color: #f26400; font-weight: 800; }

@@ -223,9 +223,9 @@ export function CoachesLanding() {
       <Section title={<>Get found. Get booked. <span>Coach better.</span></>} copy="A professional home for your coaching, from the first message to the hundredth lesson.">
         <Cards
           items={[
-            ['01 · GET FOUND', 'Be easier to choose.', 'Your qualifications, specialities and reviews in one profile golfers trust.'],
-            ['02 · RUN YOUR WEEK', 'Leave the admin to Fore.', 'Bookings, reminders, rescheduling and payments, without the WhatsApp back-and-forth.'],
-            ['03 · SHOW PROGRESS', 'Keep players improving.', 'Lesson notes, drills, rounds and swing videos in one record you share with every player.'],
+            ['Get found', 'Be easier to choose.', 'Your qualifications, specialities and reviews in one profile golfers trust.'],
+            ['Run your week', 'Leave the admin to Fore.', 'Bookings, reminders, rescheduling and payments, without the WhatsApp back-and-forth.'],
+            ['Show progress', 'Keep players improving.', 'Lesson notes, drills, rounds and swing videos in one record you share with every player.'],
           ]}
         />
       </Section>
@@ -237,13 +237,13 @@ export function CoachesLanding() {
           </div>
           <div className="val-grid two-col">
             <NextLink className="val-card cf-link-card" href="/coaches/teaching">
-              <div className="val-num">TEACHING PROS</div>
+              <div className="val-num">Teaching pros</div>
               <h3>More students. Less admin.</h3>
               <p>Get found by golfers near you, turn trials into regulars and get paid before every lesson.</p>
               <span className="cf-more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
             </NextLink>
             <NextLink className="val-card cf-link-card" href="/coaches/performance">
-              <div className="val-num">PERFORMANCE COACHES</div>
+              <div className="val-num">Performance coaches</div>
               <h3>Every player. One record.</h3>
               <p>Lessons, rounds, practice and progress in one place, shared with players, parents and your team.</p>
               <span className="cf-more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
@@ -291,9 +291,9 @@ export function TeachingLanding() {
       <Section title={<>From first search <span>to regular student.</span></>} copy="Fore brings you new students and keeps them coming back.">
         <Cards
           items={[
-            ['01 · GET FOUND', 'Show up near you.', 'Golfers nearby find your profile, see what you teach and book a trial in a tap.'],
-            ['02 · CONVERT', 'Turn trials into plans.', 'Send a lesson plan after the trial. The trial fee comes off when they sign up.'],
-            ['03 · RETAIN', 'Bring students back.', 'When a student goes quiet, send them your next free slot in one tap.'],
+            ['Get found', 'Show up near you.', 'Golfers nearby find your profile, see what you teach and book a trial in a tap.'],
+            ['Convert', 'Turn trials into plans.', 'Send a lesson plan after the trial. The trial fee comes off when they sign up.'],
+            ['Retain', 'Bring students back.', 'When a student goes quiet, send them your next free slot in one tap.'],
           ]}
         />
       </Section>
@@ -305,12 +305,12 @@ export function TeachingLanding() {
           </div>
           <div className="val-grid two-col">
             <div className="val-card">
-              <div className="val-num">YOUR PROFILE</div>
+              <div className="val-num">Your profile</div>
               <h3>Look like the pro you are.</h3>
               <p>Qualifications, specialities and reviews from real students help golfers trust you before they meet you.</p>
             </div>
             <div className="val-card">
-              <div className="val-num">YOUR PLANS</div>
+              <div className="val-num">Your plans</div>
               <h3>Sell plans, not single lessons.</h3>
               <ul className="offer-list">
                 {['Trial lesson', '4-lesson pack', '8-lesson swing rebuild', '4-week group class'].map((n) => (
@@ -352,14 +352,14 @@ export function PerformanceLanding() {
       <Section title={<>Close the loop <span>between lessons.</span></>} copy="See what happens between lessons, and shape it.">
         <Cards
           items={[
-            ['01 · FIND THE LEAK', 'Know where shots go.', 'Players log rounds in minutes. Strokes gained shows exactly which part of their game needs work.'],
-            ['02 · COACH IT', 'Lesson notes in one tap.', 'Film the swing and talk. Fore writes the note and sends the drills.'],
-            ['03 · SEE THE WORK', 'See who did their homework.', 'Know who practised before the next lesson, and nudge who didn’t.'],
+            ['Find the leak', 'Know where shots go.', 'Players log rounds in minutes. Strokes gained shows exactly which part of their game needs work.'],
+            ['Coach it', 'Lesson notes in one tap.', 'Film the swing and talk. Fore writes the note and sends the drills.'],
+            ['See the work', 'See who did their homework.', 'Know who practised before the next lesson, and nudge who didn’t.'],
           ]}
         />
         <div className="perf-card">
           <div className="perf-card-copy">
-            <div className="val-num">SHOW THE CHANGE</div>
+            <div className="val-num">Show the change</div>
             <h3>Progress players can see.</h3>
             <p>Put two swings side by side and share a monthly report with players and parents.</p>
           </div>
@@ -374,9 +374,9 @@ export function PerformanceLanding() {
       <Section title={<>Everyone around the player, <span>on the same page.</span></>} copy="Players own their record. Your notes and drills stay yours.">
         <Cards
           items={[
-            ['YOU', 'Spot problems early.', 'Every player’s status at a glance, so nothing costs a season.'],
-            ['PLAYERS & PARENTS', 'Fewer calls, happier parents.', 'A clear focus, drills for the week and a monthly report.'],
-            ['YOUR TEAM', 'One record, many coaches.', 'Swing, short-game, fitness and mental coaches working from the same page.'],
+            ['You', 'Spot problems early.', 'Every player’s status at a glance, so nothing costs a season.'],
+            ['Players & parents', 'Fewer calls, happier parents.', 'A clear focus, drills for the week and a monthly report.'],
+            ['Your team', 'One record, many coaches.', 'Swing, short-game, fitness and mental coaches working from the same page.'],
           ]}
         />
       </Section>
