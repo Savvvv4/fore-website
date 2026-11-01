@@ -14,7 +14,22 @@ export const SPECIALTIES = [
   'Ladies golf',
   'Competition prep',
 ];
-export const CERTIFICATIONS = ['PGA of India', 'PGTI', 'TPI certified', 'TrackMan certified', 'USGTF', 'PGA UK', 'Other qualification'];
+/** Coaching qualifications common among coaches in India, plus the main international ones. */
+export const CERTIFICATIONS = [
+  'PGA of India',
+  'NGAI (Indian Golf Union)',
+  'PGTI member',
+  'PGA of GB&I',
+  'PGA of America',
+  'PGA of Australia',
+  'TPI certified',
+  'TrackMan certified',
+  'USGTF',
+  'US Kids Golf certified',
+];
+/** Choices shown after the list: 'Other' asks the coach to type it, 'None yet' stands alone. */
+export const OTHER_QUALIFICATION = 'Other';
+export const NO_QUALIFICATION = 'None yet';
 export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 export const FORMATS = ['In-person', 'Online video analysis', 'On-course playing lesson', 'Group clinics'];
 export const PLAYING_LEVELS = [
@@ -33,6 +48,8 @@ export const PROGRAM_ROLES = ['Head coach', 'Academy director', 'Assistant coach
 export const PLAYER_GROUPS = ['National-level juniors', 'Elite juniors (U-14 to U-18)', 'College-bound juniors', 'Top amateurs', 'Touring professionals', 'Development squad'];
 export const DISCIPLINES = ['Swing', 'Short game', 'Putting', 'Fitness', 'Mental', 'Course strategy', 'Nutrition'];
 export const PRIORITIES = ['Lesson notes & video', 'Practice plans & homework', 'Round stats & strokes gained', 'Swing comparisons', 'Squad overview', 'Event debriefs', 'Parent reports', 'Coordinating with other coaches'];
+
+const PRICES_SHOWN = false;
 
 export type CoachType = 'teaching' | 'performance';
 export const PHOTO_BUCKET = 'coach-photos';
@@ -108,8 +125,9 @@ export function photoUrl(path: string | null | undefined): string {
   return `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/${PHOTO_BUCKET}/${encoded}`;
 }
 
+/** Prices are not shown anywhere on Fore for now, so stored packages are ignored. */
 function toPackages(value: unknown): CoachPackage[] {
-  if (!Array.isArray(value)) return [];
+  if (!PRICES_SHOWN || !Array.isArray(value)) return [];
   return value
     .filter((p): p is Record<string, unknown> => !!p && typeof p === 'object')
     .map((p) => ({

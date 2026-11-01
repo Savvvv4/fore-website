@@ -15,21 +15,16 @@ export const TEACHING_JOIN = '/coaches/teaching/join';
 export const PERFORMANCE_JOIN = '/coaches/performance/join';
 
 
-/** Shown under every coach call to action, so the promise matches the Instagram posts. */
-const CTA_NOTE = 'Takes 2 minutes · No payment · We launch 1 December';
-
 function Hero({ title, copy, cta, mock }: { title: ReactNode; copy: string; cta: { href: string; label: string }; mock: ReactNode }) {
   return (
     <section className="aud-hero-section">
       <div className="container aud-hero">
         <motion.div className="aud-hero-copy" initial={{ y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.2, 0.8, 0.2, 1] }}>
-          <span className="cf-kicker">Founding coaches · Launching 1 December</span>
           <h1>{title}</h1>
           <p>{copy}</p>
           <div className="button-row cf-hero-cta">
             <NextLink className="button acid" href={cta.href}>{cta.label} <ArrowUpRight size={18} /></NextLink>
           </div>
-          <p className="cf-cta-note">{CTA_NOTE}</p>
         </motion.div>
         {mock}
       </div>
@@ -65,15 +60,6 @@ function Cards({ items, two = false }: { items: [string, string, string][]; two?
   );
 }
 
-function Pills({ items }: { items: string[] }) {
-  return (
-    <div className="pill-strip">
-      <span className="pill-strip-label">AND MORE</span>
-      {items.map((f) => <span key={f} className="pill">{f}</span>)}
-    </div>
-  );
-}
-
 function Join({ title, copy, steps, href, label }: { title: string; copy: string; steps: [string, string][]; href: string; label: string }) {
   return (
     <section className="form-section">
@@ -91,7 +77,6 @@ function Join({ title, copy, steps, href, label }: { title: string; copy: string
           <div className="coach-join-actions">
             <NextLink className="button acid" href={href}>{label} <ArrowUpRight size={16} /></NextLink>
           </div>
-          <p className="cf-cta-note">{CTA_NOTE}</p>
         </div>
       </div>
     </section>
@@ -102,7 +87,7 @@ function Join({ title, copy, steps, href, label }: { title: string; copy: string
  * Phones only: a join button pinned to the bottom of the screen once the hero button has
  * scrolled away, hidden again when the join section or the footer comes into view.
  */
-function StickyJoin({ href, label }: { href: string; label: string }) {
+function StickyJoin({ href, label, text }: { href: string; label: string; text: string }) {
   const [heroGone, setHeroGone] = useState(false);
   const [endVisible, setEndVisible] = useState(false);
 
@@ -125,10 +110,7 @@ function StickyJoin({ href, label }: { href: string; label: string }) {
   const show = heroGone && !endVisible;
   return (
     <div className={`cf-sticky${show ? ' is-shown' : ''}`} aria-hidden={!show}>
-      <div>
-        <strong>Founding coach spots</strong>
-        <small>2 minutes · No payment</small>
-      </div>
+      <strong>{text}</strong>
       <NextLink className="button acid" href={href} tabIndex={show ? 0 : -1}>{label} <ArrowUpRight size={16} /></NextLink>
     </div>
   );
@@ -144,7 +126,6 @@ function MockFrame({ label, children }: { label: string; children: ReactNode }) 
         <span className="mock-dot" />
         <span className="mock-dot" />
         <span className="mock-bar-label">{label}</span>
-        <span className="mock-preview-badge">Concept preview</span>
       </div>
       <div className="mock-body">{children}</div>
     </div>
@@ -159,7 +140,6 @@ function ProfileMock() {
         <div>
           <strong>Arjun Rao</strong>
           <small>PGA Coach · 12 yrs · Gurugram</small>
-          <small className="cm-ink">★★★★★ 4.9 · 86 reviews</small>
         </div>
       </div>
       <div className="cm-chips">{['Beginners', 'Short game', 'Full swing', 'TrackMan'].map((s) => <span key={s}>{s}</span>)}</div>
@@ -168,8 +148,8 @@ function ProfileMock() {
         <div className="cm-slots">{['Sat 07:00', 'Sat 10:00', 'Sun 09:00'].map((s) => <span key={s}>{s}</span>)}</div>
       </div>
       <div className="cm-foot">
-        <div><strong>₹2,500</strong><small>trial lesson</small></div>
-        <span className="cm-cta">Book trial</span>
+        <div><strong>Trial lesson</strong><small>60 min · Golf Course Rd</small></div>
+        <span className="cm-cta">Book</span>
       </div>
     </MockFrame>
   );
@@ -194,7 +174,7 @@ function WeekMock() {
         ))}
       </div>
       <div className="cm-foot">
-        <div><strong>₹21,250</strong><small>paid before the lesson</small></div>
+        <div><strong>4 lessons</strong><small>All paid in advance</small></div>
         <span className="cm-badge">Rain? Move all</span>
       </div>
     </MockFrame>
@@ -279,20 +259,19 @@ export function CoachesLanding() {
             ['THREE', 'Measure', 'See practice, rounds and swing changes, then use them to plan the next lesson.'],
           ]}
         />
-        <Pills items={['Calendar & availability', 'Lesson packs', 'UPI & card payments', 'Session notes', 'Swing analysis', 'Drill assignments', 'Round stats', 'Parent reports']} />
       </Section>
       <Join
-        title="Get on Fore early."
-        copy="Join the first coaches on Fore and help shape the future of golf coaching in India. It takes two minutes."
+        title="Be on Fore from day one."
+        copy="We launch on 1 December."
         steps={[
-          ['Reserve your profile', 'Your details and what you teach. About two minutes.'],
-          ['Go live', 'Your profile appears in Find a coach straight away.'],
-          ['Get verified', 'We check your qualifications and add a verified badge.'],
+          ['Reserve your profile', 'Your details and how you coach.'],
+          ['Go live', 'Golfers find you in Find a coach.'],
+          ['Get verified', 'We check your qualifications.'],
         ]}
         href={JOIN}
         label="Reserve your profile"
       />
-      <StickyJoin href={JOIN} label="Reserve" />
+      <StickyJoin href={JOIN} label="Reserve" text="Be among the first coaches" />
     </>
   );
 }
@@ -331,21 +310,20 @@ export function TeachingLanding() {
               <p>Qualifications, specialities and reviews from real students help golfers trust you before they meet you.</p>
             </div>
             <div className="val-card">
-              <div className="val-num">YOUR PRICES</div>
+              <div className="val-num">YOUR PLANS</div>
               <h3>Sell plans, not single lessons.</h3>
               <ul className="offer-list">
-                {[['Trial lesson', '₹2,500'], ['4-lesson pack', '₹15,000'], ['8-lesson swing rebuild', '₹28,000'], ['Group class · 4 weeks', '₹9,000']].map(([n, p]) => (
-                  <li key={n} className="offer-row"><span className="offer-name">{n}</span><span className="offer-price">{p}</span></li>
+                {['Trial lesson', '4-lesson pack', '8-lesson swing rebuild', '4-week group class'].map((n) => (
+                  <li key={n} className="offer-row"><span className="offer-name">{n}</span></li>
                 ))}
               </ul>
             </div>
           </div>
-          <Pills items={['Calendar & availability', 'Online booking', 'UPI & card payments', 'Reminders', 'Rain rescheduling', 'Verified reviews', 'Video notes']} />
         </div>
       </section>
       <Join
         title="Your profile, live on Fore."
-        copy="Create your profile in two minutes and start getting found by golfers near you."
+        copy="Start getting found by golfers near you."
         steps={[
           ['Create your profile', 'What you teach, where and your prices.'],
           ['Go live', 'Golfers find you in Find a coach straight away.'],
@@ -354,7 +332,7 @@ export function TeachingLanding() {
         href={TEACHING_JOIN}
         label="Create your profile"
       />
-      <StickyJoin href={TEACHING_JOIN} label="Create profile" />
+      <StickyJoin href={TEACHING_JOIN} label="Reserve" text="Get found by golfers" />
     </>
   );
 }
@@ -404,7 +382,7 @@ export function PerformanceLanding() {
       </Section>
       <Join
         title="Your squad, on Fore."
-        copy="Tell us about your program in two minutes. We’ll set up the rest with you on a short call."
+        copy="We set up the rest with you on a short call."
         steps={[
           ['Sign up', 'You, your players and how you coach.'],
           ['A 20-minute call', 'We set up your squad with you.'],
@@ -413,7 +391,7 @@ export function PerformanceLanding() {
         href={PERFORMANCE_JOIN}
         label="Set up your squad"
       />
-      <StickyJoin href={PERFORMANCE_JOIN} label="Set up squad" />
+      <StickyJoin href={PERFORMANCE_JOIN} label="Set up" text="Bring your squad to Fore" />
     </>
   );
 }

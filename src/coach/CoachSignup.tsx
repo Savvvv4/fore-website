@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
 import NextLink from 'next/link';
-import { ArrowLeft, ArrowRight, Check, ChevronDown, Loader2, Lock, Share2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Loader2, Share2 } from 'lucide-react';
 import { getSupabase } from '../lib/supabase';
 import { SiteShell } from '../App';
 import ScrollToTop from './ScrollToTop';
@@ -10,13 +10,15 @@ import { getSource } from './source';
 import {
   CERTIFICATIONS,
   FORMATS,
+  NO_QUALIFICATION,
+  OTHER_QUALIFICATION,
   PHOTO_BUCKET,
   PLAYER_GROUPS,
   SPECIALTIES,
   type CoachType,
 } from './shared';
 
-const DRAFT_KEY = 'foresports-coach-signup-v4';
+const DRAFT_KEY = 'foresports-coach-signup-v5';
 const STEPS = ['About you', 'Your coaching'];
 
 type Form = {
@@ -32,8 +34,7 @@ type Form = {
   specialties: string[];
   certifications: string[];
   formats: string[];
-  trial: string;
-  lesson: string;
+  otherQual: string;
   squad: string;
   groups: string[];
   consent: boolean;
@@ -54,47 +55,46 @@ const defaults: Form = {
   specialties: [],
   certifications: [],
   formats: ['In-person'],
-  trial: '',
-  lesson: '',
+  otherQual: '',
   squad: '',
   groups: [],
   consent: false,
 };
 
 const TYPE_OPTIONS: { value: CoachType; title: string; copy: string }[] = [
-  { value: 'teaching', title: 'I teach lessons', copy: 'Private lessons, packs or group classes.' },
-  { value: 'performance', title: 'I coach a squad', copy: 'An academy, a squad or elite players.' },
+  { value: 'teaching', title: 'Lessons', copy: 'Private or group' },
+  { value: 'performance', title: 'Squad', copy: 'Academy or elite players' },
 ];
 
 const digits = (s: string) => s.replace(/\D/g, '');
 const nationalPhone = (s: string) => digits(s).replace(/^(91|0)(?=\d{10}$)/, '');
-const priceNumber = (s: string) => {
-  const n = parseInt(digits(s), 10);
-  return Number.isFinite(n) && n > 0 ? n : null;
-};
 
 function validate(step: number, f: Form): Errors {
   const e: Errors = {};
   if (step === 0) {
-    if (!f.type) e.type = 'Choose how you coach.';
+    if (!f.type) e.type = 'Choose one.';
     if (!f.first.trim()) e.first = 'Enter your first name.';
     if (!f.last.trim()) e.last = 'Enter your last name.';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = 'Enter a valid email, like name@gmail.com.';
-    if (nationalPhone(f.phone).length !== 10) e.phone = 'Enter a 10-digit mobile number.';
-    if (!f.city.trim()) e.city = 'Enter the city you coach in.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = 'Enter a valid email.';
+    if (nationalPhone(f.phone).length !== 10) e.phone = 'Enter a 10-digit number.';
+    if (!f.city.trim()) e.city = 'Enter your city.';
   }
   if (step === 1) {
     const y = Number(f.experience);
-    if (f.experience === '' || !Number.isInteger(y) || y < 0 || y > 60) e.experience = 'Enter a number from 0 to 60.';
-    if (f.type === 'teaching') {
+    if (f.experience === '' || !Number.isInteger(y) || y < 0 || y > 60) e.experience = 'Enter 0 to 60.';
+    if (!f.venue.trim()) e.venue = 'Enter where you coach.';
+    if (f.type === 'performance') {
+      const n = Number(f.squad);
+      if (f.squad === '' || !Number.isInteger(n) || n < 1 || n > 2000) e.squad = 'Enter 1 to 2000.';
+      if (!f.groups.length) e.groups = 'Choose at least one.';
+    } else {
       if (!f.specialties.length) e.specialties = 'Choose at least one.';
       if (!f.formats.length) e.formats = 'Choose at least one.';
-    } else {
-      if (!f.groups.length) e.groups = 'Choose at least one.';
-      const n = Number(f.squad);
-      if (f.squad !== '' && (!Number.isInteger(n) || n < 0 || n > 2000)) e.squad = 'Enter a number, or leave it blank.';
     }
-    if (!f.consent) e.consent = 'Please agree so we can list you on Fore.';
+    if (!f.certifications.length) e.certifications = 'Choose at least one.';
+    else if (f.certifications.includes(OTHER_QUALIFICATION) && !f.otherQual.trim()) e.otherQual = 'Enter your qualification.';
+    if (!f.bio.trim()) e.bio = f.type === 'performance' ? 'Add a line about how you coach.' : 'Add a line about yourself.';
+    if (!f.consent) e.consent = 'Tick to continue.';
   }
   return e;
 }
@@ -170,7 +170,6 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [result, setResult] = useState<SaveResult | null>(null);
-  const [moreOpen, setMoreOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const honeypot = useRef<HTMLInputElement>(null);
   const top = useRef<HTMLDivElement>(null);
@@ -211,7 +210,11 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   }
   function toggle(field: ListField, value: string) {
     const current = f[field];
-    update({ [field]: current.includes(value) ? current.filter((x) => x !== value) : [...current, value] } as Partial<Form>);
+    let next = current.includes(value) ? current.filter((x) => x !== value) : [...current, value];
+    if (field === 'certifications' && !current.includes(value)) {
+      next = value === NO_QUALIFICATION ? [NO_QUALIFICATION] : next.filter((x) => x !== NO_QUALIFICATION);
+    }
+    update({ [field]: next } as Partial<Form>);
   }
 
   async function onPhoto(event: ChangeEvent<HTMLInputElement>) {
@@ -219,7 +222,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     event.target.value = '';
     if (!file) return;
     if (!/^image\/(jpeg|png|webp)$/.test(file.type) || file.size > 10 * 1024 * 1024) {
-      setErrors((e) => ({ ...e, photo: 'Choose a JPG, PNG or WebP under 10 MB.' }));
+      setErrors((e) => ({ ...e, photo: 'Use a JPG, PNG or WebP under 10 MB.' }));
       return;
     }
     try {
@@ -228,7 +231,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
       setPhotoPreview(URL.createObjectURL(blob));
       setErrors((e) => ({ ...e, photo: undefined }));
     } catch {
-      setErrors((e) => ({ ...e, photo: 'We couldn’t read that image. Try another JPG or PNG.' }));
+      setErrors((e) => ({ ...e, photo: 'Couldn’t read that image. Try another.' }));
     }
   }
 
@@ -246,7 +249,6 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
 
   /** Scrolls to and focuses the first field with a problem (it may be under the keyboard). */
   function focusFirstError(e: Errors) {
-    if (e.formats || e.squad) setMoreOpen(true);
     requestAnimationFrame(() => {
       const first = Array.from(top.current?.querySelectorAll<HTMLElement>('[data-field]') ?? []).find(
         (el) => e[el.dataset.field as keyof Errors],
@@ -269,6 +271,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     const first = validate(0, f);
     if (Object.keys(first).length) { setErrors(first); setStep(0); scrollToForm(); return; }
     const e = validate(1, f);
+    if (!photoFile) e.photo = 'Add a photo.';
     setErrors(e);
     if (Object.keys(e).length) { focusFirstError(e); return; }
     if (honeypot.current?.value) { setResult('saved'); return; }
@@ -278,7 +281,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     const outcome = await save();
     setSubmitting(false);
     if (outcome === 'failed') {
-      setSubmitError('We couldn’t send that. Check your connection and try again, or email hello@foresports.in. Your answers are saved here.');
+      setSubmitError('Couldn’t save. Check your connection and try again.');
       return;
     }
     try { localStorage.removeItem(DRAFT_KEY); } catch {}
@@ -324,13 +327,11 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
       bio: f.bio.trim() || null,
       photo_path,
       specialties: teaching ? f.specialties : f.specialties.length ? f.specialties : ['Competition prep'],
-      certifications: f.certifications,
-      packages: teaching
-        ? [
-            { name: 'Trial lesson', price: priceNumber(f.trial), detail: 'A first session to understand your game' },
-            { name: 'Single lesson', price: priceNumber(f.lesson), detail: 'One coaching session' },
-          ]
-        : [],
+      certifications: f.certifications
+        .filter((c) => c !== NO_QUALIFICATION)
+        .map((c) => (c === OTHER_QUALIFICATION ? f.otherQual.trim().slice(0, 80) : c))
+        .filter(Boolean),
+      packages: [],
       formats: f.formats.length ? f.formats : ['In-person'],
       days: [],
       heard_from: getSource(),
@@ -388,19 +389,8 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   }
 
   if (result) {
-    const nextSteps = teaching
-      ? [
-          ['You’re live', 'Golfers can find you in Find a coach and message you through Fore.'],
-          ['Get verified', 'We check your qualifications and add a verified badge to your profile.'],
-          ['You’re first in', 'Bookings, payments and student tools open to you on 1 December.'],
-        ]
-      : [
-          ['We call you', 'A 20-minute chat about your program and players.'],
-          ['We set up your squad', 'Players, coaches and parents, loaded with you.'],
-          ['Your players start', 'Rounds, practice and progress flow into one record.'],
-        ];
     const shareUrl = 'https://www.foresports.in/coaches?utm_source=coach_referral';
-    const shareText = 'I just reserved my coach profile on Fore. Golfers near you can find and book you. Takes 2 minutes:';
+    const shareText = 'I just reserved my coach profile on Fore. Reserve yours:';
     const whatsapp = `https://wa.me/?text=${encodeURIComponent(`${shareText} ${shareUrl}`)}`;
     const shareMore = async () => {
       try {
@@ -415,41 +405,28 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
           <section className="cb-done">
             <span className="cb-done-ring"><Check size={26} /></span>
             <h1 ref={doneHeading} tabIndex={-1}>
-              {result === 'duplicate' ? <>Welcome back, {f.first.trim() || 'coach'}.</> : <>You’re in, {f.first.trim() || 'coach'}.</>}
+              {result === 'duplicate' ? 'Welcome back.' : <>You’re in, {f.first.trim() || 'coach'}.</>}
             </h1>
             <p>
               {result === 'duplicate'
-                ? 'This phone number or email is already signed up. We’ve noted your new details and will be in touch.'
-                : `You’re one of Fore’s founding coaches. We’ll be in touch at ${f.email.trim()} or on WhatsApp.`}
+                ? 'You’re already signed up. We’ll be in touch.'
+                : teaching ? 'Your profile is live. We launch on 1 December.' : 'We’ll call you to set up your squad.'}
             </p>
-            <ol className="cb-next">
-              {nextSteps.map(([h, p], i) => (
-                <li key={h}><span>{i + 1}</span><div><strong>{h}</strong>{p}</div></li>
-              ))}
-            </ol>
             <div className="cb-share">
               <strong>Know a coach who’d love this?</strong>
-              <p>Send them the link. It takes them two minutes too.</p>
               <div className="cb-share-actions">
-                <a className="button acid" href={whatsapp} target="_blank" rel="noreferrer">Share on WhatsApp</a>
+                <a className="button acid" href={whatsapp} target="_blank" rel="noreferrer">Send on WhatsApp</a>
                 <button type="button" className="button light" onClick={shareMore}>
-                  {copied ? <><Check size={16} /> Link copied</> : <><Share2 size={16} /> More ways</>}
+                  {copied ? <><Check size={16} /> Copied</> : <><Share2 size={16} /> Share</>}
                 </button>
               </div>
             </div>
-            <div className="button-row center">
-              {teaching
-                ? <NextLink className="cb-link" href="/coaches/directory">See Find a coach</NextLink>
-                : <NextLink className="cb-link" href="/coaches">Back to Fore for coaches</NextLink>}
-            </div>
-            <p className="cb-help">Need to change something? Email <a href="mailto:hello@foresports.in">hello@foresports.in</a>.</p>
+            {teaching && <NextLink className="cb-link" href="/coaches/directory">See Find a coach</NextLink>}
           </section>
         </div>
       </SiteShell>
     );
   }
-
-  const optionalCount = teaching ? 'Prices, lesson types, qualifications and a photo' : 'Squad size, where you coach, qualifications and a photo';
 
   return (
     <SiteShell>
@@ -457,13 +434,12 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
       <div className="cb-scope cb-page cb-signup">
         <div className="cb-signup-wrap" ref={top}>
           <h1>
-            {fixedType === 'performance' ? <>Set up your <em>squad.</em></> : fixedType === 'teaching' ? <>Create your <em>coach profile.</em></> : <>Reserve your <em>coach profile.</em></>}
+            {fixedType === 'performance' ? <>Set up your <em>squad.</em></> : <>Reserve your <em>profile.</em></>}
           </h1>
-          <p className="cb-signup-sub">Two short steps · No payment · Your answers save as you go.</p>
 
           <div className="cb-form">
             <div className="cb-progress-wrap">
-              <span className="cb-step-label">Step {step + 1} of {STEPS.length} · {STEPS[step]}</span>
+              <span className="cb-step-label">Step {step + 1} of {STEPS.length}</span>
               <nav className="cb-progress" aria-label={`Step ${step + 1} of ${STEPS.length}`}>
                 {STEPS.map((label, i) => (
                   <button
@@ -482,7 +458,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
             {step === 0 && (
               <form id="cb-about" noValidate onSubmit={(e) => { e.preventDefault(); next(); }}>
                 <h2>About you</h2>
-                <p className="cb-form-lead">Your name is what golfers see. Your email and number stay private.</p>
+                <p className="cb-form-lead">Your email and number stay private.</p>
                 {!fixedType && (
                   <fieldset className={`cb-types${errors.type ? ' has-error' : ''}`} data-field="type">
                     <legend>How do you coach?</legend>
@@ -507,7 +483,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                   <Field label="Email" error={errors.email} wide field="email">
                     <input type="email" name="email" inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" value={f.email} onChange={(e) => update({ email: e.target.value })} onBlur={() => check('email')} placeholder="you@example.com" />
                   </Field>
-                  <Field label="Mobile (WhatsApp)" error={errors.phone} field="phone">
+                  <Field label="WhatsApp number" error={errors.phone} field="phone">
                     <div className="cb-phone"><span>+91</span><input type="tel" name="tel-national" inputMode="tel" autoComplete="tel-national" maxLength={16} enterKeyHint="next" value={f.phone} onChange={(e) => update({ phone: e.target.value })} onBlur={() => check('phone')} placeholder="98765 43210" /></div>
                   </Field>
                   <Field label="City" error={errors.city} field="city">
@@ -520,74 +496,67 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
 
             {step === 1 && (
               <>
-                <h2>Your coaching</h2>
-                <p className="cb-form-lead">{teaching ? 'Three quick answers and you’re in. You can add more anytime.' : 'Three quick answers so we can set Fore up around your program.'}</p>
-                <div className="cb-grid">
+                <h2>{teaching ? 'Your coaching' : 'Your squad'}</h2>
+                <div className="cb-grid cb-gap-top">
                   <Field label="Years coaching" error={errors.experience} field="experience">
-                    <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={2} enterKeyHint="done" value={f.experience} onChange={(e) => update({ experience: digits(e.target.value) })} onBlur={() => check('experience')} placeholder="12" />
+                    <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={2} value={f.experience} onChange={(e) => update({ experience: digits(e.target.value) })} onBlur={() => check('experience')} placeholder="12" />
+                  </Field>
+                  {!teaching && (
+                    <Field label="Players" error={errors.squad} field="squad">
+                      <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} value={f.squad} onChange={(e) => update({ squad: digits(e.target.value) })} onBlur={() => check('squad')} placeholder="14" />
+                    </Field>
+                  )}
+                  <Field label="Where you coach" error={errors.venue} wide field="venue">
+                    <input value={f.venue} maxLength={120} autoCapitalize="words" onChange={(e) => update({ venue: e.target.value })} onBlur={() => check('venue')} placeholder="Club, course or range" />
                   </Field>
                 </div>
 
                 {teaching ? (
-                  <Checks legend="What you teach best" options={SPECIALTIES} value={f.specialties} onToggle={(x) => toggle('specialties', x)} error={errors.specialties} field="specialties" />
+                  <>
+                    <Checks legend="Specialities" options={SPECIALTIES} value={f.specialties} onToggle={(x) => toggle('specialties', x)} error={errors.specialties} field="specialties" />
+                    <Checks legend="Lesson types" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} field="formats" />
+                  </>
                 ) : (
                   <Checks legend="Who you coach" options={PLAYER_GROUPS} value={f.groups} onToggle={(x) => toggle('groups', x)} error={errors.groups} field="groups" />
                 )}
 
-                <div className={`cb-more${moreOpen ? ' open' : ''}`}>
-                  <button type="button" className="cb-more-toggle" aria-expanded={moreOpen} aria-controls="cb-more-body" onClick={() => setMoreOpen((o) => !o)}>
-                    <span>
-                      <strong>Make your profile stand out</strong>
-                      <small>Optional · {optionalCount}</small>
-                    </span>
-                    <ChevronDown size={18} aria-hidden="true" />
-                  </button>
-                  <div id="cb-more-body" className="cb-more-body" hidden={!moreOpen}>
-                    <div className="cb-grid">
-                      {!teaching && (
-                        <Field label="Players" hint="Optional" error={errors.squad} field="squad">
-                          <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} value={f.squad} onChange={(e) => update({ squad: digits(e.target.value) })} placeholder="14" />
-                        </Field>
-                      )}
-                      <Field label="Where you coach" hint="Optional" wide>
-                        <input value={f.venue} maxLength={120} autoCapitalize="words" onChange={(e) => update({ venue: e.target.value })} placeholder="DLF Golf & Country Club" />
-                      </Field>
-                      {teaching && (
-                        <>
-                          <Field label="Trial lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.trial} onChange={(e) => update({ trial: e.target.value.replace(/[^\d,]/g, '') })} placeholder="2,500" /></div></Field>
-                          <Field label="Single lesson price" hint="Optional"><div className="cb-money"><span>₹</span><input inputMode="numeric" value={f.lesson} onChange={(e) => update({ lesson: e.target.value.replace(/[^\d,]/g, '') })} placeholder="3,500" /></div></Field>
-                        </>
-                      )}
-                    </div>
-
-                    {teaching && (
-                      <Checks legend="Lesson types" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} field="formats" />
-                    )}
-                    <Checks legend="Qualifications" hint="Optional" options={CERTIFICATIONS.filter((c) => c !== 'Other qualification')} value={f.certifications} onToggle={(x) => toggle('certifications', x)} />
-
-                    <div className="cb-grid cb-gap-top">
-                      <Field label={teaching ? 'About you' : 'Your coaching philosophy'} hint="Optional" wide>
-                        <textarea maxLength={800} rows={3} value={f.bio} onChange={(e) => update({ bio: e.target.value })} placeholder={teaching ? 'How you coach and who you work best with.' : 'How you develop players.'} />
-                      </Field>
-                    </div>
-
-                    <label className="cb-photo">
-                      <span className="cb-photo-img">{photoPreview ? <img src={photoPreview} alt="Your photo" /> : '+'}</span>
-                      <span>
-                        <strong>{photoPreview ? 'Change photo' : 'Add a photo'}</strong>
-                        <small>Optional. Coaches with a clear headshot get chosen more.</small>
-                      </span>
-                      <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} />
-                    </label>
-                    {errors.photo && <p className="cb-error" role="alert">{errors.photo}</p>}
+                <Checks
+                  legend="Qualifications"
+                  options={[...CERTIFICATIONS, OTHER_QUALIFICATION, NO_QUALIFICATION]}
+                  value={f.certifications}
+                  onToggle={(x) => toggle('certifications', x)}
+                  error={errors.certifications}
+                  field="certifications"
+                />
+                {f.certifications.includes(OTHER_QUALIFICATION) && (
+                  <div className="cb-grid cb-gap-top">
+                    <Field label="Other qualification" error={errors.otherQual} wide field="otherQual">
+                      <input value={f.otherQual} maxLength={80} autoCapitalize="words" onChange={(e) => update({ otherQual: e.target.value })} onBlur={() => check('otherQual')} placeholder="e.g. Golf Australia Level 2" />
+                    </Field>
                   </div>
+                )}
+
+                <div className="cb-grid cb-gap-top">
+                  <Field label={teaching ? 'Short bio' : 'Coaching philosophy'} error={errors.bio} wide field="bio">
+                    <textarea maxLength={800} rows={3} value={f.bio} onChange={(e) => update({ bio: e.target.value })} onBlur={() => check('bio')} placeholder={teaching ? 'How you coach and who you work best with' : 'How you develop players'} />
+                  </Field>
                 </div>
+
+                <label className={`cb-photo${errors.photo ? ' has-error' : ''}`} data-field="photo">
+                  <span className="cb-photo-img">{photoPreview ? <img src={photoPreview} alt="Your photo" /> : '+'}</span>
+                  <span>
+                    <strong>{photoPreview ? 'Change photo' : 'Add a profile photo'}</strong>
+                    <small>A clear headshot</small>
+                  </span>
+                  <input type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} />
+                </label>
+                {errors.photo && <p className="cb-error" role="alert">{errors.photo}</p>}
 
                 <label className={`cb-consent${errors.consent ? ' has-error' : ''}`} data-field="consent">
                   <input type="checkbox" checked={f.consent} onChange={(e) => update({ consent: e.target.checked })} />
                   <span>
-                    My details are accurate. Fore can store them, show my profile in Find a coach without my email or number, and contact me by email or WhatsApp.{' '}
-                    <a href="/privacy" target="_blank" rel="noreferrer">Privacy Policy</a>
+                    Fore can list my profile, without my email or number, and contact me.{' '}
+                    <a href="/privacy" target="_blank" rel="noreferrer">Privacy</a>
                   </span>
                 </label>
                 {errors.consent && <p className="cb-error" role="alert">{errors.consent}</p>}
@@ -603,11 +572,10 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                 <button type="submit" form="cb-about" className="button acid">Continue <ArrowRight size={16} /></button>
               ) : (
                 <button type="button" className="button acid" disabled={submitting} onClick={submit}>
-                  {submitting ? <><Loader2 size={16} className="cb-spin" /> Saving…</> : teaching ? 'Reserve my profile' : 'Reserve my spot'}
+                  {submitting ? <><Loader2 size={16} className="cb-spin" /> Saving…</> : teaching ? 'Reserve profile' : 'Reserve spot'}
                 </button>
               )}
             </div>
-            <p className="cb-trust"><Lock size={14} aria-hidden="true" /> Your email and number are never shown on your profile.</p>
           </div>
         </div>
       </div>

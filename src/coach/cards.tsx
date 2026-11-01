@@ -29,7 +29,7 @@ export function CoachCardView({ coach: c }: { coach: CoachListing }) {
       {place && <p className="cc-loc"><MapPin size={14} aria-hidden="true" />{place}</p>}
       <div className="cc-foot">
         <span className="cc-price">
-          {price ? <><small>{price.label}</small> {price.value}</> : <small>{performance ? c.programName || 'Squad coaching' : 'Price on request'}</small>}
+          {price ? <><small>{price.label}</small> {price.value}</> : <small>{performance ? c.programName || 'Squad coaching' : c.formats.slice(0, 2).join(' · ') || 'Golf lessons'}</small>}
         </span>
         <span className="cc-go">View <ArrowRight size={15} aria-hidden="true" /></span>
       </div>
