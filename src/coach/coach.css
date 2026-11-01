@@ -238,7 +238,8 @@
 
 
 /* Visual pass: spacing, focus, single-column choices on phones */
-.cb-signup-wrap > h1 { margin-bottom: 24px; }
+.cb-scope .cb-signup-wrap > h1 { margin: 0; }
+.cb-scope .cb-signup-wrap > .cb-form { margin-top: 32px; }
 .cb-scope input[type=radio]:focus, .cb-scope input[type=checkbox]:focus { box-shadow: none; }
 .cb-scope input[type=radio]:focus-visible, .cb-scope input[type=checkbox]:focus-visible { outline: 2px solid var(--cb-orange); outline-offset: 2px; }
 .cb-types .cb-field-error { color: var(--cb-error); }
@@ -260,7 +261,7 @@
   .cd-hero p, .cb-signup-sub { font-size: 16px; }
   .cb-signup-wrap { padding: 104px 0 64px; }
   .cb-types > div { grid-template-columns: 1fr; }
-  .cb-form { margin: 0 -4px; padding: 20px 18px 24px; border-radius: 20px; }
+  .cb-scope .cb-signup-wrap > .cb-form { margin: 28px -4px 0; padding: 20px 18px 24px; border-radius: 20px; }
   .cb-form h2 { font-size: 23px; }
   .cb-grid { grid-template-columns: 1fr; }
   .cb-checks > div { grid-template-columns: 1fr; gap: 6px; }
