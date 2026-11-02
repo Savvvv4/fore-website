@@ -715,7 +715,7 @@ function About() {
               </div>
               <div className="founder-story">
                 <h3>Itish Arora</h3>
-                <small>Founder &amp; CEO</small>
+                <small>Founder &amp; CEO · <Link to="/itish" className="founder-link">Get in touch</Link></small>
                 <div className="founder-text">
                   <p>My journey into golf started as a parent trying to help my son navigate the game.</p>
                   <p>Like many parents, I found myself constantly searching for answers. Which coach was right? Which facilities offered the best opportunities? What tournaments should he play? How do you measure progress?</p>
@@ -731,7 +731,7 @@ function About() {
               </div>
               <div className="founder-story">
                 <h3>Savdeep Kadian</h3>
-                <small>Founder, CPO</small>
+                <small>Founder, CPO · <Link to="/savdeep" className="founder-link">Get in touch</Link></small>
                 <div className="founder-text">
                   <p>I've been playing golf for more than ten years. I started with a club a coach lent me, spent my early years in junior training camps, and gradually worked my way through the national junior and amateur circuits.</p>
                   <p>I've played at courses and facilities across the country, meeting juniors, amateurs, professionals, coaches, parents and people picking up a club for the first time. I've seen almost every side of the game.</p>

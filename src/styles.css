@@ -1883,3 +1883,5 @@ input:focus,select:focus,textarea:focus { border-color:var(--orange); outline:no
 .coach-join-actions { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 560px) { .coach-join-actions .button { flex: 1 1 100%; } }
 
+.founder-link { color: var(--orange-text); font-weight: 600; text-decoration: none; }
+.founder-link:hover { text-decoration: underline; }

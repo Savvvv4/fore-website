@@ -15,6 +15,8 @@ const routes: MetadataRoute.Sitemap = [
   { url: `${siteUrl}/coaches/performance/join`, priority: 0.7 },
   { url: `${siteUrl}/facilities`, priority: 0.9 },
   { url: `${siteUrl}/about`, priority: 0.8 },
+  { url: `${siteUrl}/savdeep`, priority: 0.6 },
+  { url: `${siteUrl}/itish`, priority: 0.6 },
   { url: `${siteUrl}/privacy`, priority: 0.2 },
   { url: `${siteUrl}/terms`, priority: 0.2 },
 ];
