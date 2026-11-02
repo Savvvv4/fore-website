@@ -40,22 +40,20 @@ export default function FounderPage({ slug }: { slug: FounderSlug }) {
         </div>
       </section>
 
-      <section className="section fp-story-section">
-        <div className="container about-split">
+      <section className="fp-story-section">
+        <div className="container fp-split">
           <div>
-            <h2 className="about-split-h2">Why I'm building <span>FORE.</span></h2>
+            <h2 className="fp-section-h2">Why I'm building <span>FORE.</span></h2>
           </div>
-          <div className="about-split-copy founder-text">
+          <div className="fp-story">
             {f.story.map((p) => <p key={p}>{p}</p>)}
           </div>
         </div>
       </section>
 
-      <section className="section" style={{ background: '#FFFFFF' }}>
+      <section className="fp-partner-section">
         <div className="container">
-          <div className="aud-section-intro">
-            <div><h2>Meet my partner.</h2></div>
-          </div>
+          <h2 className="fp-section-h2">Meet my partner.</h2>
           <NextLink href={`/${other.slug}`} className="fp-other founder-card">
             <div className="fp-other-photo">
               <img src={other.photo.src} alt={other.name} className={`founder-photo-img ${other.photoClass ?? ''}`} />
