@@ -1,5 +1,5 @@
 /* Founder pages (/savdeep, /itish) — built on About page styles */
-.fp-hero { padding: 160px 0 96px; }
+.fp-hero { padding: 140px 0 96px; }
 .fp-hero-grid { display: grid; grid-template-columns: 1.15fr .85fr; gap: 72px; align-items: center; }
 .fp-hero h1 {
   font-family: var(--font-manrope), sans-serif;
@@ -14,8 +14,7 @@
   letter-spacing: -.03em; color: var(--ink); margin: 0 0 40px; max-width: 560px;
 }
 .fp-actions { display: flex; flex-wrap: wrap; gap: 12px; }
-.fp-actions--center { justify-content: center; margin-top: 48px; }
-.fp-email { font-size: 14px; color: var(--muted); margin: 16px 0 0; }
+.fp-actions .button svg { flex-shrink: 0; }
 .fp-photo { margin: 0; border: 1px solid var(--line); background: var(--soft-white, #FFFAF7); }
 
 .fp-story-section { background: var(--soft-white, #FFFAF7); }
