@@ -26,7 +26,7 @@ export default function FounderPage({ slug }: { slug: FounderSlug }) {
             <p className="fp-role">{f.role}</p>
             <p className="fp-headline">{f.headline}</p>
             <div className="fp-actions">
-              <a className="button acid" href={waHref} target="_blank" rel="noopener noreferrer">
+              <a className="button fp-wa" href={waHref} target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon /> Message on WhatsApp
               </a>
               <a className="button light" href={mailHref}>

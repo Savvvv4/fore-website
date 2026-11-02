@@ -42,3 +42,5 @@
   .fp-other { grid-template-columns: 1fr; gap: 20px; padding: 24px; }
   .fp-other-photo { max-width: 160px; }
 }
+.button.fp-wa { background: #25D366; color: #111111; }
+.button.fp-wa:hover { background: #1EBE5A; box-shadow: 0 8px 24px rgba(17,17,17,.10); }
