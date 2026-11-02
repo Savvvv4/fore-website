@@ -61,7 +61,7 @@ export default function FounderPage({ slug }: { slug: FounderSlug }) {
             <div className="founder-story">
               <h3>{other.name}</h3>
               <small>{other.role}</small>
-              <p className="fp-other-intro">{other.intro}</p>
+              <p className="fp-other-intro">{other.partnerNote}</p>
               <span className="fp-other-link">Read {other.firstName}'s story <ArrowUpRight size={16} /></span>
             </div>
           </NextLink>

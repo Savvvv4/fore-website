@@ -11,6 +11,7 @@ export type Founder = {
   role: string;
   headline: string;
   intro: string;
+  partnerNote: string; // shown on the other founder's page, in their voice
   photo: StaticImageData;
   photoClass?: string;
   whatsapp: string; // digits only, with country code
@@ -24,7 +25,8 @@ export const founders: Record<FounderSlug, Founder> = {
     name: 'Savdeep Kadian',
     firstName: 'Savdeep',
     role: 'Founder, CPO',
-    headline: "I've spent ten years finding my way through golf. If you're finding yours, let's talk.",
+    headline: "Golf started for me with a borrowed club and a coach who believed in me. I've been chasing that feeling ever since.",
+    partnerNote: "Savdeep grew up on the junior circuit with a borrowed club and a lot of early mornings. He has seen golf from almost every side, and every part of FORE is shaped by those years on the course.",
     intro: 'Now I want to build something that makes that journey easier for the next golfer.',
     photo: savdeepImg,
     photoClass: 'founder-photo-img--savdeep',
@@ -43,7 +45,8 @@ export const founders: Record<FounderSlug, Founder> = {
     name: 'Itish Arora',
     firstName: 'Itish',
     role: 'Founder & CEO',
-    headline: "I came to golf as a parent with more questions than answers. If that's you too, let's talk.",
+    headline: "I fell in love with golf watching my son learn the game, one lesson and one tournament at a time.",
+    partnerNote: "Itish came to golf through his son, standing at the edge of ranges and tournaments with every question a parent has. He brings that care, and years of building businesses, to everything we do.",
     intro: 'My journey into golf started as a parent trying to help my son navigate the game.',
     photo: itishImg,
     whatsapp: '919811029003',
