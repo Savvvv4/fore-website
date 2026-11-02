@@ -13,7 +13,7 @@ function WhatsAppIcon() {
 export default function FounderPage({ slug }: { slug: FounderSlug }) {
   const f = founders[slug];
   const other = founders[slug === 'savdeep' ? 'itish' : 'savdeep'];
-  const waText = encodeURIComponent(`Hi ${f.firstName}, I found you on foresports.in and wanted to get in touch.`);
+  const waText = encodeURIComponent(`Hi ${f.firstName}, it was great to connect. I'd like to get in touch.`);
   const waHref = `https://wa.me/${f.whatsapp}?text=${waText}`;
   const mailHref = `mailto:${f.email}?subject=${encodeURIComponent(`Hello ${f.firstName}`)}`;
 
