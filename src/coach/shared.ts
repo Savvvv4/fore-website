@@ -31,7 +31,7 @@ export const CERTIFICATIONS = [
 export const OTHER_QUALIFICATION = 'Other';
 export const NO_QUALIFICATION = 'None yet';
 export const WEEKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-export const FORMATS = ['In-person', 'Online video analysis', 'On-course playing lesson', 'Group clinics'];
+export const FORMATS = ['In-person', 'Online lessons', 'Online video analysis', 'On-course playing lesson', 'Group clinics'];
 export const PLAYING_LEVELS = [
   'Touring professional (current)',
   'Former touring professional',
