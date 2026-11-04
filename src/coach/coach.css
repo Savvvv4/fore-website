@@ -373,3 +373,12 @@
   outline: 2px solid var(--cb-orange); outline-offset: -1px;
 }
 .cb-page .cb-form, .cb-page .cb-share { border: 1.5px solid var(--cb-line); }
+
+
+/* Multiple coaching locations */
+.cb-venues { display: grid; gap: 8px; }
+.cb-venue-row { display: flex; gap: 8px; min-width: 0; }
+.cb-venue-row input { flex: 1 1 auto; min-width: 0; }
+.cb-remove-venue { width: 46px; flex: 0 0 46px; border: 1px solid var(--cb-line); border-radius: 12px; background: #fff; color: var(--cb-muted); font-size: 22px; cursor: pointer; }
+.cb-add-venue { justify-self: start; padding: 7px 0; border: 0; background: transparent; color: var(--cb-orange-text); font-size: 14px; font-weight: 700; cursor: pointer; }
+.cb-add-venue:hover { text-decoration: underline; text-underline-offset: 3px; }
