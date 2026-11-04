@@ -108,7 +108,7 @@ function validate(step: number, f: Form): Errors {
     }
     if (!f.certifications.length) e.certifications = 'Choose at least one.';
     else if (f.certifications.includes(OTHER_QUALIFICATION) && !f.otherQual.trim()) e.otherQual = 'Enter your qualification.';
-    if (!f.bio.trim()) e.bio = f.type === 'performance' ? 'Add a line about how you coach.' : 'Add a line about yourself.';
+    if (f.type === 'teaching' && !f.bio.trim()) e.bio = 'Add a line about yourself.';
     if (!f.consent) e.consent = 'Tick to continue.';
   }
   return e;
@@ -556,11 +556,13 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                   </div>
                 )}
 
-                <div className="cb-grid cb-gap-top">
-                  <Field label={teaching ? 'Short bio' : 'Coaching philosophy'} error={errors.bio} wide field="bio">
-                    <textarea maxLength={800} rows={3} value={f.bio} onChange={(e) => update({ bio: e.target.value })} onBlur={() => check('bio')} placeholder={teaching ? 'How you coach and who you work best with' : 'How you develop players'} />
-                  </Field>
-                </div>
+                {teaching && (
+                  <div className="cb-grid cb-gap-top">
+                    <Field label="Short bio" error={errors.bio} wide field="bio">
+                      <textarea maxLength={800} rows={3} value={f.bio} onChange={(e) => update({ bio: e.target.value })} onBlur={() => check('bio')} placeholder="How you coach and who you work best with" />
+                    </Field>
+                  </div>
+                )}
 
                 <label className={`cb-photo${errors.photo ? ' has-error' : ''}`} data-field="photo">
                   <span className="cb-photo-img">{photoPreview ? <img src={photoPreview} alt="Your photo" /> : '+'}</span>
