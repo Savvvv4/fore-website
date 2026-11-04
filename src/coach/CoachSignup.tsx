@@ -519,7 +519,8 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                       <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} value={f.squad} onChange={(e) => update({ squad: digits(e.target.value) })} onBlur={() => check('squad')} placeholder="14" />
                     </Field>
                   )}
-                  <Field label="Courses and facilities" error={errors.venue} wide field="venue" hint="Add every place where you coach">
+                  <div className={`cb-location-field wide${errors.venue ? ' has-error' : ''}`} data-field="venue">
+                    <span className="cb-label">Courses and facilities <em>Add every place where you coach</em></span>
                     <div className="cb-venues">
                       {f.venue.map((venue, index) => (
                         <div className="cb-venue-row" key={index}>
@@ -539,7 +540,8 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                       ))}
                       <button type="button" className="cb-add-venue" onClick={() => update({ venue: [...f.venue, ''] })}>+ Add another course or facility</button>
                     </div>
-                  </Field>
+                    {errors.venue && <span className="cb-field-error" role="alert">{errors.venue}</span>}
+                  </div>
                 </div>
 
                 {teaching ? (
@@ -548,7 +550,15 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                   <Checks legend="Who you coach" options={PLAYER_GROUPS} value={f.groups} onToggle={(x) => toggle('groups', x)} error={errors.groups} field="groups" />
                 )}
 
-                <Checks legend="Coaching formats" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} field="formats" />
+                <Checks
+                  legend="How do you offer coaching?"
+                  hint="Select all that apply"
+                  options={FORMATS}
+                  value={f.formats}
+                  onToggle={(x) => toggle('formats', x)}
+                  error={errors.formats}
+                  field="formats"
+                />
 
                 <div className="cb-grid cb-gap-top">
                   <Field label="Qualifications" error={errors.certifications} wide field="certifications" hint="Add each qualification on a new line">
