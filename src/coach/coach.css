@@ -382,3 +382,11 @@
 .cb-remove-venue { width: 46px; flex: 0 0 46px; border: 1px solid var(--cb-line); border-radius: 12px; background: #fff; color: var(--cb-muted); font-size: 22px; cursor: pointer; }
 .cb-add-venue { justify-self: start; padding: 7px 0; border: 0; background: transparent; color: var(--cb-orange-text); font-size: 14px; font-weight: 700; cursor: pointer; }
 .cb-add-venue:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+
+/* Coach locations: use a neutral container rather than nesting buttons inside a label */
+.cb-location-field { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.cb-location-field .cb-label { color: var(--cb-ink); font-size: 15px; font-weight: 700; }
+.cb-location-field .cb-venues { width: 100%; }
+.cb-location-field .cb-venue-row input { width: 100%; min-width: 0; }
+.cb-location-field .cb-add-venue { min-height: 40px; padding: 8px 0; cursor: pointer; touch-action: manipulation; }
