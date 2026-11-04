@@ -8,10 +8,7 @@ import { SiteShell } from '../App';
 import ScrollToTop from './ScrollToTop';
 import { getSource } from './source';
 import {
-  CERTIFICATIONS,
   FORMATS,
-  NO_QUALIFICATION,
-  OTHER_QUALIFICATION,
   PHOTO_BUCKET,
   PLAYER_GROUPS,
   SPECIALTIES,
@@ -30,12 +27,11 @@ type Form = {
   phone: string;
   city: string;
   experience: string;
-  venue: string;
+  venue: string[];
   bio: string;
   specialties: string[];
   certifications: string[];
   formats: string[];
-  otherQual: string;
   squad: string;
   groups: string[];
   consent: boolean;
@@ -52,12 +48,11 @@ const defaults: Form = {
   phone: '',
   city: '',
   experience: '',
-  venue: '',
+  venue: [''],
   bio: '',
   specialties: [],
   certifications: [],
   formats: ['In-person'],
-  otherQual: '',
   squad: '',
   groups: [],
   consent: false,
@@ -97,17 +92,16 @@ function validate(step: number, f: Form): Errors {
   if (step === 1) {
     const y = Number(f.experience);
     if (f.experience === '' || !Number.isInteger(y) || y < 0 || y > 60) e.experience = 'Enter 0 to 60.';
-    if (!f.venue.trim()) e.venue = 'Enter where you coach.';
+    if (!f.venue.some((venue) => venue.trim())) e.venue = 'Add at least one course or facility.';
     if (f.type === 'performance') {
       const n = Number(f.squad);
       if (f.squad === '' || !Number.isInteger(n) || n < 1 || n > 2000) e.squad = 'Enter 1 to 2000.';
       if (!f.groups.length) e.groups = 'Choose at least one.';
     } else {
       if (!f.specialties.length) e.specialties = 'Choose at least one.';
-      if (!f.formats.length) e.formats = 'Choose at least one.';
     }
-    if (!f.certifications.length) e.certifications = 'Choose at least one.';
-    else if (f.certifications.includes(OTHER_QUALIFICATION) && !f.otherQual.trim()) e.otherQual = 'Enter your qualification.';
+    if (!f.formats.length) e.formats = 'Choose at least one.';
+    if (!f.certifications.some((qualification) => qualification.trim())) e.certifications = 'Add at least one qualification.';
     if (f.type === 'teaching' && !f.bio.trim()) e.bio = 'Add a line about yourself.';
     if (!f.consent) e.consent = 'Tick to continue.';
   }
@@ -199,7 +193,12 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     } catch {}
     const q = new URLSearchParams(window.location.search).get('type');
     const type = fixedType ?? (q === 'teaching' || q === 'performance' ? q : next.type);
-    setF({ ...next, type });
+    const savedVenues = Array.isArray(next.venue)
+      ? next.venue
+      : typeof next.venue === 'string' && next.venue.trim()
+        ? next.venue.split(',').map((venue) => venue.trim())
+        : [''];
+    setF({ ...next, venue: savedVenues.length ? savedVenues : [''], type });
     setReady(true);
   }, [fixedType]);
 
@@ -226,9 +225,6 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
   function toggle(field: ListField, value: string) {
     const current = f[field];
     let next = current.includes(value) ? current.filter((x) => x !== value) : [...current, value];
-    if (field === 'certifications' && !current.includes(value)) {
-      next = value === NO_QUALIFICATION ? [NO_QUALIFICATION] : next.filter((x) => x !== NO_QUALIFICATION);
-    }
     update({ [field]: next } as Partial<Form>);
   }
 
@@ -337,15 +333,12 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
       email,
       phone,
       city: f.city.trim(),
-      venue: f.venue.trim() || null,
+      venue: f.venue.map((venue) => venue.trim()).filter(Boolean).join(', ') || null,
       years_coaching: Number(f.experience),
       bio: f.bio.trim() || null,
       photo_path,
       specialties: teaching ? f.specialties : f.specialties.length ? f.specialties : ['Competition prep'],
-      certifications: f.certifications
-        .filter((c) => c !== NO_QUALIFICATION)
-        .map((c) => (c === OTHER_QUALIFICATION ? f.otherQual.trim().slice(0, 80) : c))
-        .filter(Boolean),
+      certifications: f.certifications.map((qualification) => qualification.trim()).filter(Boolean),
       packages: [],
       formats: f.formats.length ? f.formats : ['In-person'],
       days: [],
@@ -526,35 +519,49 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                       <input type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} value={f.squad} onChange={(e) => update({ squad: digits(e.target.value) })} onBlur={() => check('squad')} placeholder="14" />
                     </Field>
                   )}
-                  <Field label="Where you coach" error={errors.venue} wide field="venue">
-                    <input value={f.venue} maxLength={120} autoCapitalize="words" onChange={(e) => update({ venue: e.target.value })} onBlur={() => check('venue')} placeholder="Club, course or range" />
+                  <Field label="Courses and facilities" error={errors.venue} wide field="venue" hint="Add every place where you coach">
+                    <div className="cb-venues">
+                      {f.venue.map((venue, index) => (
+                        <div className="cb-venue-row" key={index}>
+                          <input
+                            value={venue}
+                            maxLength={120}
+                            autoCapitalize="words"
+                            onChange={(e) => update({ venue: f.venue.map((item, i) => i === index ? e.target.value : item) })}
+                            onBlur={() => check('venue')}
+                            placeholder={index === 0 ? 'e.g. Delhi Golf Club' : 'Another course or facility'}
+                            aria-label={`Course or facility ${index + 1}`}
+                          />
+                          {f.venue.length > 1 && (
+                            <button type="button" className="cb-remove-venue" onClick={() => update({ venue: f.venue.filter((_, i) => i !== index) })} aria-label={`Remove course or facility ${index + 1}`}>×</button>
+                          )}
+                        </div>
+                      ))}
+                      <button type="button" className="cb-add-venue" onClick={() => update({ venue: [...f.venue, ''] })}>+ Add another course or facility</button>
+                    </div>
                   </Field>
                 </div>
 
                 {teaching ? (
-                  <>
-                    <Checks legend="Specialities" options={SPECIALTIES} value={f.specialties} onToggle={(x) => toggle('specialties', x)} error={errors.specialties} field="specialties" />
-                    <Checks legend="Lesson types" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} field="formats" />
-                  </>
+                  <Checks legend="Specialities" options={SPECIALTIES} value={f.specialties} onToggle={(x) => toggle('specialties', x)} error={errors.specialties} field="specialties" />
                 ) : (
                   <Checks legend="Who you coach" options={PLAYER_GROUPS} value={f.groups} onToggle={(x) => toggle('groups', x)} error={errors.groups} field="groups" />
                 )}
 
-                <Checks
-                  legend="Qualifications"
-                  options={[...CERTIFICATIONS, OTHER_QUALIFICATION, NO_QUALIFICATION]}
-                  value={f.certifications}
-                  onToggle={(x) => toggle('certifications', x)}
-                  error={errors.certifications}
-                  field="certifications"
-                />
-                {f.certifications.includes(OTHER_QUALIFICATION) && (
-                  <div className="cb-grid cb-gap-top">
-                    <Field label="Other qualification" error={errors.otherQual} wide field="otherQual">
-                      <input value={f.otherQual} maxLength={80} autoCapitalize="words" onChange={(e) => update({ otherQual: e.target.value })} onBlur={() => check('otherQual')} placeholder="e.g. Golf Australia Level 2" />
-                    </Field>
-                  </div>
-                )}
+                <Checks legend="Coaching formats" options={FORMATS} value={f.formats} onToggle={(x) => toggle('formats', x)} error={errors.formats} field="formats" />
+
+                <div className="cb-grid cb-gap-top">
+                  <Field label="Qualifications" error={errors.certifications} wide field="certifications" hint="Add each qualification on a new line">
+                    <textarea
+                      maxLength={600}
+                      rows={3}
+                      value={f.certifications.join('\n')}
+                      onChange={(e) => update({ certifications: e.target.value.split('\n').slice(0, 10) })}
+                      onBlur={() => check('certifications')}
+                      placeholder={'e.g. PGA of India\nTPI Certified\nIGU Level 2'}
+                    />
+                  </Field>
+                </div>
 
                 {teaching && (
                   <div className="cb-grid cb-gap-top">
