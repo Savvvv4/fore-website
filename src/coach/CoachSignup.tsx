@@ -26,6 +26,7 @@ type Form = {
   first: string;
   last: string;
   email: string;
+  countryCode: string;
   phone: string;
   city: string;
   experience: string;
@@ -47,6 +48,7 @@ const defaults: Form = {
   first: '',
   last: '',
   email: '',
+  countryCode: '+91',
   phone: '',
   city: '',
   experience: '',
@@ -66,8 +68,20 @@ const TYPE_OPTIONS: { value: CoachType; title: string; copy: string }[] = [
   { value: 'performance', title: 'Squad', copy: 'Academy or elite players' },
 ];
 
+const COUNTRY_CODES = [
+  ['India', '+91'], ['United States', '+1'], ['United Kingdom', '+44'], ['United Arab Emirates', '+971'],
+  ['Australia', '+61'], ['Canada', '+1'], ['Singapore', '+65'], ['New Zealand', '+64'],
+  ['Pakistan', '+92'], ['Bangladesh', '+880'], ['Nepal', '+977'], ['Sri Lanka', '+94'],
+  ['South Africa', '+27'], ['Saudi Arabia', '+966'], ['Qatar', '+974'], ['Kuwait', '+965'],
+  ['Bahrain', '+973'], ['Oman', '+968'], ['Germany', '+49'], ['France', '+33'], ['Italy', '+39'],
+  ['Spain', '+34'], ['Netherlands', '+31'], ['Switzerland', '+41'], ['Ireland', '+353'],
+  ['China', '+86'], ['Japan', '+81'], ['South Korea', '+82'], ['Malaysia', '+60'],
+  ['Thailand', '+66'], ['Indonesia', '+62'], ['Philippines', '+63'], ['Vietnam', '+84'],
+  ['Brazil', '+55'], ['Mexico', '+52'], ['Turkey', '+90'],
+].map(([label, code]) => ({ label, code }));
+
 const digits = (s: string) => s.replace(/\D/g, '');
-const nationalPhone = (s: string) => digits(s).replace(/^(91|0)(?=\d{10}$)/, '');
+const nationalPhone = (s: string) => digits(s);
 
 function validate(step: number, f: Form): Errors {
   const e: Errors = {};
@@ -76,7 +90,8 @@ function validate(step: number, f: Form): Errors {
     if (!f.first.trim()) e.first = 'Enter your first name.';
     if (!f.last.trim()) e.last = 'Enter your last name.';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(f.email.trim())) e.email = 'Enter a valid email.';
-    if (nationalPhone(f.phone).length !== 10) e.phone = 'Enter a 10-digit number.';
+    const phoneDigits = nationalPhone(f.phone);
+    if (phoneDigits.length < 7 || phoneDigits.length > 15) e.phone = 'Enter a valid phone number (7–15 digits).';
     if (!f.city.trim()) e.city = 'Enter your city.';
   }
   if (step === 1) {
@@ -302,7 +317,7 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
     const squad = f.squad === '' ? null : Number(f.squad);
     const name = `${f.first.trim()} ${f.last.trim()}`;
     const email = f.email.trim().toLowerCase();
-    const phone = '+91' + nationalPhone(f.phone);
+    const phone = f.countryCode + nationalPhone(f.phone);
 
     let photo_path: string | null = null;
     if (photoFile) {
@@ -484,7 +499,12 @@ export default function CoachSignup({ type: fixedType }: { type?: CoachType }) {
                     <input type="email" name="email" inputMode="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} enterKeyHint="next" value={f.email} onChange={(e) => update({ email: e.target.value })} onBlur={() => check('email')} placeholder="you@example.com" />
                   </Field>
                   <Field label="WhatsApp number" error={errors.phone} field="phone">
-                    <div className="cb-phone"><span>+91</span><input type="tel" name="tel-national" inputMode="tel" autoComplete="tel-national" maxLength={16} enterKeyHint="next" value={f.phone} onChange={(e) => update({ phone: e.target.value })} onBlur={() => check('phone')} placeholder="98765 43210" /></div>
+                    <div className="cb-phone">
+                      <select aria-label="Country calling code" name="tel-country-code" autoComplete="tel-country-code" value={f.countryCode} onChange={(e) => update({ countryCode: e.target.value })}>
+                        {COUNTRY_CODES.map((country) => <option key={country.code + country.label} value={country.code}>{country.label} ({country.code})</option>)}
+                      </select>
+                      <input type="tel" name="tel-national" inputMode="tel" autoComplete="tel-national" maxLength={18} enterKeyHint="next" value={f.phone} onChange={(e) => update({ phone: e.target.value })} onBlur={() => check('phone')} placeholder="98765 43210" />
+                    </div>
                   </Field>
                   <Field label="City" error={errors.city} field="city">
                     <input name="address-level2" autoComplete="address-level2" autoCapitalize="words" enterKeyHint="go" value={f.city} onChange={(e) => update({ city: e.target.value })} onBlur={() => check('city')} placeholder="Gurugram" />
