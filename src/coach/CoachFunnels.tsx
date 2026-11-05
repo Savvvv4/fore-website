@@ -6,13 +6,14 @@ import { motion } from 'framer-motion';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import ScrollToTop from './ScrollToTop';
 import { rememberSource } from './source';
+import { CoachSignupForm } from '../signup/SignupFlows';
 
 /* Coach pages use the same building blocks and type scale as the golfers and facilities
    pages in src/App.tsx: .aud-hero-section, .aud-section-intro, .val-grid and .form-section. */
 
-export const JOIN = '/coaches/join';
-export const TEACHING_JOIN = '/coaches/teaching/join';
-export const PERFORMANCE_JOIN = '/coaches/performance/join';
+export const JOIN = '/coaches#join';
+export const TEACHING_JOIN = '/coaches?type=teaching#join';
+export const PERFORMANCE_JOIN = '/coaches?type=performance#join';
 
 
 function Hero({ title, copy, cta, mock }: { title: ReactNode; copy: string; cta: { href: string; label: string }; mock: ReactNode }) {
@@ -236,13 +237,13 @@ export function CoachesLanding() {
             <p>Whether you teach lessons or run a squad, Fore fits the way you already work.</p>
           </div>
           <div className="val-grid two-col">
-            <NextLink className="val-card cf-link-card" href="/coaches/teaching">
+            <NextLink className="val-card cf-link-card" href="/coaches?type=teaching#join">
               <div className="val-num">Teaching pros</div>
               <h3>More students. Less admin.</h3>
               <p>Get found by golfers near you, turn trials into regulars and get paid before every lesson.</p>
               <span className="cf-more">Learn more <ArrowRight size={16} aria-hidden="true" /></span>
             </NextLink>
-            <NextLink className="val-card cf-link-card" href="/coaches/performance">
+            <NextLink className="val-card cf-link-card" href="/coaches?type=performance#join">
               <div className="val-num">Performance coaches</div>
               <h3>Every player. One record.</h3>
               <p>Lessons, rounds, practice and progress in one place, shared with players, parents and your team.</p>
@@ -260,18 +261,8 @@ export function CoachesLanding() {
           ]}
         />
       </Section>
-      <Join
-        title="Be on Fore from day one."
-        copy="We launch on 1 December."
-        steps={[
-          ['Reserve your profile', 'Your details and how you coach.'],
-          ['Go live', 'Golfers find you in Find a coach.'],
-          ['Get verified', 'We check your qualifications.'],
-        ]}
-        href={JOIN}
-        label="Reserve your profile"
-      />
-      <StickyJoin href={JOIN} label="Reserve" text="Coach on Fore" />
+      <CoachSignupForm />
+      <StickyJoin href="#join" label="Reserve" text="Coach on Fore" />
     </div>
   );
 }

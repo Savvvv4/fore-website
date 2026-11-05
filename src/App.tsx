@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useEffect, useRef, useState, type ReactNode, type FormEvent } from 'react';
+import React, { useEffect, useRef, useState, type ReactNode } from 'react';
 import itishImg from './imports/itish-arora.jpg';
 import savdeepImg from './imports/PFP.jpeg';
 import ProductDemo from './components/ProductDemo';
-import { getSupabase } from './lib/supabase';
+import { GolferJoinForm as RedesignedGolferJoinForm, FacilityJoinForm as RedesignedFacilityJoinForm } from './signup/SignupFlows';
+import { usePathname } from 'next/navigation';
 import NextLink from 'next/link';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from 'lucide-react';
-import { Toaster, toast } from 'sonner';
+import { ArrowUpRight, Menu, X } from 'lucide-react';
+import { Toaster } from 'sonner';
 
 type AppLinkProps = Omit<React.ComponentProps<typeof NextLink>, 'href'> & { to: string };
 function Link({ to, ...props }: AppLinkProps) { return <NextLink href={to} {...props} />; }
@@ -50,7 +51,11 @@ function Logo() {
   );
 }
 
-function Header() {
+type SitePage = Page | 'coaches';
+
+function Header({ page = 'home' }: { page?: SitePage }) {
+  const pathname = usePathname();
+  const activePage: SitePage = pathname.startsWith('/coaches') ? 'coaches' : pathname.startsWith('/golfers') ? 'golfers' : pathname.startsWith('/facilities') ? 'facilities' : page;
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState(false);
   const lastScrollY = useRef(0);
@@ -75,6 +80,8 @@ function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const cta = activePage === 'golfers' ? { label: 'Join the waitlist', href: '/golfers#join' } : activePage === 'coaches' ? { label: 'Reserve your profile', href: '/coaches#join' } : activePage === 'facilities' ? { label: 'Talk to us', href: '/facilities#join' } : { label: 'Join early', href: '/join' };
 
   const links = [
     ['Golfers', '/golfers'],
@@ -101,8 +108,8 @@ function Header() {
         </nav>
 
         <div className="nav-actions">
-          <Link className="button dark small" to="/facilities#join">
-            Partner with Fore
+          <Link className="button dark small" to={cta.href}>
+            {cta.label}
             <ArrowUpRight size={14} />
           </Link>
 
@@ -168,185 +175,23 @@ function Layout({ page }: { page: Page }) {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <Header />
+      <Header page={page} />
 
       <main id="main-content" tabIndex={-1}>
         {content}
       </main>
 
       <Footer />
-      <FloatingWaitlistCTA />
       <Toaster position="bottom-center" />
     </>
   );
 }
 
-function FloatingWaitlistCTA() {
-  const [minimized, setMinimized] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [heroPassed, setHeroPassed] = useState(false);
-  const [footerVisible, setFooterVisible] = useState(false);
-  const [productDemoVisible, setProductDemoVisible] = useState(false);
-  const touchStartX = useRef<number | null>(null);
-
-  useEffect(() => {
-    setMinimized(false);
-    setModalOpen(false);
-    setSubmitted(false);
-  }, []);
-
-  useEffect(() => {
-    setHeroPassed(false);
-    setFooterVisible(false);
-    setProductDemoVisible(false);
-
-    const hero = document.querySelector<HTMLElement>('.hero-bg, .aud-hero-section, .about-hero, .page-hero');
-    const footer = document.querySelector<HTMLElement>('.footer');
-    if (!hero || !footer) return;
-
-    const updateHeroState = () => {
-      setHeroPassed(hero.getBoundingClientRect().bottom <= 0);
-    };
-
-    updateHeroState();
-    window.addEventListener('scroll', updateHeroState, { passive: true });
-
-    const footerObserver = new IntersectionObserver(
-      ([entry]) => setFooterVisible(entry.isIntersecting),
-      { threshold: 0.01 },
-    );
-    footerObserver.observe(footer);
-
-    const productDemo = document.querySelector<HTMLElement>('.product-demo');
-    const mobileQuery = window.matchMedia('(max-width: 600px)');
-    const demoObserver = productDemo
-      ? new IntersectionObserver(
-          ([entry]) => setProductDemoVisible(mobileQuery.matches && entry.isIntersecting),
-          { threshold: 0.1 },
-        )
-      : null;
-    if (productDemo) demoObserver?.observe(productDemo);
-
-    return () => {
-      window.removeEventListener('scroll', updateHeroState);
-      footerObserver.disconnect();
-      demoObserver?.disconnect();
-    };
-  }, []);
-
-  const submitFloatingForm = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubmitting(true);
-    const form = event.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await submitWaitlist({
-        name: String(data.get('name') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-        city: '',
-        role: String(data.get('role') ?? 'general') as WaitlistSubmission['role'],
-        source: 'floating_cta',
-      });
-      setSubmitted(true);
-      form.reset();
-    } catch (error) {
-      console.error('Floating waitlist submission failed', error);
-      toast.error('We could not save your details. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleTouchStart = (event: React.TouchEvent<HTMLElement>) => {
-    touchStartX.current = event.touches[0]?.clientX ?? null;
-  };
-
-  const handleTouchEnd = (event: React.TouchEvent<HTMLElement>) => {
-    if (touchStartX.current === null) return;
-    const distance = event.changedTouches[0].clientX - touchStartX.current;
-    touchStartX.current = null;
-    if (distance < -60) setMinimized(true);
-  };
-
-  if (!heroPassed || footerVisible || productDemoVisible) return null;
-
-  return (
-    <>
-      {minimized ? (
-        <button className="floating-waitlist-restore" type="button" onClick={() => setMinimized(false)} aria-label="Restore early member invitation">
-          <ChevronRight size={17} />
-        </button>
-      ) : (
-      <aside className="floating-waitlist-cta" aria-label="Become an early member" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
-        <button className="floating-waitlist-minimize" type="button" onClick={() => setMinimized(true)} aria-label="Minimize early member invitation" title="Minimize">
-          <ChevronDown size={15} />
-        </button>
-        <div className="floating-waitlist-copy">
-          <strong>Get in early.</strong>
-          <span>Become an early member.</span>
-        </div>
-        <div className="floating-waitlist-actions">
-          <button className="button acid small floating-waitlist-button" type="button" onClick={() => { setSubmitted(false); setModalOpen(true); }}>
-            Join Fore
-            <ArrowUpRight size={14} />
-          </button>
-        </div>
-      </aside>
-      )}
-
-      {modalOpen && (
-        <div className="early-member-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setModalOpen(false); }}>
-          <section className="early-member-modal" role="dialog" aria-modal="true" aria-labelledby="early-member-title">
-            {!submitted ? (
-              <>
-                <div className="early-member-modal-header">
-                  <div>
-                    <span className="section-label">Get in early</span>
-                    <h2 id="early-member-title">Become an early member.</h2>
-                  </div>
-                  <button className="early-member-close" type="button" onClick={() => setModalOpen(false)} aria-label="Close early member form">{String.fromCharCode(215)}</button>
-                </div>
-                <form className="early-member-form" onSubmit={submitFloatingForm}>
-                  <label>Name<input required name="name" placeholder="Your name" /></label>
-                  <label>Phone<input required name="phone" type="tel" placeholder="+91" /></label>
-                  <fieldset className="early-member-role-fieldset">
-                    <legend>I am a</legend>
-                    <div className="early-member-role-options">
-                      {(['golfer', 'coach', 'facility'] as const).map((role) => (
-                        <label key={role} className="early-member-role-option">
-                          <input required type="radio" name="role" value={role} />
-                          <span>{role === 'facility' ? 'Facility Rep' : role[0].toUpperCase() + role.slice(1)}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </fieldset>
-                  <button className="button acid" type="submit" disabled={submitting}>{submitting ? 'Joining...' : 'Join Fore'}</button>
-                </form>
-              </>
-            ) : (
-              <div className="early-member-success">
-                <div className="early-member-success-icon">✓</div>
-                <h2 id="early-member-title">You’re on the list.</h2>
-                <p>Thanks for joining Fore early. We’ll be in touch soon.</p>
-                <button className="button dark" type="button" onClick={() => setModalOpen(false)}>Done</button>
-              </div>
-            )}
-          </section>
-        </div>
-      )}
-    </>
-  );
-}
-
-/** Site header and footer around content rendered outside App (e.g. the coach directory). */
-export function SiteShell({ children }: { children: ReactNode }) {
+export function SiteShell({ children, page = 'home' }: { children: ReactNode; page?: SitePage }) {
   return (
     <>
       <a className="skip-link" href="#main-content">Skip to main content</a>
-      <Header />
+      <Header page={page} />
       <main id="main-content" tabIndex={-1}>
         {children}
       </main>
@@ -365,51 +210,6 @@ function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
-type WaitlistSubmission = {
-  name: string;
-  email?: string;
-  phone?: string;
-  city: string;
-  role: 'general' | 'golfer' | 'coach' | 'facility';
-  source: 'golfer_join' | 'coach_join' | 'facility_join' | 'floating_cta';
-  facility_name?: string;
-};
-
-async function submitWaitlist(submission: WaitlistSubmission) {
-  const supabase = await getSupabase();
-  if (!supabase) {
-    throw new Error('Supabase is not configured');
-  }
-
-  const { error } = await supabase.from('waitlist_submissions').insert(submission);
-
-  if (error) {
-    throw new Error(`Supabase submission failed: ${error.message}`);
-  }
-}
-
-function SubmissionConfirmation({ role, onClose }: { role: 'general' | 'golfer' | 'coach' | 'facility'; onClose: () => void }) {
-  const copy = {
-    general: ['Thanks for reaching out.', 'We have your details and will be in touch soon.'],
-    golfer: ['You’re on the list.', 'We’ll let you know as soon as Fore is ready for your next round.'],
-    coach: ['Profile reserved.', 'We’ll be in touch soon to help you get set up on Fore.'],
-    facility: ['Let’s build together.', 'We’ll be in touch soon to talk about bringing your facility onto Fore.'],
-  }[role];
-
-  return (
-    <div className="form-confirmation-overlay" role="presentation">
-      <section className="form-confirmation" role="dialog" aria-modal="true" aria-labelledby="form-confirmation-title">
-        <div className="early-member-success-icon">✓</div>
-        <h2 id="form-confirmation-title">{copy[0]}</h2>
-        <p>{copy[1]}</p>
-        <button className="button dark" type="button" onClick={onClose}>Done</button>
-      </section>
-    </div>
-  );
-}
-
-
-
 function Home() {
   return (
     <>
@@ -427,16 +227,17 @@ function Home() {
 
             <div className="button-row hero-cta-row">
               <Link className="button acid" to="/facilities">
-                For facilities <ArrowUpRight />
+                I run a facility <ArrowUpRight />
               </Link>
               <div className="hero-audience-ctas">
                 <Link className="button hero-ghost" to="/golfers">
-                  For golfers <ArrowUpRight />
+                  I play golf <ArrowUpRight />
                 </Link>
                 <Link className="button hero-ghost" to="/coaches">
-                  For coaches <ArrowUpRight />
+                  I coach <ArrowUpRight />
                 </Link>
               </div>
+              <Link className="fs-parent-cta" to="/golfers#join?for=child">Joining for your child? <ArrowUpRight size={14} /></Link>
             </div>
           </div>
 
@@ -555,6 +356,7 @@ const faqItems = [
     question: 'What does partnering cost a facility or coach?',
     answer: 'There\'s no upfront cost to join. Facilities pay a small commission only on bookings made through Fore; coaches keep full pricing control and only pay for bookings sourced through the platform. Full terms shared before you commit.',
   },
+  { question: 'How do I join Fore?', answer: 'Pick who you are and we’ll call you.' },
 ];
 
 function FAQ() {
@@ -596,33 +398,7 @@ function FAQ() {
   );
 }
 
-function FinalCTA() {
-  return (
-    <section className="final-cta">
-      <div className="container">
-        <h2>Be the first on <span className="cta-fore">Fore.</span></h2>
-
-        <p>
-          We're building one connected ecosystem for golf in India.<br />Join early — as a golfer, a coach or a facility.
-        </p>
-
-        <div className="button-row center">
-          <Link className="button acid" to="/golfers#join">
-            Join as a golfer <ArrowUpRight size={16} />
-          </Link>
-
-          <Link className="button acid" to="/coaches">
-            Join as a coach <ArrowUpRight size={16} />
-          </Link>
-
-          <Link className="button acid" to="/facilities#join">
-            Partner with Fore <ArrowUpRight size={16} />
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
+function FinalCTA() { return <section className="final-cta"><div className="container"><h2>Be the first on <span className="cta-fore">Fore.</span></h2><p>We’re building one connected ecosystem for golf. Join us early.</p><div className="button-row center"><Link className="button acid" to="/join">Join us early <ArrowUpRight size={16}/></Link></div></div></section>; }
 
 function PageHero({
   label,
@@ -949,183 +725,6 @@ function Terms() {
 }
 function NotFound() { return <><PageHero label="404" title="Page not found." desc="The page you were looking for does not exist or may have moved." /><section className="section container legal"><Link className="button acid" to="/">Return to ForeSports <ArrowUpRight /></Link></section></>; }
 
-type AudienceRole = 'golfer' | 'coach' | 'facility';
-
-function AudienceSignupModal({ role, onClose }: { role: AudienceRole; onClose: () => void }) {
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const isFacility = role === 'facility';
-  const details = {
-    golfer: { label: 'Join as a golfer', title: 'Be one of the first.', button: 'Join Fore', source: 'golfer_join' as const },
-    coach: { label: 'Join as a coach', title: 'Get on Fore early.', button: 'Reserve coach profile', source: 'coach_join' as const },
-    facility: { label: 'Partner with Fore', title: 'Build with us.', button: 'Let’s build together', source: 'facility_join' as const },
-  }[role];
-
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubmitting(true);
-    const form = event.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await submitWaitlist({
-        name: String(data.get('name') ?? ''),
-        email: String(data.get('email') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-        city: String(data.get('city') ?? ''),
-        role,
-        source: details.source,
-        ...(isFacility ? { facility_name: String(data.get('facility') ?? '') } : {}),
-      });
-      setSubmitted(true);
-      form.reset();
-    } catch (error) {
-      console.error(`${role} waitlist submission failed`, error);
-      toast.error('We could not save your details. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="early-member-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <section className="early-member-modal" role="dialog" aria-modal="true" aria-labelledby="audience-signup-title">
-        {submitted ? (
-          <div className="early-member-success">
-            <div className="early-member-success-icon">✓</div>
-            <h2 id="audience-signup-title">{role === 'coach' ? 'Profile reserved.' : role === 'facility' ? 'Let’s build together.' : 'You’re on the list.'}</h2>
-            <p>We’ll be in touch soon.</p>
-            <button className="button dark" type="button" onClick={onClose}>Done</button>
-          </div>
-        ) : (
-          <>
-            <div className="early-member-modal-header">
-              <div>
-                <SectionLabel>{details.label}</SectionLabel>
-                <h2 id="audience-signup-title">{details.title}</h2>
-              </div>
-              <button className="early-member-close" type="button" onClick={onClose} aria-label="Close sign-up form"><X size={18} /></button>
-            </div>
-            <form className="early-member-form" onSubmit={submit}>
-              {isFacility && <label>Facility name<input required name="facility" placeholder="Name of your golf facility" /></label>}
-              <label>{isFacility ? 'Your name' : 'Name'}<input required name="name" placeholder={isFacility ? 'Contact name' : 'Your name'} /></label>
-              <label>Email<input required type="email" name="email" placeholder={isFacility ? 'you@facility.com' : 'you@email.com'} /></label>
-              <label>Phone<input name="phone" placeholder="+91" /></label>
-              <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
-              <button className="button acid" type="submit" disabled={submitting}>{submitting ? 'Saving...' : <>{details.button} <ArrowUpRight size={16} /></>}</button>
-            </form>
-          </>
-        )}
-      </section>
-    </div>
-  );
-}
-
-// ─── Audience join forms ──────────────────────────────────────────
-
-function GolferJoinForm() {
-  const [confirmed, setConfirmed] = useState(false);
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await submitWaitlist({
-        name: String(data.get('name') ?? ''),
-        email: String(data.get('email') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-        city: String(data.get('city') ?? ''),
-        role: 'golfer',
-        source: 'golfer_join',
-      });
-      setConfirmed(true);
-      form.reset();
-    } catch (error) {
-      console.error('Golfer waitlist submission failed', error);
-      toast.error('We could not save your details. Please try again.');
-    }
-  };
-  return (
-    <>
-    <section id="join" className="form-section">
-      <div className="container form-layout">
-        <div>
-          <SectionLabel>Join as a golfer</SectionLabel>
-          <h2>Be one of the first.</h2>
-          <p>Be among the first golfers to experience a more connected way to discover, play and improve. Wherever you are in your golfing journey, share your details and join the FORE community.</p>
-        </div>
-        <form className="form-card" onSubmit={submit}>
-          <div className="form-fields">
-            <label>Name<input required name="name" placeholder="Your name" /></label>
-            <label>Email<input required type="email" name="email" placeholder="you@email.com" /></label>
-            <label>Phone<input name="phone" placeholder="+91" /></label>
-            <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
-          </div>
-          <button className="button acid" type="submit">
-            Join Fore <ArrowUpRight size={16} />
-          </button>
-        </form>
-      </div>
-    </section>
-    {confirmed && <SubmissionConfirmation role="golfer" onClose={() => setConfirmed(false)} />}
-    </>
-  );
-}
-
-function FacilityJoinForm() {
-  const [confirmed, setConfirmed] = useState(false);
-  const submit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const data = new FormData(form);
-
-    try {
-      await submitWaitlist({
-        name: String(data.get('name') ?? ''),
-        email: String(data.get('email') ?? ''),
-        phone: String(data.get('phone') ?? ''),
-        city: String(data.get('city') ?? ''),
-        role: 'facility',
-        source: 'facility_join',
-        facility_name: String(data.get('facility') ?? ''),
-      });
-      setConfirmed(true);
-      form.reset();
-    } catch (error) {
-      console.error('Facility waitlist submission failed', error);
-      toast.error('We could not save your details. Please try again.');
-    }
-  };
-  return (
-    <>
-    <section id="join" className="form-section">
-      <div className="container form-layout">
-        <div>
-          <SectionLabel>Partner with Fore</SectionLabel>
-          <h2>Build with us.</h2>
-          <p>We’re partnering with forward-thinking golf facilities across India and worldwide to shape a platform built around their needs. If you share our vision for a more connected future for golf, leave your details and let’s start the conversation.</p>
-        </div>
-        <form className="form-card" onSubmit={submit}>
-          <div className="form-fields">
-            <label className="full-width">Facility name<input required name="facility" placeholder="Name of your golf facility" /></label>
-            <label>Your name<input required name="name" placeholder="Contact name" /></label>
-            <label>Email<input required type="email" name="email" placeholder="you@facility.com" /></label>
-            <label>Phone<input name="phone" placeholder="+91" /></label>
-            <label>City<input required name="city" placeholder="Delhi, Gurugram…" /></label>
-          </div>
-          <button className="button acid" type="submit">
-            Let’s build together <ArrowUpRight size={16} />
-          </button>
-        </form>
-      </div>
-    </section>
-    {confirmed && <SubmissionConfirmation role="facility" onClose={() => setConfirmed(false)} />}
-    </>
-  );
-}
-
-// ─── Audience page mock UIs ───────────────────────────────────────
 
 function GolfersMock() {
   return (
@@ -1213,8 +812,6 @@ function FacilitiesMock() {
 // ─── Audience page components ─────────────────────────────────────
 
 function GolfersPage() {
-  const [signupOpen, setSignupOpen] = useState(false);
-
   return (
     <>
       <section className="aud-hero-section">
@@ -1228,12 +825,9 @@ function GolfersPage() {
             <h1>Play beyond <em>your usual.</em></h1>
             <p>Discover more places to play, find the right coach, and book golf in a few taps — all in one place.</p>
             <div className="button-row">
-              <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
-                Join as a golfer <ArrowUpRight size={18} />
-              </button>
-              <Link className="button light" to="/coaches/directory">
-                Find a coach <ArrowUpRight size={18} />
-              </Link>
+              <Link className="button acid" to="/golfers#join">I play golf <ArrowUpRight size={18} /></Link>
+              <Link className="button light" to="/coaches/directory">Find a coach <ArrowUpRight size={18} /></Link>
+              <Link className="fs-parent-cta" to="/golfers#join?for=child">Joining for your child? <ArrowUpRight size={14} /></Link>
             </div>
           </motion.div>
           <GolfersMock />
@@ -1302,14 +896,12 @@ function GolfersPage() {
         </div>
       </section>
 
-      <GolferJoinForm />
-      {signupOpen && <AudienceSignupModal role="golfer" onClose={() => setSignupOpen(false)} />}
+      <RedesignedGolferJoinForm />
     </>
   );
 }
 
 function FacilitiesPage() {
-  const [signupOpen, setSignupOpen] = useState(false);
   const pricingRows = [
     { time: '09:00', standard: '₹2,500', fore: '₹2,500', status: 'high' as const, statusLabel: 'High demand' },
     { time: '11:00', standard: '₹2,500', fore: '₹1,800', status: 'fill' as const, statusLabel: 'Fill' },
@@ -1329,9 +921,7 @@ function FacilitiesPage() {
             <h1>Increase revenue. <em>Streamline operations.</em></h1>
             <p>Reach more golfers, fill more tee times and bays, and run your facility from one connected system.</p>
             <div className="button-row">
-              <button className="button acid" type="button" onClick={() => setSignupOpen(true)}>
-                Partner with Fore <ArrowUpRight size={18} />
-              </button>
+              <Link className="button acid" to="/facilities#join">Partner with Fore <ArrowUpRight size={18} /></Link>
               <a className="button light" href="#revenue">
                 See how it works <ArrowUpRight size={18} />
               </a>
@@ -1442,8 +1032,7 @@ function FacilitiesPage() {
         </div>
       </section>
 
-      <FacilityJoinForm />
-      {signupOpen && <AudienceSignupModal role="facility" onClose={() => setSignupOpen(false)} />}
+      <RedesignedFacilityJoinForm />
     </>
   );
 }

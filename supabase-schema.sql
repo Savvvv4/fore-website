@@ -24,3 +24,28 @@ on public.waitlist_submissions
 for insert
 to anon, authenticated
 with check (true);
+
+
+-- Shared, WhatsApp-keyed sign-up records.
+-- Fore! sign-up flow redesign — November 2026
+-- Run after supabase-schema.sql and supabase/coach-directory.sql.
+create table if not exists public.signup_leads (
+ id uuid primary key default gen_random_uuid(),
+ first_name text not null check (char_length(first_name) between 1 and 80),
+ last_name text check (last_name is null or char_length(last_name) <= 80),
+ email text not null check (char_length(email) <= 254 and email ~* '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+ whatsapp text not null unique check (whatsapp ~ '^\+[1-9][0-9]{6,14}$'),
+ city text not null check (char_length(city) between 1 and 100),
+ signup_type text not null check (signup_type in ('golfer','coach','facility')),
+ details jsonb not null default '{}'::jsonb check (jsonb_typeof(details)='object'),
+ source_page text not null, utm_source text, utm_medium text, utm_campaign text, utm_term text, utm_content text,
+ consent boolean not null check (consent), created_at timestamptz not null default now()
+);
+create index if not exists signup_leads_created_at_idx on public.signup_leads(created_at desc);
+create index if not exists signup_leads_type_idx on public.signup_leads(signup_type,created_at desc);
+alter table public.signup_leads enable row level security;
+drop policy if exists "Website can submit sign-up leads" on public.signup_leads;
+create policy "Website can submit sign-up leads" on public.signup_leads for insert to anon,authenticated with check(consent=true);
+revoke all on public.signup_leads from anon,authenticated;
+grant insert(first_name,last_name,email,whatsapp,city,signup_type,details,source_page,utm_source,utm_medium,utm_campaign,utm_term,utm_content,consent) on public.signup_leads to anon,authenticated;
+

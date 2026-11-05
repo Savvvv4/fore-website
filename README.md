@@ -18,18 +18,19 @@ If Vercel won't save the anon key with `NEXT_PUBLIC_` (it may insist the key is 
 Run each file once in Supabase → SQL Editor:
 
 1. `supabase-schema.sql` — waitlist forms
-2. `supabase/coach-directory.sql` — coach sign-ups, the coach directory, enquiries and the `coach-photos` storage bucket
+2. `supabase/coach-directory.sql` — coach directory, enquiries and the `coach-photos` storage bucket
+3. `supabase/signup-flow-redesign.sql` — WhatsApp-keyed leads, international coach numbers and pending founding profiles. Run this after the first two files.
 
-Both files are safe to run again.
+The base schema and redesign migration are safe to re-run. Run the coach-directory setup once before the redesign migration; do not rerun it afterward, because it approves pending profiles.
 
 ## Coach pages, sign-ups and Find a coach
 
 | Page | What it does |
 | --- | --- |
-| `/coaches` | Marketing page for every coach, linking to sign-up and to the two pages below. |
-| `/coaches/teaching` | Shareable page for teaching pros. Its buttons go to `/coaches/teaching/join`. |
-| `/coaches/performance` | Shareable page for performance coaches. Its buttons go to `/coaches/performance/join`. |
-| `/coaches/join` | Two-step sign-up that asks which kind of coach you are, then a confirmation screen. `?type=teaching` or `?type=performance` pre-selects it. |
+| `/coaches` | Coach landing page with the founding-profile reservation form. |
+| `/coaches/teaching` | Shareable page for teaching pros. Its buttons pre-select the teaching-pro goal in the form on `/coaches#join`. |
+| `/coaches/performance` | Shareable page for performance coaches. Its buttons pre-select the performance-coach goal in the form on `/coaches#join`. |
+| `/coaches/join` | Two-step founding-profile reservation. `?type=teaching` or `?type=performance` pre-selects the goal. |
 | `/coaches/teaching/join`, `/coaches/performance/join` | The same sign-up with the coach type already set. |
 | `/coaches/directory` | Find a coach: every approved coach, with search and filters. Linked from the golfers page and the footer. Always shows live data. |
 | `/coaches/directory/<slug>` | A coach's public profile with a message form. |
@@ -38,19 +39,11 @@ Both files are safe to run again.
 
 ### How sign-ups are saved
 
-The sign-up tries three places in turn, so a sign-up is only lost if Supabase is unreachable altogether (the coach then sees an error and their answers stay in the form):
-
-1. `coach_profiles` with every field.
-2. `coach_profiles` with the original columns, if `supabase/coach-directory.sql` hasn't been re-run yet. A performance coach's program details go at the top of their bio.
-3. `waitlist_submissions` with name, email, phone and city, role `coach` and a `source` ending in `_backup`. A coach who signs up again with the same email is saved here with a source ending in `_repeat`.
-
-`source` in `coach_profiles` is `teaching_signup` or `performance_signup`.
-
-Re-run `supabase/coach-directory.sql` after pulling these changes. It adds the coach type columns, approves sign-ups automatically (including any still pending), and allows one sign-up per phone number. If two profiles already share a phone number, it skips that last rule and says so; reject or delete the extra row and run it again.
+Golfer, parent and facility records are stored in `signup_leads`, uniquely keyed by the E.164 WhatsApp number. Coach answers are stored there as structured details and mirrored to `coach_profiles` as a pending founding profile. Source page and UTM attribution are retained. If the profile mirror fails, the lead remains saved for team follow-up.
 
 ### Approving and verifying coaches
 
-Sign-ups are approved automatically and appear in Find a coach as soon as they're saved.
+Founding profiles remain pending and private until the team verifies and approves them for launch.
 
 1. Supabase → Table Editor → `coach_profiles`.
 2. To mark a coach as verified, set `verified` to `true` once you've checked their qualifications. The badge shows on their card and profile the next time the page loads.
@@ -58,6 +51,15 @@ Sign-ups are approved automatically and appear in Find a coach as soon as they'r
 4. Also check `waitlist_submissions` for rows with role `coach`: backup and repeat sign-ups land there.
 
 `admin_notes` is private to your team.
+
+### WhatsApp follow-up
+
+The forms capture the details and consent needed for one confirmation message per sign-up. Automated outbound WhatsApp delivery is not enabled in this repository; it requires approved WhatsApp Business templates and a configured messaging provider. Template copy from the redesign:
+
+- Golfer: Hi {{1}}, you’re on the Fore! waitlist. We’ll message you here the day we open in {{2}}.
+- Parent: Hi {{1}}, you’re on the Fore! waitlist for your child. When we open in {{2}}, we’ll show you coaches who teach juniors aged {{3}}.
+- Coach: Hi {{1}}, your Fore! founding profile is reserved. We’ll call you in the {{2}} to verify you and hear how you coach.
+- Facility: Hi {{1}}, thanks for getting in touch about {{2}}. We’ll reach you within {{3}} to start the conversation.
 
 ### Enquiries
 
