@@ -68,3 +68,5 @@ Golfer enquiries land in `coach_enquiries`, linked to the coach by `coach_id`. F
 ### What visitors can and can't see
 
 Visitors can submit sign-ups and enquiries, and read the public fields of approved coaches. They can never read email, phone, consent, notes, pending profiles or enquiries. Row-level security and column grants enforce this in `supabase/coach-directory.sql`.
+
+Deployments: pushes to `main` trigger the production deployment on Vercel.
